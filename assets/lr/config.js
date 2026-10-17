@@ -14,9 +14,9 @@ window.LR_CONFIG = {
   // 바꾸는 법: lecture-room/tools/password-hash.html 에서 값을 만들어 붙여넣기
   SITE_PASSWORD_SHA256: window.LR_SITE_HASH || 'c5cc15b6430ca720613daef384c58149870660959a4ecbb76ba3b55ba02ad77e',
 
-  // Supabase 연결 정보 (Project Settings → API). 비워 두면 데모 모드(이 브라우저에만 저장)
-  SUPABASE_URL: '',
-  SUPABASE_ANON_KEY: '',
+  // Supabase 연결 정보 (Project Settings → API Keys). 비워 두면 데모 모드(이 브라우저에만 저장)
+  SUPABASE_URL: 'https://vpphzfbuzkmhlojvfkjr.supabase.co',
+  SUPABASE_ANON_KEY: 'sb_publishable_KsEHk7U9y729c6w9L5KF3Q_9WTRTF5j',   // 공개용(publishable) 키. secret 키는 절대 넣지 말 것
 
   // 수강 권한이 없는 강의의 [수강 신청하기] 버튼이 갈 곳
   PURCHASE_URL: 'lectures-shop.html',
