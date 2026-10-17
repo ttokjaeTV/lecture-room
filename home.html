@@ -28,12 +28,12 @@
 <link rel="stylesheet" href="assets/css/depth.css">
 <link rel="stylesheet" href="assets/css/fx.css">
 <link rel="stylesheet" href="assets/css/ace.css">
-<link rel="stylesheet" href="assets/css/shell.css">
+<link rel="stylesheet" href="assets/css/shell.css?v=20261017d">
 <script>if(!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches))document.documentElement.classList.add('js-motion');
 /* 이번 창에서 이미 들어갔거나, #주소로 바로 온 경우에는 랜딩을 건너뛴다 */
 (function(){var d=document.documentElement,seen=false;try{seen=sessionStorage.getItem('tj-intro-done')==='1'}catch(e){}if(seen||location.hash)d.classList.add('intro-skip');else d.classList.add('intro-on');})();</script>
 </head>
-<body>
+<body class="home-page">
 
 <!-- 선 아이콘 스프라이트 -->
 <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
@@ -205,7 +205,7 @@
     </nav>
     <nav class="bar__nav" aria-label="주요 메뉴">
       <a class="bar__room" href="classroom.html"><svg viewBox="0 0 24 24" aria-hidden="true"><rect class="ic-frame" x="2.5" y="4.5" width="19" height="15" rx="4"/><path class="ic-play" d="M10 8.6v6.8l5.6-3.4z"/></svg><span>내 강의실</span></a>
-      <a class="hide-sm" href="#tools">무료 계산기</a>
+      <a class="hide-sm" href="#tools">계산기</a>
       <a class="hide-sm" href="#topics">주제별 영상</a>
       <a class="sns sns--yt" href="https://www.youtube.com/@ttok_jae" target="_blank" rel="noopener" aria-label="똑재TV 유튜브"><svg class="sns__ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="1.5" y="5" width="21" height="14" rx="4.5" fill="#fff"/><path d="M10 9v6l5.2-3z" fill="#E62117"/></svg><span>유튜브</span></a>
       <a class="sns sns--nv" href="https://cafe.naver.com/ttokjae" target="_blank" rel="noopener" aria-label="네이버 카페 가입"><svg class="sns__ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" fill="#fff"/><path d="M8 7h3l2.6 4V7H16v10h-3l-2.6-4v4H8z" fill="#03C75A"/></svg><span>카페 가입</span></a>
@@ -311,7 +311,7 @@
           <p class="door__time"><b>5분</b><span>무료</span></p>
           <h3 class="door__t">계산기에 내 숫자 넣어보기</h3>
           <p class="door__d">막연하던 질문이 "그래서 몇 년 뒤 얼마?"로 바뀝니다. 질문이 구체적이어야 답도 구체적입니다.</p>
-          <a class="tlink" href="#tools">무료 계산기 보기</a>
+          <a class="tlink" href="#tools">계산기 보기</a>
         </div>
         <div class="door">
           <p class="door__time"><b>매주</b><span>무료</span></p>
@@ -406,12 +406,12 @@
     <div class="marq__row marq__row--line" data-dir="1"><div class="marq__track"><span class="marq__w">현금흐름</span><span class="marq__dot"></span><span class="marq__w">리밸런싱</span><span class="marq__dot"></span><span class="marq__w">자산배분</span><span class="marq__dot"></span><span class="marq__w">금융소득종합과세</span><span class="marq__dot"></span><span class="marq__w">건강보험료</span><span class="marq__dot"></span><span class="marq__w">ISA</span><span class="marq__dot"></span><span class="marq__w">IRP</span><span class="marq__dot"></span><span class="marq__w">연금저축</span><span class="marq__dot"></span><span class="marq__w">비용과 세금</span><span class="marq__dot"></span><span class="marq__w">ETF 구조</span><span class="marq__dot"></span><span class="marq__w">현금흐름</span><span class="marq__dot"></span><span class="marq__w">리밸런싱</span><span class="marq__dot"></span><span class="marq__w">자산배분</span><span class="marq__dot"></span><span class="marq__w">금융소득종합과세</span><span class="marq__dot"></span><span class="marq__w">건강보험료</span><span class="marq__dot"></span><span class="marq__w">ISA</span><span class="marq__dot"></span><span class="marq__w">IRP</span><span class="marq__dot"></span><span class="marq__w">연금저축</span><span class="marq__dot"></span><span class="marq__w">비용과 세금</span><span class="marq__dot"></span><span class="marq__w">ETF 구조</span><span class="marq__dot"></span></div></div>
   </div>
 
-  <!-- 무료 계산기 ------------------------------------------------------------>
+  <!-- 투자 Tool — 기본 기능은 무료, 전용 기능은 멤버십 ---------------------------->
   <section class="sec" id="tools" aria-labelledby="tools-t">
     <div class="wrap">
       <div class="sec__head">
         <h2 class="sec__t" id="tools-t">숫자는 직접 넣어봐야 내 것이 됩니다</h2>
-        <p class="sec__sub">영상에서 쓰는 계산기를 그대로 열어 두었습니다. 가입도 설치도 필요 없습니다.</p>
+        <p class="sec__sub">영상에서 쓰는 계산기의 기본 기능은 누구나 무료로 씁니다. 더 깊이 따져 보는 기능은 투자 Tool 멤버십 회원에게 열립니다.</p>
       </div>
 
       <!-- 계산기 화면이 누운 상태에서 스크롤을 따라 일어선다 (Aceternity Container Scroll 아이디어) -->
@@ -428,6 +428,7 @@
           <span class="tool__ico" aria-hidden="true"><svg class="ico"><use href="#i-snow"/></svg></span>
           <h3 class="tool__t">월배당 적립 계산기</h3>
           <p class="tool__d">배당을 재투자할 때와 안 할 때, 세전과 세후, 물가까지 반영해 몇 년 뒤 배당이 얼마가 되는지 봅니다.</p>
+          <p class="tool__tier"><span>기본 무료</span><span class="is-m">전용 기능 멤버십</span></p>
           <p class="tool__go"><a class="tlink" href="https://ttokjaetv.github.io/ttokjae-div/" target="_blank" rel="noopener">계산기 열기</a></p>
         </li>
         <!-- 아래 세 개는 주소가 정해지면 href 를 바꾸고 data-todo="link" 를 지운다 -->
@@ -435,21 +436,45 @@
           <span class="tool__ico" aria-hidden="true"><svg class="ico"><use href="#i-scale"/></svg></span>
           <h3 class="tool__t">절세계좌 비교 계산기</h3>
           <p class="tool__d">같은 돈을 연금저축·IRP·ISA에 넣었을 때 세금이 얼마나 달라지는지 나란히 비교합니다.</p>
+          <p class="tool__tier"><span>기본 무료</span><span class="is-m">전용 기능 멤버십</span></p>
           <p class="tool__go"><a class="tlink" href="#" data-todo="link">계산기 열기</a> <span class="todo">주소 연결 전</span></p>
         </li>
         <li class="tool spot">
           <span class="tool__ico" aria-hidden="true"><svg class="ico"><use href="#i-rewind"/></svg></span>
           <h3 class="tool__t">은퇴 자금 역산 계산기</h3>
           <p class="tool__d">은퇴 후 쓰고 싶은 생활비에서 거꾸로, 지금부터 얼마를 모아야 하는지 계산합니다.</p>
+          <p class="tool__tier"><span>기본 무료</span><span class="is-m">전용 기능 멤버십</span></p>
           <p class="tool__go"><a class="tlink" href="#" data-todo="link">계산기 열기</a> <span class="todo">주소 연결 전</span></p>
         </li>
         <li class="tool spot">
           <span class="tool__ico" aria-hidden="true"><svg class="ico"><use href="#i-avg"/></svg></span>
           <h3 class="tool__t">물타기 계산기</h3>
           <p class="tool__d">추가로 사면 평균 단가가 어떻게 바뀌는지, 그때 시장 공포 지표는 어디쯤인지 함께 봅니다.</p>
+          <p class="tool__tier"><span>기본 무료</span><span class="is-m">전용 기능 멤버십</span></p>
           <p class="tool__go"><a class="tlink" href="#" data-todo="link">계산기 열기</a> <span class="todo">주소 연결 전</span></p>
         </li>
       </ul>
+
+      <!-- 무료 · 멤버십 나눔 — 어떤 기능을 멤버십 전용으로 둘지 정해지면 빨간 점선 줄을 기능 이름으로 바꾼다 -->
+      <div class="tier">
+        <div class="tier__c">
+          <p class="tier__k">무료</p>
+          <p class="tier__t">기본 기능은 누구나</p>
+          <ul class="tier__l" role="list">
+            <li>계산기마다 기본 계산은 무료로 열려 있습니다</li>
+            <li>가입 · 설치 없이 바로 씁니다</li>
+          </ul>
+        </div>
+        <div class="tier__c tier__c--m">
+          <p class="tier__k">투자 Tool 멤버십 · 월 8,900원</p>
+          <p class="tier__t">더 깊이 따져 보는 전용 기능</p>
+          <ul class="tier__l" role="list">
+            <li><span class="todo">계산기별 멤버십 전용 기능 — 확정 후 기재</span></li>
+            <li>내 강의실 계정으로 로그인하면 바로 열립니다</li>
+          </ul>
+          <a class="btn btn--yellow tier__go" href="tools-shop.html">멤버십 알아보기 <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
     </div>
   </section>
 

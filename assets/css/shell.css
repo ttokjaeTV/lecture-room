@@ -125,3 +125,34 @@ body { padding-bottom: 96px; }
 /* 강의실 페이지: 강의실 화면이 본문 폭을 쓴다 */
 .room-page main { min-height: 60vh; }
 .room-page .lr .lr-main { padding-top: 26px; }
+
+/* 투자 Tool — 무료 · 멤버십 나눔 (소개 페이지 계산기 칸, 멤버십 상세에서 함께 씀) */
+.tier { display: grid; gap: 12px; margin-top: 22px; }
+@media (min-width: 760px) { .tier { grid-template-columns: 1fr 1.25fr; } }
+.tier__c { position: relative; padding: 22px 24px; border-radius: 18px; background: var(--paper, #fff); border: 1px solid var(--line, #e7e2dc); }
+.tier__c--m { background: linear-gradient(150deg, #3A2F26, #2B221B); border-color: transparent; color: #FBF7F0;
+  box-shadow: 0 1px 2px rgba(58, 47, 38, .1), 0 18px 34px -20px rgba(43, 34, 27, .6); }
+.tier__k { font-size: 12.5px; font-weight: 800; letter-spacing: .02em; color: var(--red, #96181a); }
+.tier__c--m .tier__k { color: var(--yellow, #F8E04A); }
+.tier__t { margin-top: 4px; font-size: 19px; font-weight: 900; letter-spacing: -.035em; color: var(--cocoa, #3A2F26); }
+.tier__c--m .tier__t { color: #FBF7F0; }
+.tier__l { display: grid; gap: 7px; margin-top: 12px; }
+.tier__l li { position: relative; padding-left: 18px; font-size: 14.5px; line-height: 1.6; color: var(--ink-2, #5f5a55); }
+.tier__l li::before { content: ''; position: absolute; left: 0; top: .78em; width: 8px; height: 1.5px; background: var(--red, #96181a); }
+.tier__c--m .tier__l li { color: rgba(251, 247, 240, .82); }
+.tier__c--m .tier__l li::before { background: var(--yellow, #F8E04A); }
+.tier__c--m .todo { color: var(--yellow, #F8E04A); border-bottom-color: rgba(248, 224, 74, .6); }
+.tier__go { margin-top: 16px; }
+.tool__tier { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.tool__tier span { padding: 3px 9px; border-radius: 999px; font-size: 11.5px; font-weight: 800; background: var(--paper-gray, #f6f4f1); color: var(--ink-2, #5f5a55); }
+.tool__tier .is-m { background: #3A2F26; color: var(--yellow, #F8E04A); }
+
+/* 소개 페이지(home.html) 상단바 상품 메뉴 4개 — 좁은 화면에서는 상단바 아래 한 줄(가로 스크롤)로 (상세 페이지 shop.css 와 같은 규칙) */
+@media (max-width: 760px) {
+  .home-page .bar__in { flex-wrap: wrap; height: auto; padding-top: 10px; padding-bottom: 0; row-gap: 6px; }
+  .home-page .bar__prim { order: 3; flex: 1 0 100%; margin: 0 calc(var(--gut, 20px) * -1); padding: 0 var(--gut, 20px) 8px; overflow-x: auto; scrollbar-width: none; gap: 4px; }
+  .home-page .bar__prim::-webkit-scrollbar { display: none; }
+  .home-page .bar__p { flex: none; height: 34px; padding: 0 14px; font-size: 15px; background: rgba(58, 47, 38, .06); }
+}
+.tool .tool__tier, .tool .tool__go { grid-column: 2; }
+.tool .tool__tier { margin-top: 4px; }
