@@ -232,7 +232,7 @@
     var pill = document.createElement('span');
     pill.className = 'nav-pill'; pill.setAttribute('aria-hidden', 'true');
     nav.insertBefore(pill, nav.firstChild);
-    Array.prototype.forEach.call(nav.querySelectorAll('a:not(.btn):not(.sns)'), function (a) {
+    Array.prototype.forEach.call(nav.querySelectorAll('a:not(.btn):not(.sns):not(.bar__room)'), function (a) {
       a.addEventListener('mouseenter', function () {
         pill.style.left = (a.offsetLeft - 12) + 'px';
         pill.style.width = (a.offsetWidth + 24) + 'px';

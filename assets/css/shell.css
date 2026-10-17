@@ -95,22 +95,30 @@ body { padding-bottom: 96px; }
 .bar__nav a.sns { font-size: 14.5px; }
 
 /* ---------------------------------------------------------------- 내 강의실 입구 (2026-10-17) */
+/* 상품 메뉴와 구분되는 '들어가는 문' — 코코아 단색 알약 + 노란 재생 아이콘 */
 .bar__room {
-  display: inline-flex; align-items: center; flex: none; gap: 6px; height: 38px; padding: 0 14px 0 11px; border-radius: 999px;
+  display: inline-flex; align-items: center; flex: none; gap: 7px; height: 38px; padding: 0 17px 0 14px; border-radius: 999px;
   font-size: 14.5px; font-weight: 800; letter-spacing: -.02em; text-decoration: none; white-space: nowrap;
-  color: var(--cocoa, #3A2F26); background: rgba(58, 47, 38, .06); box-shadow: inset 0 0 0 1.5px rgba(58, 47, 38, .7);
-  transition: background-color .2s ease, color .2s ease;
+  color: #FBF7F0; background: var(--cocoa, #3A2F26);
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, .25), 0 6px 14px -8px rgba(58, 47, 38, .6);
+  transition: transform .15s ease, background-color .2s ease, box-shadow .15s ease;
 }
-.bar__room svg { width: 19px; height: 19px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-.bar__room:hover, .bar__room[aria-current="page"] { background: var(--cocoa, #3A2F26); color: var(--yellow, #F8E04A); box-shadow: none; }
+.bar__room svg { width: 18px; height: 18px; flex: none; }
+.bar__room svg .ic-play { fill: var(--yellow, #F8E04A); }
+.bar__room svg .ic-frame { fill: none; stroke: var(--yellow, #F8E04A); stroke-width: 1.8; }
+.bar__room:hover { background: #4A3D32; transform: translateY(-1px); }
+.bar__room:active { transform: translateY(1px); box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .25); }
+.bar__room[aria-current="page"] { color: var(--yellow, #F8E04A); }
 /* 상단바 글자 메뉴 규칙(tj.css .bar__nav a · aria-current 밑줄)이 이 버튼을 덮지 않게 */
-.bar__nav a.bar__room { font-size: 14.5px; font-weight: 800; padding-top: 0; padding-bottom: 0; text-decoration: none; color: var(--cocoa, #3A2F26); }
-.bar__nav a.bar__room:hover, .bar__nav a.bar__room[aria-current="page"] { color: var(--yellow, #F8E04A); text-decoration: none; }
-.bar__room + .hide-sm, .bar__room + .sns { margin-left: 0; }
+.bar__nav a.bar__room, .bar__nav a.bar__room:not(.btn):not(.sns) { font-size: 14.5px; font-weight: 800; padding: 0 17px 0 14px; text-decoration: none; color: #FBF7F0; }
+.bar__nav a.bar__room[aria-current="page"], .bar__nav a.bar__room[aria-current="page"]:not(.btn):not(.sns) { color: var(--yellow, #F8E04A); text-decoration: none; }
+.bar__nav a.bar__room:hover { color: #FBF7F0; }
+.bar__nav a.bar__room[aria-current="page"]:hover { color: var(--yellow, #F8E04A); }
 @media (max-width: 860px) {
   .bar__room { width: 38px; padding: 0; justify-content: center; }
   .bar__room span { display: none; }      /* 좁은 화면: 아이콘만 */
-  .bar__room svg { width: 21px; height: 21px; }
+  .bar__room svg { width: 20px; height: 20px; }
+  .bar__nav a.bar__room, .bar__nav a.bar__room:not(.btn):not(.sns) { padding: 0; }
 }
 .buy__room { margin-top: 10px; font-size: 14px; color: var(--ink-2); }
 
