@@ -776,3 +776,53 @@ input:focus-visible + .co-chk { outline: 2px solid var(--red); outline-offset: 2
 .co-msg small { display: block; margin-top: 4px; color: var(--ink-3); }
 .co-safe { display: flex; gap: 8px; align-items: flex-start; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 12px; color: var(--ink-3); line-height: 1.55; }
 .co-safe .ico { flex: none; width: 15px; height: 15px; margin-top: 1px; fill: none; stroke: currentColor; stroke-width: 2; }
+
+/* 카드 그림 1 — 강의(2026-10-17 교체): 「월 현금흐름」 — 1~12월 막대에 동전이 한 달씩 떨어진다.
+   금액 숫자는 일부러 넣지 않음(수익 약속으로 읽히지 않게). 예전 계단 장면은 _backup-thumb 에 보관 */
+.mcf {
+  position: absolute; inset: 0; display: block; overflow: hidden; isolation: isolate; container-type: inline-size;
+  background:
+    radial-gradient(70% 55% at 88% 18%, rgba(248, 224, 74, .14), transparent 60%),
+    radial-gradient(90% 70% at 10% 110%, rgba(150, 24, 26, .30), transparent 60%),
+    linear-gradient(160deg, #43362B 0%, var(--cocoa) 45%, var(--cocoa-2) 100%);
+  color: var(--paper);
+}
+.mcf__glow { position: absolute; right: -10%; top: 30%; width: 55%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(closest-side, rgba(248, 224, 74, .18), transparent); filter: blur(8px); z-index: -1; }
+.mcf__head { position: absolute; left: 7cqw; top: 17cqw; z-index: 2; display: flex; flex-direction: column; gap: 1.6cqw; }
+.mcf__pre { font-size: 5.6cqw; font-weight: 700; letter-spacing: -.03em; color: rgba(251, 247, 240, .8); }
+.mcf__big { position: relative; font-size: 13.2cqw; font-weight: 900; line-height: 1.05; letter-spacing: -.055em; color: var(--yellow); text-shadow: 0 0 18px rgba(248, 224, 74, .28); white-space: nowrap; }
+.mcf__scene { position: absolute; left: 0; bottom: 0; width: 100%; height: auto; overflow: visible; z-index: 1; font-family: var(--font); }
+.mcf__n { font-size: 11px; font-weight: 800; fill: rgba(251, 247, 240, .5); }
+.mcf__flow { filter: drop-shadow(0 0 4px rgba(248, 224, 74, .8)); }
+.mcf.is-play .mcf__flow { animation: mcfFlow 1.2s linear infinite; }
+@keyframes mcfFlow { to { stroke-dashoffset: -24; } }
+.mcf__coin > g { filter: drop-shadow(0 0 5px rgba(248, 224, 74, .7)); }
+.mcf__char image { filter: drop-shadow(0 6px 6px rgba(0, 0, 0, .45)); }
+/* 재생: 막대가 차례로 솟고 → 위의 노란 선이 계속 흐르고 → 동전이 1월부터 한 달씩(0.4초 간격) 떨어져 막대 윗면을 노랗게 켠다. 12달 = 한 바퀴 4.8초 */
+.mcf.is-play .mcf__head { animation: mcfIn .7s cubic-bezier(.2, .8, .2, 1) both; }
+.mcf.is-play .mcf__m { transform-box: fill-box; transform-origin: 50% 100%; animation: cvStep .6s cubic-bezier(.3, 1.4, .5, 1) calc(.25s + var(--i) * .05s) both; }
+.mcf.is-play .mcf__coin > g { opacity: 0; animation: mcfDrop 4.8s cubic-bezier(.5, 0, .7, .4) calc(1.3s + var(--i) * .4s) infinite; }
+.mcf.is-play .mcf__top { animation: mcfLit 4.8s ease-out calc(1.3s + var(--i) * .4s) infinite; }
+.mcf.is-play .mcf__char { animation: cvFade .5s ease 1s both; }
+@keyframes mcfIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes mcfDrop {
+  0%   { opacity: 0; transform: translateY(-47px); }
+  3%   { opacity: 1; }
+  9%   { opacity: 1; transform: translateY(0) scale(1, 1); }
+  11%  { transform: translateY(1px) scale(1.15, .8); }
+  14%  { opacity: 1; transform: translateY(4px) scale(.9, .9); }
+  19%  { opacity: 0; transform: translateY(10px) scale(.5); }
+  100% { opacity: 0; transform: translateY(10px) scale(.5); }
+}
+@keyframes mcfLit { 0%, 8% { fill: #C0392B; } 11% { fill: #F8E04A; } 30%, 100% { fill: #C0392B; } }
+@media (prefers-reduced-motion: reduce) {
+  .mcf *, .mcf.is-play * { animation: none !important; }
+  .mcf__coin > g { opacity: 1; }
+}
+@media (max-width: 560px) {
+  .mcf__head { top: 9cqw; }
+  .mcf__pre { font-size: 8cqw; }
+  .mcf__big { font-size: 15.5cqw; white-space: normal; line-height: 1.08; }
+  .mcf__n { display: none; }
+  .mcf__scene { left: -6%; width: 112%; }
+}
