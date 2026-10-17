@@ -7,7 +7,7 @@ window.LR_CONFIG = {
 
   // 사이트 입장 비밀번호 (SHA-256 값). 비우면 잠금 없음.
   // 바꾸는 법: tools/password-hash.html 을 열어 새 비밀번호를 넣고 나온 값을 붙여넣기
-  SITE_PASSWORD_SHA256: '7e5adb55484f6b4cd1f697f8b72032fb76060c36ddb22df196370500c5dee360',
+  SITE_PASSWORD_SHA256: 'c5cc15b6430ca720613daef384c58149870660959a4ecbb76ba3b55ba02ad77e',
 
   // Supabase 연결 정보 (Project Settings → API 에서 복사)
   // 둘 다 비워 두면 '데모 모드'로 동작합니다 (이 컴퓨터 브라우저에만 저장).
