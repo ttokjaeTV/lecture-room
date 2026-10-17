@@ -187,6 +187,10 @@ body.lr { margin: 0; }
 .lr .lesson.locked { opacity: .55; }
 .lr .course.locked .course-head { background: repeating-linear-gradient(-45deg, transparent 0 10px, rgba(196,165,123,.08) 10px 20px); }
 .lr .lock-cta { padding: 18px 22px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; background: #F8F1E6; }
+/* 전자책 · 멤버십 카드 (회차 없는 상품) */
+.lr .product .course-head > div:first-child { flex: 1 1 300px; min-width: 0; }
+.lr .product-act { align-self: center; display: flex; gap: 8px; flex-wrap: wrap; }
+.lr .product-act .lbtn { min-width: 140px; justify-content: center; }
 .lr .history-list { list-style: none; margin: 0; padding: 0; }
 .lr .history-list li { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
 .lr .history-list li:last-child { border-bottom: 0; }
@@ -332,6 +336,8 @@ body.lr { margin: 0; }
   .lr .lesson .lesson-mini { display: none; }
   .lr .course-head { padding: 18px 16px 14px; }
   .lr .course-progress { text-align: left; min-width: 0; width: 100%; }
+  .lr .product-act { width: 100%; }
+  .lr .product-act .lbtn { flex: 1; }
   .lr .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .lr .stats .lstat:last-child { grid-column: 1 / -1; }
   .lr .watch-title { font-size: 20px; }

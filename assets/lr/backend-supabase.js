@@ -97,6 +97,16 @@
         profile.name = name; return profile;
       },
 
+      // 상품(영문 이름) 이용 가능 여부: { ok, reason, kind, title, expires_at, shop_url }
+      myAccess: async function (slug) { return chk(await sb.rpc('my_access', { p_slug: slug })); },
+      // 전자책 받기: 권한 확인·기록 → 저장소에서 60초짜리 다운로드 주소 발급
+      ebookOpen: async function (courseId) {
+        var r = chk(await sb.rpc('ebook_open', { p_course: courseId, p_user_agent: navigator.userAgent.slice(0, 200) }));
+        if (!r || !r.ok) return r || { ok: false, reason: 'error' };
+        var d = chk(await sb.storage.from('ebooks').createSignedUrl(r.path, 60, { download: r.file_name }));
+        return { ok: true, url: d.signedUrl, file_name: r.file_name };
+      },
+
       listCourses: async function () { return chk(await sb.from('courses').select('*').order('sort').order('created_at')); },
       listLessons: async function () { return chk(await sb.from('lessons').select('*').order('sort').order('created_at')); },
       myEnrollments: async function () { return chk(await sb.from('enrollments').select('*').eq('user_id', profile.id)); },
@@ -150,11 +160,24 @@
           return chk(await sb.from('watch_sessions').select('*').eq('user_id', userId).order('started_at', { ascending: false }).limit(50));
         },
         saveCourse: async function (c) {
-          var row = { title: c.title, description: c.description, max_views: c.max_views, access_days: c.access_days, sort: c.sort, is_published: c.is_published };
+          var row = { title: c.title, description: c.description, max_views: c.max_views, access_days: c.access_days, sort: c.sort, is_published: c.is_published,
+                      kind: c.kind || 'lecture', slug: c.slug || null, file_path: c.file_path || null, file_name: c.file_name || null,
+                      link_url: c.link_url || null, shop_url: c.shop_url || null };
           if (c.id) return chk(await sb.from('courses').update(row).eq('id', c.id).select().single());
           return chk(await sb.from('courses').insert(row).select().single());
         },
         deleteCourse: async function (id) { chk(await sb.from('courses').delete().eq('id', id)); return true; },
+        // 전자책 PDF 올리기 (ebooks 비공개 버킷). 한글 파일명은 저장소 경로에 못 쓰므로 경로는 영문, 받을 때 이름은 file_name 으로
+        uploadEbook: async function (courseId, file) {
+          var path = courseId + '/' + Date.now() + '.pdf';
+          chk(await sb.storage.from('ebooks').upload(path, file, { contentType: 'application/pdf', upsert: false }));
+          return path;
+        },
+        listDownloads: async function (userId) {
+          var q = sb.from('ebook_downloads').select('*').order('created_at', { ascending: false }).limit(50);
+          if (userId) q = q.eq('user_id', userId);
+          return chk(await q);
+        },
         listMedia: async function () { return chk(await sb.from('lesson_media').select('*')); },
         saveLesson: async function (l, media) {
           var row = { course_id: l.course_id, title: l.title, section: l.section || null, duration_sec: l.duration_sec, sort: l.sort };

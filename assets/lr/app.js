@@ -104,6 +104,16 @@
     var d = daysLeft(e.expires_at);
     return '<span class="lchip ' + (d <= 7 ? 'chip-warn' : 'chip-green') + '">D-' + d + ' · ' + fmtDate(e.expires_at) + '까지</span>';
   }
+  // 상품 종류 (supabase/products.sql courses.kind)
+  var KIND = { lecture: '강의', ebook: '전자책', membership: '멤버십' };
+  function kindOf(c) { return (c && c.kind) || 'lecture'; }
+  function isLecture(c) { return kindOf(c) === 'lecture'; }
+  var BUY_LABEL = { lecture: '수강 신청하기', ebook: '전자책 구매하기', membership: '멤버십 가입하기' };
+  var EBOOK_REASONS = {
+    login: '다시 로그인해 주세요.', not_found: '상품을 찾을 수 없어요.', not_enrolled: '구매 후 받을 수 있어요.',
+    not_started: '이용 시작일부터 받을 수 있어요.', expired: '이용 기간이 끝났어요.',
+    too_many: '오늘 받을 수 있는 횟수(10회)를 모두 썼어요. 내일 다시 받아 주세요.', no_file: '파일을 준비하고 있어요. 잠시 후 다시 시도해 주세요.'
+  };
   var REASONS = {
     login: ['🔒', '다시 로그인해 주세요', '로그인이 풀렸어요.'],
     not_found: ['🔍', '강의를 찾을 수 없어요', '삭제되었거나 비공개로 바뀐 강의예요.'],
@@ -331,10 +341,11 @@
 
     var mine = cards.filter(function (x) { return x.st === 'active'; }).length;
     var html = '<div class="page-head"><div><h1 class="page-title">' + esc(S.user.name || '회원') + '님의 강의실</h1>' +
-      '<p class="page-sub">지금 들을 수 있는 강의 ' + mine + '개' + (S.user.is_admin ? ' · 관리자는 모든 강의를 미리 볼 수 있어요' : '') + '</p></div></div><div class="grid">';
+      '<p class="page-sub">이용 중인 상품 ' + mine + '개' + (S.user.is_admin ? ' · 관리자는 모든 상품을 미리 볼 수 있어요' : '') + '</p></div></div><div class="grid">';
 
-    if (!cards.length) html += '<div class="card empty">아직 등록된 강의가 없어요.</div>';
+    if (!cards.length) html += '<div class="card empty">아직 등록된 상품이 없어요.</div>';
     cards.forEach(function (x) {
+      if (!isLecture(x.c)) { html += productCard(x); return; }
       var c = x.c, ls = lessonsOf(c.id), can = x.st === 'active';
       var sm = courseSummary(c);
       var meta = (S.user.is_admin && !x.e ? '<span class="lchip chip-dark">관리자 미리보기</span>' : (x.e ? periodChip(x.e) : '')) +
@@ -345,12 +356,7 @@
         (can ? '<div class="course-progress"><div class="lsmall muted" style="font-weight:700">전체 진도 · 완료 ' + sm.done + '/' + sm.count + '강</div><b>' + pct(sm.ratio) + '%</b>' + trackHtml(sm.ratio) + '</div>' : '') +
         '</div><div class="lessons">' + (ls.length ? lessonList(c, ls, can) : '<div class="empty">회차가 아직 없어요.</div>') + '</div>';
       if (!can) {
-        var why = x.st === 'expired' ? '수강 기간이 ' + fmtDate(x.e.expires_at) + '에 끝났어요. ' + esc(CFG.CONTACT_TEXT || '')
-          : x.st === 'revoked' ? '수강 권한이 해지됐어요. ' + esc(CFG.CONTACT_TEXT || '')
-          : x.st === 'pending' ? fmtDate(x.e.starts_at) + '부터 수강할 수 있어요.'
-          : '수강 신청 후 들을 수 있어요.';
-        html += '<div class="lock-cta"><span class="lsmall" style="font-weight:700">' + why + '</span>' +
-          (x.st === 'none' && CFG.PURCHASE_URL ? '<a class="lbtn lbtn-primary lbtn-sm" href="' + esc(CFG.PURCHASE_URL) + '">수강 신청하기</a>' : '') + '</div>';
+        html += lockCta(x);
       }
       html += '</section>';
     });
@@ -364,6 +370,48 @@
         }).join('') + '</ul></section>';
     }
     $('#lr-main').innerHTML = html;
+    $$('[data-ebook]').forEach(function (b) {
+      b.addEventListener('click', async function () {
+        b.disabled = true; var label = b.textContent; b.textContent = '준비 중…';
+        try {
+          var r = await B.ebookOpen(b.getAttribute('data-ebook'));
+          if (!r || !r.ok) { toast(EBOOK_REASONS[r && r.reason] || EBOOK_REASONS.not_found); return; }
+          var a = document.createElement('a');
+          a.href = r.url; a.download = r.file_name || ''; a.rel = 'noopener';
+          document.body.appendChild(a); a.click(); a.remove();
+          toast('내려받기를 시작했어요.');
+        } catch (e) { toast(errMsg(e)); }
+        finally { b.disabled = false; b.textContent = label; }
+      });
+    });
+  }
+
+  // 권한이 없을 때 카드 아래 안내 + 구매 버튼 (상품마다 상품 페이지가 다름)
+  function lockCta(x) {
+    var lec = kindOf(x.c) === 'lecture', w = lec ? '수강' : '이용';
+    var why = x.st === 'expired' ? w + ' 기간이 ' + fmtDate(x.e.expires_at) + '에 끝났어요. ' + esc(CFG.CONTACT_TEXT || '')
+      : x.st === 'revoked' ? w + ' 권한이 해지됐어요. ' + esc(CFG.CONTACT_TEXT || '')
+      : x.st === 'pending' ? fmtDate(x.e.starts_at) + '부터 ' + w + '할 수 있어요.'
+      : lec ? '수강 신청 후 들을 수 있어요.' : '구매 후 이용할 수 있어요.';
+    var shop = x.c.shop_url || CFG.PURCHASE_URL;
+    var buy = x.st === 'none' && shop ? '<a class="lbtn lbtn-primary lbtn-sm" href="' + esc(shop) + '">' + BUY_LABEL[kindOf(x.c)] + '</a>' : '';
+    return '<div class="lock-cta"><span class="lsmall" style="font-weight:700">' + why + '</span>' + buy + '</div>';
+  }
+
+  // 전자책 · 멤버십 카드 (회차가 없는 상품)
+  function productCard(x) {
+    var c = x.c, k = kindOf(c), can = x.st === 'active';
+    var meta = '<span class="lchip chip-dark">' + KIND[k] + '</span>' +
+      (S.user.is_admin && !x.e ? '<span class="lchip">관리자 미리보기</span>' : (x.e ? periodChip(x.e) : ''));
+    var act = '';
+    if (can && k === 'ebook') act = '<button class="lbtn lbtn-primary" data-ebook="' + esc(c.id) + '">PDF 받기</button>';
+    if (can && k === 'membership' && c.link_url) act = '<a class="lbtn lbtn-primary" href="' + esc(c.link_url) + '" target="_blank" rel="noopener">도구 열기 ↗</a>';
+    var note = can ? (k === 'ebook' ? '받을 때마다 다운로드 기록이 남고, 하루 10회까지 받을 수 있어요.'
+      : '이 계정으로 로그인된 브라우저에서 도구를 열면 바로 쓸 수 있어요.') : '';
+    return '<section class="card course product product--' + k + (can ? '' : ' locked') + '" data-kind="' + k + '"><div class="course-head"><div>' +
+      '<h2 class="course-title">' + esc(c.title) + '</h2>' + (c.description ? '<p class="course-desc">' + esc(c.description) + '</p>' : '') +
+      '<div class="course-meta">' + meta + '</div>' + (note ? '<p class="lsmall muted" style="margin:10px 0 0">' + note + '</p>' : '') + '</div>' +
+      (act ? '<div class="product-act">' + act + '</div>' : '') + '</div>' + (can ? '' : lockCta(x)) + '</section>';
   }
 
   // ---------------------------------------------------------------- 시청
@@ -503,11 +551,11 @@
   }
   function adminTabs(on) {
     var t = function (k, href, label) { return '<a href="' + href + '" class="' + (on === k ? 'on' : '') + '">' + label + '</a>'; };
-    return '<div class="admin-tabs">' + t('students', '#/admin', '수강생') + t('courses', '#/admin/courses', '강의·회차') + t('stats', '#/admin/stats', '시청 통계') + '</div>';
+    return '<div class="admin-tabs">' + t('students', '#/admin', '수강생') + t('courses', '#/admin/courses', '상품·회차') + t('stats', '#/admin/stats', '시청 통계') + '</div>';
   }
-  function courseOptions(sel, withAll) {
-    return (withAll ? '<option value="">전체 강의</option>' : '') + A.courses.map(function (c) {
-      return '<option value="' + esc(c.id) + '"' + (c.id === sel ? ' selected' : '') + '>' + esc(c.title) + '</option>';
+  function courseOptions(sel, withAll, onlyLecture) {
+    return (withAll ? '<option value="">전체 상품</option>' : '') + A.courses.filter(function (c) { return !onlyLecture || isLecture(c); }).map(function (c) {
+      return '<option value="' + esc(c.id) + '"' + (c.id === sel ? ' selected' : '') + '>' + (isLecture(c) ? '' : '[' + KIND[kindOf(c)] + '] ') + esc(c.title) + '</option>';
     }).join('');
   }
   function enrSummary(e) {
@@ -539,10 +587,12 @@
     var activeIds = {}; active.forEach(function (e) { activeIds[e.user_id] = 1; });
     A.progress.forEach(function (p) { if (activeIds[p.user_id] && p.updated_at > weekAgo && p.played_sec > 0) watchers[p.user_id] = 1; });
     var soon = active.filter(function (e) { var d = daysLeft(e.expires_at); return d != null && d <= 7; }).length;
-    var avg = active.length ? active.reduce(function (s, e) { return s + enrSummary(e).ratio; }, 0) / active.length : 0;
+    var activeLec = active.filter(function (e) { return isLecture(byId(A.courses, e.course_id)); });
+    var avg = activeLec.length ? activeLec.reduce(function (s, e) { return s + enrSummary(e).ratio; }, 0) / activeLec.length : 0;
 
     var rows = A.enrollments.map(function (e) {
-      return { e: e, u: byId(A.profiles, e.user_id) || { name: '(탈퇴)', email: '' }, c: byId(A.courses, e.course_id) || { title: '-' }, st: enrState(e), sm: enrSummary(e) };
+      var cc = byId(A.courses, e.course_id) || { title: '-' };
+      return { e: e, u: byId(A.profiles, e.user_id) || { name: '(탈퇴)', email: '' }, c: cc, st: enrState(e), sm: enrSummary(e), lec: isLecture(cc) };
     }).filter(function (r) {
       if (stuFilter.course && r.e.course_id !== stuFilter.course) return false;
       if (stuFilter.st && r.st !== stuFilter.st) return false;
@@ -559,20 +609,21 @@
       '<div class="card card-pad"><div class="toolbar"><select class="input" id="flt-course">' + courseOptions(stuFilter.course, true) + '</select>' +
       '<select class="input" id="flt-st"><option value="">전체 상태</option><option value="active"' + (stuFilter.st === 'active' ? ' selected' : '') + '>수강 중</option><option value="expired"' + (stuFilter.st === 'expired' ? ' selected' : '') + '>만료</option><option value="revoked"' + (stuFilter.st === 'revoked' ? ' selected' : '') + '>해지</option></select>' +
       '<input class="input grow" id="flt-q" placeholder="이름·이메일·메모 검색" value="' + esc(stuFilter.q) + '"><span class="spacer"></span>' +
-      '<button class="lbtn lbtn-primary" id="btn-grant">+ 수강 권한 부여</button></div>' +
-      '<div class="tbl-wrap"><table class="tbl"><thead><tr><th>수강생</th><th>강의</th><th>기간</th><th>진도율</th><th class="num">완료</th><th>최근 시청</th><th>상태</th></tr></thead><tbody>' +
+      '<button class="lbtn lbtn-primary" id="btn-grant">+ 이용 권한 부여</button></div>' +
+      '<div class="tbl-wrap"><table class="tbl"><thead><tr><th>회원</th><th>상품</th><th>기간</th><th>진도율</th><th class="num">완료</th><th>최근 시청</th><th>상태</th></tr></thead><tbody>' +
       (rows.length ? rows.map(function (r) {
         return '<tr class="click" data-uid="' + esc(r.e.user_id) + '"><td><b>' + esc(r.u.name) + '</b><div class="tbl-email">' + esc(r.u.email) + (r.e.memo ? ' · ' + esc(r.e.memo) : '') + '</div></td>' +
-          '<td>' + esc(r.c.title) + '</td><td class="nowrap">' + (r.e.expires_at ? fmtDate(r.e.expires_at) + (r.st === 'active' ? ' <span class="muted lsmall">(D-' + daysLeft(r.e.expires_at) + ')</span>' : '') : '무제한') + '</td>' +
-          '<td style="min-width:120px"><div class="lsmall" style="font-weight:800">' + pct(r.sm.ratio) + '%</div><div class="pbar" style="margin-top:3px"><i style="width:' + pct(r.sm.ratio) + '%"></i></div></td>' +
-          '<td class="num">' + r.sm.done + '/' + r.sm.count + '</td><td class="nowrap">' + (r.sm.last ? ago(r.sm.last) : '<span class="muted">시청 전</span>') + '</td><td>' + (stLabel[r.st] || '') + '</td></tr>';
+          '<td>' + (r.lec ? '' : '<span class="lchip chip-dark">' + KIND[kindOf(r.c)] + '</span> ') + esc(r.c.title) + '</td><td class="nowrap">' + (r.e.expires_at ? fmtDate(r.e.expires_at) + (r.st === 'active' ? ' <span class="muted lsmall">(D-' + daysLeft(r.e.expires_at) + ')</span>' : '') : '무제한') + '</td>' +
+          (r.lec ? '<td style="min-width:120px"><div class="lsmall" style="font-weight:800">' + pct(r.sm.ratio) + '%</div><div class="pbar" style="margin-top:3px"><i style="width:' + pct(r.sm.ratio) + '%"></i></div></td>' +
+          '<td class="num">' + r.sm.done + '/' + r.sm.count + '</td><td class="nowrap">' + (r.sm.last ? ago(r.sm.last) : '<span class="muted">시청 전</span>') + '</td>'
+          : '<td class="muted">-</td><td class="num muted">-</td><td class="muted">-</td>') + '<td>' + (stLabel[r.st] || '') + '</td></tr>';
       }).join('') : '<tr><td colspan="7" class="empty">조건에 맞는 수강생이 없어요.</td></tr>') +
       '</tbody></table></div></div>';
 
     if (A.invites.length) {
       html += '<div class="card card-pad" style="margin-top:18px"><h2 class="section-title">가입 대기 중 (' + A.invites.length + ')</h2>' +
         '<p class="lsmall muted" style="margin-top:-6px">아직 가입하지 않은 이메일이에요. 이 이메일로 가입하는 순간 수강 권한이 자동으로 생겨요.</p>' +
-        '<div class="tbl-wrap"><table class="tbl"><thead><tr><th>이메일</th><th>강의</th><th>기간</th><th>메모</th><th>등록일</th><th></th></tr></thead><tbody>' +
+        '<div class="tbl-wrap"><table class="tbl"><thead><tr><th>이메일</th><th>상품</th><th>기간</th><th>메모</th><th>등록일</th><th></th></tr></thead><tbody>' +
         A.invites.map(function (i) {
           var c = byId(A.courses, i.course_id);
           return '<tr><td>' + esc(i.email) + '</td><td>' + esc(c ? c.title : '-') + '</td><td>' + (i.until_at ? fmtDate(i.until_at) + '까지' : i.days ? '가입일부터 ' + i.days + '일' : '무제한') + '</td>' +
@@ -595,13 +646,13 @@
   }
 
   function openGrant(onDone) {
-    if (!A.courses.length) { toast('먼저 강의를 만들어 주세요.'); return; }
+    if (!A.courses.length) { toast('먼저 상품을 만들어 주세요.'); return; }
     var c0 = byId(A.courses, stuFilter.course) || A.courses[0];
-    var m = modal('수강 권한 부여',
+    var m = modal('이용 권한 부여',
       '<label class="field"><span>이메일 (여러 명은 줄바꿈이나 쉼표로 구분)</span><textarea class="input" id="g-emails" placeholder="buyer1@example.com&#10;buyer2@example.com"></textarea>' +
-      '<em>가입한 회원은 바로, 가입 전이면 그 이메일로 가입할 때 자동으로 수강 권한이 생겨요.</em></label>' +
-      '<label class="field"><span>강의</span><select class="input" id="g-course">' + courseOptions(c0.id) + '</select></label>' +
-      '<label class="field"><span>수강 기간</span><select class="input" id="g-mode"><option value="default">강의 기본 기간</option><option value="days">직접 입력 (일)</option><option value="until">특정 날짜까지</option><option value="none">무제한</option></select></label>' +
+      '<em>가입한 회원은 바로, 가입 전이면 그 이메일로 가입할 때 자동으로 권한이 생겨요.</em></label>' +
+      '<label class="field"><span>상품</span><select class="input" id="g-course">' + courseOptions(c0.id) + '</select></label>' +
+      '<label class="field"><span>이용 기간</span><select class="input" id="g-mode"><option value="default">상품 기본 기간</option><option value="days">직접 입력 (일)</option><option value="until">특정 날짜까지</option><option value="none">무제한</option></select></label>' +
       '<div class="row hidden" id="g-days-row" style="margin:-4px 0 14px"><input class="input grow" type="number" min="1" id="g-days" placeholder="예: 365"><span class="lsmall muted">일</span></div>' +
       '<div class="hidden" id="g-until-row" style="margin:-4px 0 14px"><input class="input" type="date" id="g-until"></div>' +
       '<p class="lsmall muted" id="g-default-hint" style="margin:-6px 0 14px"></p>' +
@@ -611,7 +662,7 @@
       var c = byId(A.courses, $('#g-course', m).value), mode = $('#g-mode', m).value;
       $('#g-days-row', m).classList.toggle('hidden', mode !== 'days');
       $('#g-until-row', m).classList.toggle('hidden', mode !== 'until');
-      $('#g-default-hint', m).textContent = mode === 'default' ? (c && c.access_days ? '오늘(가입 전이면 가입일)부터 ' + c.access_days + '일' : '이 강의는 기본 기간이 무제한이에요.') : '';
+      $('#g-default-hint', m).textContent = mode === 'default' ? (c && c.access_days ? '오늘(가입 전이면 가입일)부터 ' + c.access_days + '일' : '이 상품은 기본 기간이 무제한이에요.') : '';
     }
     $('#g-course', m).addEventListener('change', hint); $('#g-mode', m).addEventListener('change', hint); hint();
     $('#g-ok', m).addEventListener('click', async function () {
@@ -640,8 +691,8 @@
   // ---------------------------------------------------------------- 관리자: 수강생 상세
   async function viewAdminStudent(uid) {
     shell(adminTabs('students') + '<div class="empty">불러오는 중…</div>', 'admin');
-    var sessions;
-    try { await loadAdmin(!A); sessions = (await B.admin.listSessions(uid)).filter(function (s) { return s.played_sec > 0 || (!s.ended_reason && Date.now() - new Date(s.last_beat_at).getTime() < 60000); }); A.progress = A.progress.filter(function (p) { return p.user_id !== uid; }).concat(await B.admin.listProgress({ userId: uid })); }
+    var sessions, downloads = [];
+    try { await loadAdmin(!A); downloads = B.admin.listDownloads ? await B.admin.listDownloads(uid) : []; sessions = (await B.admin.listSessions(uid)).filter(function (s) { return s.played_sec > 0 || (!s.ended_reason && Date.now() - new Date(s.last_beat_at).getTime() < 60000); }); A.progress = A.progress.filter(function (p) { return p.user_id !== uid; }).concat(await B.admin.listProgress({ userId: uid })); }
     catch (e) { $('#lr-main').innerHTML = '<div class="msg msg-err">' + esc(errMsg(e)) + '</div>'; return; }
     var u = byId(A.profiles, uid);
     if (!u) { $('#lr-main').innerHTML = adminTabs('students') + '<div class="card empty">회원을 찾을 수 없어요.</div>'; return; }
@@ -657,19 +708,28 @@
 
     var html = adminTabs('students') + '<div class="lcrumb"><a href="#/admin">수강생</a> › ' + esc(u.name) + '</div>' +
       '<div class="page-head"><div><h1 class="page-title">' + esc(u.name) + '</h1><p class="page-sub">' + esc(u.email) + ' · ' + fmtDate(u.created_at) + ' 가입' + (u.is_admin ? ' · 관리자' : '') + '</p></div>' +
-      '<button class="lbtn lbtn-primary" id="btn-add-course">+ 강의 권한 추가</button></div><div class="grid">';
+      '<button class="lbtn lbtn-primary" id="btn-add-course">+ 권한 추가</button></div><div class="grid">';
 
-    if (!ens.length) html += '<div class="card empty">수강 중인 강의가 없어요.</div>';
+    if (!ens.length) html += '<div class="card empty">이용 중인 상품이 없어요.</div>';
     ens.forEach(function (e) {
       var c = byId(A.courses, e.course_id); if (!c) return;
       var ls = A.lessons.filter(function (l) { return l.course_id === c.id; });
       var st = enrState(e);
       html += '<section class="card card-pad" data-enr="' + esc(e.id) + '"><div class="row" style="justify-content:space-between;align-items:flex-start;margin-bottom:12px">' +
-        '<div><h2 class="section-title" style="margin-bottom:6px">' + esc(c.title) + '</h2><div class="course-meta" style="margin-top:0">' + periodChip(e) +
+        '<div><h2 class="section-title" style="margin-bottom:6px">' + (isLecture(c) ? '' : '<span class="lchip chip-dark">' + KIND[kindOf(c)] + '</span> ') + esc(c.title) + '</h2><div class="course-meta" style="margin-top:0">' + periodChip(e) +
         '<span class="lchip">' + fmtDate(e.starts_at) + ' 시작</span><span class="lchip">' + ({ manual: '직접 부여', invite: '초대 가입', payment: '결제' }[e.source] || esc(e.source)) + '</span>' + (e.memo ? '<span class="lchip">' + esc(e.memo) + '</span>' : '') + '</div></div>' +
         '<div class="row"><button class="lbtn lbtn-sm" data-ext="30">+30일</button><button class="lbtn lbtn-sm" data-ext="90">+90일</button><button class="lbtn lbtn-sm" data-ext="date">날짜 지정</button><button class="lbtn lbtn-sm" data-ext="none">무제한</button>' +
-        (st === 'revoked' ? '<button class="lbtn lbtn-sm" data-status="active">권한 복구</button>' : '<button class="lbtn lbtn-sm lbtn-danger" data-status="revoked">권한 해지</button>') + '</div></div>' +
-        '<div class="tbl-wrap"><table class="tbl"><thead><tr><th>회차</th><th>진도율</th><th class="num">사용 / 최대</th><th class="num">이어보기 위치</th><th>최근 시청</th><th></th></tr></thead><tbody>' +
+        (st === 'revoked' ? '<button class="lbtn lbtn-sm" data-status="active">권한 복구</button>' : '<button class="lbtn lbtn-sm lbtn-danger" data-status="revoked">권한 해지</button>') + '</div></div>';
+      if (!isLecture(c)) {
+        if (kindOf(c) === 'ebook') {
+          var dl = downloads.filter(function (x) { return x.course_id === c.id; });
+          html += '<div class="lsmall muted" style="margin-bottom:6px">다운로드 ' + dl.length + '회' + (dl.length ? ' · 마지막 ' + fmtDT(dl[0].created_at) : '') + '</div>' +
+            (dl.length ? '<ul class="history-list">' + dl.slice(0, 10).map(function (x) { return '<li><span>' + fmtDT(x.created_at) + '</span><span class="muted lsmall">' + esc(device(x.user_agent)) + '</span></li>'; }).join('') + '</ul>' : '');
+        }
+        html += '</section>';
+        return;
+      }
+      html += '<div class="tbl-wrap"><table class="tbl"><thead><tr><th>회차</th><th>진도율</th><th class="num">사용 / 최대</th><th class="num">이어보기 위치</th><th>최근 시청</th><th></th></tr></thead><tbody>' +
         ls.map(function (l, i) {
           var p = A.progress.find(function (x) { return x.user_id === uid && x.lesson_id === l.id; });
           var used = C.viewsUsed(p && p.played_sec, l.duration_sec), lim = C.viewLimit(c, p);
@@ -751,27 +811,39 @@
     shell(adminTabs('courses') + '<div class="empty">불러오는 중…</div>', 'admin');
     var media;
     try { await loadAdmin(true); media = await B.admin.listMedia(); } catch (e) { $('#lr-main').innerHTML = '<div class="msg msg-err">' + esc(errMsg(e)) + '</div>'; return; }
-    if (!selCourse || !byId(A.courses, selCourse)) selCourse = A.courses[0] ? A.courses[0].id : 'new';
-    var c = selCourse === 'new' ? { title: '', description: '', max_views: 3, access_days: 180, sort: A.courses.length + 1, is_published: true } : byId(A.courses, selCourse);
+    if (selCourse !== 'new' && (!selCourse || !byId(A.courses, selCourse))) selCourse = A.courses[0] ? A.courses[0].id : 'new';   // '새 상품'을 누른 상태는 유지
+    var c = selCourse === 'new' ? { title: '', description: '', kind: 'lecture', max_views: 3, access_days: 180, sort: A.courses.length + 1, is_published: true } : byId(A.courses, selCourse);
+    var k = kindOf(c);
     var ls = c.id ? A.lessons.filter(function (l) { return l.course_id === c.id; }) : [];
+    var only = function (kinds, inner) { return '<div data-for="' + kinds + '"' + (kinds.split(' ').indexOf(k) < 0 ? ' class="hidden"' : '') + '>' + inner + '</div>'; };
 
-    var html = adminTabs('courses') + '<div class="two-col"><div class="card" style="overflow:hidden"><div class="side-head row" style="justify-content:space-between"><b>강의 목록</b><button class="lbtn lbtn-sm lbtn-primary" id="c-new">+ 새 강의</button></div>' +
+    var html = adminTabs('courses') + '<div class="two-col"><div class="card" style="overflow:hidden"><div class="side-head row" style="justify-content:space-between"><b>상품 목록</b><button class="lbtn lbtn-sm lbtn-primary" id="c-new">+ 새 상품</button></div>' +
       (A.courses.length ? A.courses.map(function (x) {
         var n = A.lessons.filter(function (l) { return l.course_id === x.id; }).length;
         var k = A.enrollments.filter(function (e) { return e.course_id === x.id && enrState(e) === 'active'; }).length;
-        return '<a class="lesson' + (x.id === selCourse ? ' current' : '') + '" href="#" data-sel="' + esc(x.id) + '" style="grid-template-columns:1fr auto;padding:13px 16px"><span><span class="lesson-title">' + esc(x.title) + '</span><span class="lesson-sub"><span>' + n + '강</span><span>수강 중 ' + k + '명</span>' + (x.is_published ? '' : '<span>비공개</span>') + '</span></span><span class="muted">›</span></a>';
-      }).join('') : '<div class="empty">강의가 없어요.</div>') + '</div>' +
+        return '<a class="lesson' + (x.id === selCourse ? ' current' : '') + '" href="#" data-sel="' + esc(x.id) + '" style="grid-template-columns:1fr auto;padding:13px 16px"><span><span class="lesson-title">' + esc(x.title) + '</span><span class="lesson-sub"><span>' + KIND[kindOf(x)] + '</span>' + (isLecture(x) ? '<span>' + n + '강</span>' : '') + '<span>이용 중 ' + k + '명</span>' + (x.slug ? '<span>' + esc(x.slug) + '</span>' : '') + (x.is_published ? '' : '<span>비공개</span>') + '</span></span><span class="muted">›</span></a>';
+      }).join('') : '<div class="empty">상품이 없어요.</div>') + '</div>' +
 
-      '<div class="grid"><section class="card card-pad"><h2 class="section-title">' + (c.id ? '강의 정보' : '새 강의 만들기') + '</h2><form id="f-course">' +
-      '<label class="field"><span>강의명</span><input class="input" name="title" required value="' + esc(c.title) + '"></label>' +
+      '<div class="grid"><section class="card card-pad"><h2 class="section-title">' + (c.id ? '상품 정보' : '새 상품 만들기') + '</h2><form id="f-course">' +
+      '<div class="row" style="align-items:flex-start"><label class="field" style="width:150px"><span>종류</span><select class="input" name="kind"' + (c.id ? ' disabled' : '') + '>' +
+        ['lecture', 'ebook', 'membership'].map(function (x) { return '<option value="' + x + '"' + (x === k ? ' selected' : '') + '>' + KIND[x] + '</option>'; }).join('') + '</select>' +
+        (c.id ? '<em>만든 뒤에는 못 바꿔요</em>' : '') + '</label>' +
+      '<label class="field grow"><span>상품명</span><input class="input" name="title" required value="' + esc(c.title) + '"></label></div>' +
       '<label class="field"><span>설명 (선택)</span><input class="input" name="description" value="' + esc(c.description || '') + '"></label>' +
-      '<div class="row" style="align-items:flex-start"><label class="field grow"><span>회차당 최대 시청 횟수</span><input class="input" name="max_views" type="number" min="0.5" step="0.5" value="' + (c.max_views == null ? '' : esc(c.max_views)) + '" placeholder="비우면 무제한"><em>영상 길이만큼 재생 = 1회</em></label>' +
-      '<label class="field grow"><span>기본 수강 기간 (일)</span><input class="input" name="access_days" type="number" min="1" value="' + (c.access_days == null ? '' : esc(c.access_days)) + '" placeholder="비우면 무제한"><em>권한 부여할 때 기본값</em></label>' +
+      '<div class="row" style="align-items:flex-start"><label class="field grow"><span>영문 이름 (선택)</span><input class="input" name="slug" value="' + esc(c.slug || '') + '" placeholder="예: tools" autocapitalize="off" spellcheck="false">' +
+        '<em>도구·상품 페이지가 이 이름으로 권한을 확인해요. 투자 Tool 멤버십은 <b>tools</b></em></label>' +
+      '<label class="field grow"><span>상품 페이지 주소 (선택)</span><input class="input" name="shop_url" value="' + esc(c.shop_url || '') + '" placeholder="예: tools-shop.html"><em>권한이 없을 때 [구매] 버튼이 가는 곳</em></label></div>' +
+      only('lecture', '<div class="row" style="align-items:flex-start"><label class="field grow"><span>회차당 최대 시청 횟수</span><input class="input" name="max_views" type="number" min="0.5" step="0.5" value="' + (c.max_views == null ? '' : esc(c.max_views)) + '" placeholder="비우면 무제한"><em>영상 길이만큼 재생 = 1회</em></label></div>') +
+      only('ebook', '<div class="row" style="align-items:flex-start"><label class="field grow"><span>PDF 파일</span><input class="input" type="file" name="file" accept="application/pdf,.pdf">' +
+        '<em>' + (c.file_path ? '등록됨: ' + esc(c.file_path) + ' · 새 파일을 고르면 바뀌어요' : '아직 파일이 없어요') + '. 비공개 저장소에 올라가고, 권한 있는 회원만 60초짜리 주소로 받아요.</em></label>' +
+        '<label class="field grow"><span>받을 때 파일 이름</span><input class="input" name="file_name" value="' + esc(c.file_name || '') + '" placeholder="예: 노후자금 시스템 V5.0.pdf"></label></div>') +
+      only('membership', '<label class="field"><span>도구 주소</span><input class="input" name="link_url" value="' + esc(c.link_url || '') + '" placeholder="https://ttokjaetv.github.io/"><em>내 강의실의 [도구 열기] 버튼이 가는 곳</em></label>') +
+      '<div class="row" style="align-items:flex-start"><label class="field grow"><span>기본 이용 기간 (일)</span><input class="input" name="access_days" type="number" min="1" value="' + (c.access_days == null ? '' : esc(c.access_days)) + '" placeholder="비우면 무제한"><em>권한 부여할 때 기본값</em></label>' +
       '<label class="field" style="width:90px"><span>정렬 순서</span><input class="input" name="sort" type="number" value="' + esc(c.sort) + '"></label></div>' +
-      '<label class="check" style="margin-bottom:16px"><input type="checkbox" name="is_published"' + (c.is_published ? ' checked' : '') + '> 수강생에게 공개</label>' +
-      '<div class="row"><button class="lbtn lbtn-primary">' + (c.id ? '저장' : '만들기') + '</button>' + (c.id ? '<span class="spacer"></span><button type="button" class="lbtn lbtn-danger lbtn-ghost" id="c-del">강의 삭제</button>' : '') + '</div></form></section>';
+      '<label class="check" style="margin-bottom:16px"><input type="checkbox" name="is_published"' + (c.is_published ? ' checked' : '') + '> 회원에게 공개</label>' +
+      '<div class="row"><button class="lbtn lbtn-primary">' + (c.id ? '저장' : '만들기') + '</button>' + (c.id ? '<span class="spacer"></span><button type="button" class="lbtn lbtn-danger lbtn-ghost" id="c-del">상품 삭제</button>' : '') + '</div></form></section>';
 
-    if (c.id) {
+    if (c.id && isLecture(c)) {
       html += '<section class="card card-pad"><div class="row" style="justify-content:space-between;margin-bottom:10px"><h2 class="section-title" style="margin:0">회차 (' + ls.length + ' · ' + C.fmtMinutes(ls.reduce(function (a, x) { return a + x.duration_sec; }, 0)) + ')</h2><div class="row"><button class="lbtn lbtn-sm" id="l-import">회차 일괄 등록</button><button class="lbtn lbtn-sm lbtn-primary" id="l-new">+ 회차 추가</button></div></div>' +
         (ls.length ? '<div class="tbl-wrap"><table class="tbl"><thead><tr><th class="num">순서</th><th>회차명</th><th>구간</th><th class="num">길이</th><th>Vimeo</th><th></th></tr></thead><tbody>' +
           ls.map(function (l) {
@@ -786,21 +858,42 @@
 
     $$('[data-sel]').forEach(function (a) { a.addEventListener('click', function (e) { e.preventDefault(); selCourse = a.getAttribute('data-sel'); viewAdminCourses(); }); });
     $('#c-new').addEventListener('click', function () { selCourse = 'new'; viewAdminCourses(); });
+    var fk = $('#f-course').kind;
+    fk.addEventListener('change', function () {
+      $$('[data-for]').forEach(function (d) { d.classList.toggle('hidden', d.getAttribute('data-for').split(' ').indexOf(fk.value) < 0); });
+    });
     $('#f-course').addEventListener('submit', async function (e) {
       e.preventDefault();
-      var f = e.target;
+      var f = e.target, kind = c.id ? k : f.kind.value;
+      var slug = f.slug.value.trim().toLowerCase();
+      if (slug && !/^[a-z0-9][a-z0-9-]{1,39}$/.test(slug)) { toast('영문 이름은 영문 소문자·숫자·하이픈 2~40자로 적어 주세요.'); return; }
+      if (slug && A.courses.some(function (x) { return x.slug === slug && x.id !== c.id; })) { toast('같은 영문 이름을 쓰는 상품이 이미 있어요.'); return; }
+      var file = kind === 'ebook' && f.file.files && f.file.files[0];
+      if (file && !/\.pdf$/i.test(file.name) && file.type !== 'application/pdf') { toast('PDF 파일만 올릴 수 있어요.'); return; }
       var row = {
-        id: c.id, title: f.title.value.trim(), description: f.description.value.trim() || null,
-        max_views: f.max_views.value === '' ? null : Number(f.max_views.value),
+        id: c.id, kind: kind, title: f.title.value.trim(), description: f.description.value.trim() || null,
+        slug: slug || null, shop_url: f.shop_url.value.trim() || null,
+        max_views: kind === 'lecture' && f.max_views.value !== '' ? Number(f.max_views.value) : null,
         access_days: f.access_days.value === '' ? null : parseInt(f.access_days.value, 10),
+        file_path: c.file_path || null, file_name: kind === 'ebook' ? (f.file_name.value.trim() || (file ? file.name : null) || c.file_name || null) : null,
+        link_url: kind === 'membership' ? (f.link_url.value.trim() || null) : null,
         sort: parseInt(f.sort.value, 10) || 0, is_published: f.is_published.checked
       };
-      try { var saved = await B.admin.saveCourse(row); selCourse = saved.id; toast('저장했어요.'); viewAdminCourses(); }
-      catch (err) { toast(errMsg(err)); }
+      var btn = f.querySelector('button.lbtn-primary'); btn.disabled = true;
+      try {
+        var saved = await B.admin.saveCourse(row);
+        if (file) {
+          btn.textContent = '파일 올리는 중…';
+          row.id = saved.id; row.file_path = await B.admin.uploadEbook(saved.id, file);
+          saved = await B.admin.saveCourse(row);
+        }
+        selCourse = saved.id; toast('저장했어요.'); viewAdminCourses();
+      }
+      catch (err) { btn.disabled = false; btn.textContent = c.id ? '저장' : '만들기'; toast(errMsg(err)); }
     });
     var cd = $('#c-del');
     if (cd) cd.addEventListener('click', async function () {
-      if (!confirm('"' + c.title + '" 강의를 삭제할까요?\n회차·수강 권한·시청 기록이 모두 함께 삭제되고 되돌릴 수 없어요.')) return;
+      if (!confirm('"' + c.title + '" 상품을 삭제할까요?\n' + (isLecture(c) ? '회차·수강 권한·시청 기록이' : '이용 권한·기록이') + ' 모두 함께 삭제되고 되돌릴 수 없어요.')) return;
       await B.admin.deleteCourse(c.id); selCourse = null; toast('삭제했어요.'); viewAdminCourses();
     });
     var li = $('#l-import');
@@ -941,8 +1034,9 @@
   async function viewAdminStats() {
     shell(adminTabs('stats') + '<div class="empty">불러오는 중…</div>', 'admin');
     try { await loadAdmin(true); } catch (e) { $('#lr-main').innerHTML = '<div class="msg msg-err">' + esc(errMsg(e)) + '</div>'; return; }
-    if (!A.courses.length) { $('#lr-main').innerHTML = adminTabs('stats') + '<div class="card empty">강의가 없어요.</div>'; return; }
-    if (!statCourse || !byId(A.courses, statCourse)) statCourse = A.courses[0].id;
+    var lecs = A.courses.filter(isLecture);
+    if (!lecs.length) { $('#lr-main').innerHTML = adminTabs('stats') + '<div class="card empty">강의가 없어요.</div>'; return; }
+    if (!statCourse || !byId(lecs, statCourse)) statCourse = lecs[0].id;
     var c = byId(A.courses, statCourse);
     var ls = A.lessons.filter(function (l) { return l.course_id === c.id; });
     var ens = A.enrollments.filter(function (e) { return e.course_id === c.id && e.status === 'active'; });
@@ -955,7 +1049,7 @@
     var started = students.filter(function (uid) { return A.progress.some(function (p) { return p.user_id === uid && p.played_sec > 0 && ls.some(function (l) { return l.id === p.lesson_id; }); }); }).length;
     var avg = ens.length ? ens.reduce(function (s, e) { return s + enrSummary(e).ratio; }, 0) / ens.length : 0;
 
-    var html = adminTabs('stats') + '<div class="toolbar"><select class="input" id="st-course">' + courseOptions(statCourse) + '</select>' +
+    var html = adminTabs('stats') + '<div class="toolbar"><select class="input" id="st-course">' + courseOptions(statCourse, false, true) + '</select>' +
       '<span class="lsmall muted">수강 권한이 있는 회원 기준 (해지 제외)</span></div>' +
       '<div class="kpis"><div class="lstat"><div class="stat-label">수강생</div><div class="stat-value">' + students.length + '<small>명</small></div></div>' +
       '<div class="lstat"><div class="stat-label">한 번이라도 시청</div><div class="stat-value">' + started + '<small>명 · ' + pct(students.length ? started / students.length : 0) + '%</small></div></div>' +

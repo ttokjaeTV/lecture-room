@@ -6,7 +6,7 @@
 (function () {
   'use strict';
   var C = window.LRCore;
-  var KEY = 'lr_demo_db_v1';
+  var KEY = 'lr_demo_db_v2';   // v2: 상품 4종(전자책·멤버십) 추가
   var SKEY = 'lr_demo_uid';
   var DAY = 86400000;
 
@@ -28,14 +28,16 @@
   // ---------- 데모 데이터 ----------
   function seed() {
     var now = Date.now();
-    var db = { users: [], courses: [], lessons: [], media: [], enrollments: [], invites: [], progress: [], sessions: [] };
+    var db = { users: [], courses: [], lessons: [], media: [], enrollments: [], invites: [], progress: [], sessions: [], downloads: [] };
     var admin = { id: 'u_admin', email: 'admin@demo.com', password: 'demo1234', name: '운영자', is_admin: true, created_at: iso(now - 90 * DAY) };
     var me = { id: 'u_student', email: 'student@demo.com', password: 'demo1234', name: '데모수강생', is_admin: false, created_at: iso(now - 20 * DAY) };
     db.users.push(admin, me);
 
-    var c1 = { id: 'c_basic', title: 'ETF 노후 시스템 기본반 (데모)', description: '월배당 ETF로 노후 현금흐름을 설계하는 기본 과정', max_views: 3, access_days: 180, sort: 1, is_published: true, created_at: iso(now - 60 * DAY) };
-    var c2 = { id: 'c_adv', title: '연금계좌 절세 심화반 (데모)', description: '연금저축·IRP 인출 순서와 세금', max_views: 2, access_days: 90, sort: 2, is_published: true, created_at: iso(now - 30 * DAY) };
-    db.courses.push(c1, c2);
+    var c1 = { id: 'c_basic', title: 'ETF 노후 시스템 기본반 (데모)', description: '월배당 ETF로 노후 현금흐름을 설계하는 기본 과정', max_views: 3, access_days: 180, sort: 1, is_published: true, kind: 'lecture', slug: 'nubugong', shop_url: 'lectures-shop.html', created_at: iso(now - 60 * DAY) };
+    var c2 = { id: 'c_adv', title: '연금계좌 절세 심화반 (데모)', description: '연금저축·IRP 인출 순서와 세금', max_views: 2, access_days: 90, sort: 2, is_published: true, kind: 'lecture', slug: 'usstock', shop_url: 'usstock-shop.html', created_at: iso(now - 30 * DAY) };
+    var c3 = { id: 'c_ebook', title: '노후자금 시스템 만들기 노하우 (데모 전자책)', description: 'PDF · V5.0 개정판', max_views: null, access_days: null, sort: 50, is_published: true, kind: 'ebook', slug: 'ebook-v5', file_path: 'demo/ebook.pdf', file_name: '노후자금 시스템 만들기 (데모).pdf', shop_url: 'ebooks-shop.html', created_at: iso(now - 60 * DAY) };
+    var c4 = { id: 'c_tools', title: '투자 Tool 멤버십 (데모)', description: '배당 · 절세계좌 · 은퇴 자금 · 물타기 계산기', max_views: null, access_days: 365, sort: 90, is_published: true, kind: 'membership', slug: 'tools', link_url: 'https://ttokjaetv.github.io/', shop_url: 'tools-shop.html', created_at: iso(now - 60 * DAY) };
+    db.courses.push(c1, c2, c3, c4);
 
     // 공개된 Vimeo 영상으로 시연 (실제 강의는 관리자 화면에서 교체)
     var L = [
@@ -50,6 +52,8 @@
     });
 
     db.enrollments.push({ id: uid(), user_id: me.id, course_id: c1.id, starts_at: iso(now - 20 * DAY), expires_at: iso(now + 160 * DAY), status: 'active', source: 'manual', memo: '데모', created_at: iso(now - 20 * DAY) });
+    db.enrollments.push({ id: uid(), user_id: me.id, course_id: c3.id, starts_at: iso(now - 20 * DAY), expires_at: null, status: 'active', source: 'manual', memo: '데모', created_at: iso(now - 20 * DAY) });
+    db.enrollments.push({ id: uid(), user_id: me.id, course_id: c4.id, starts_at: iso(now - 20 * DAY), expires_at: iso(now + 345 * DAY), status: 'active', source: 'manual', memo: '데모', created_at: iso(now - 20 * DAY) });
 
     // 통계 화면용 가상 수강생 12명
     var names = ['김민수', '이서연', '박지훈', '최유진', '정하늘', '강도윤', '조수아', '윤서준', '장예린', '임건우', '한지민', '오태양'];
@@ -130,6 +134,41 @@
     resetPassword: function () { return wait(true); },
     updatePassword: function () { return wait(true); },
     updateName: function (name) { var d = db(); var u = me(d); u.name = name; save(d); return wait(pub(u)); },
+
+    // 상품(영문 이름) 이용 가능 여부 — schema/products.sql my_access 와 동일
+    myAccess: function (slug) {
+      var d = db(); var u = me(d);
+      if (!u) return wait({ ok: false, reason: 'login' });
+      var c = d.courses.find(function (x) { return x.slug === slug; });
+      if (!c || (!c.is_published && !u.is_admin)) return wait({ ok: false, reason: 'not_found' });
+      if (u.is_admin) return wait({ ok: true, admin: true, kind: c.kind, title: c.title, expires_at: null });
+      var e = d.enrollments.find(function (x) { return x.user_id === u.id && x.course_id === c.id; });
+      var st = enrollmentState(d, u.id, c.id);
+      return wait({ ok: st === 'ok', reason: st === 'ok' ? null : st, kind: c.kind, title: c.title, starts_at: e && e.starts_at, expires_at: e ? e.expires_at : null, shop_url: c.shop_url });
+    },
+    // 전자책 받기 — 데모는 한 쪽짜리 PDF를 만들어 준다
+    ebookOpen: function (courseId) {
+      var d = db(); var u = me(d);
+      if (!u) return wait({ ok: false, reason: 'login' });
+      var c = d.courses.find(function (x) { return x.id === courseId && x.kind === 'ebook'; });
+      if (!c || (!c.is_published && !u.is_admin)) return wait({ ok: false, reason: 'not_found' });
+      if (!u.is_admin) {
+        var st = enrollmentState(d, u.id, c.id);
+        if (st !== 'ok') return wait({ ok: false, reason: st });
+        var n = (d.downloads || []).filter(function (x) { return x.user_id === u.id && Date.now() - new Date(x.created_at).getTime() < DAY; }).length;
+        if (n >= 10) return wait({ ok: false, reason: 'too_many' });
+      }
+      if (!c.file_path) return wait({ ok: false, reason: 'no_file' });
+      d.downloads = d.downloads || [];
+      d.downloads.push({ id: uid(), user_id: u.id, course_id: c.id, created_at: iso(Date.now()), user_agent: navigator.userAgent.slice(0, 200) });
+      save(d);
+      var pdf = '%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj 2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj ' +
+        '3 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 300 120]/Contents 4 0 R/Resources<</Font<</F1 5 0 R>>>>>>endobj ' +
+        '4 0 obj<</Length 44>>stream\nBT /F1 16 Tf 30 60 Td (Demo e-book) Tj ET\nendstream endobj ' +
+        '5 0 obj<</Type/Font/Subtype/Type1/BaseFont/Helvetica>>endobj\ntrailer<</Root 1 0 R>>\n%%EOF';
+      var url = URL.createObjectURL(new Blob([pdf], { type: 'application/pdf' }));
+      return wait({ ok: true, url: url, file_name: c.file_name || (c.title + '.pdf') });
+    },
 
     listCourses: function () {
       var d = db(); var u = me(d);
@@ -264,6 +303,15 @@
         save(d); return wait(true);
       },
       listMedia: function () { var d = db(); requireAdmin(d); return wait(d.media); },
+      uploadEbook: function (courseId, file) {
+        var d = db(); requireAdmin(d);
+        return wait('demo/' + courseId + '-' + Date.now() + '.pdf');
+      },
+      listDownloads: function (userId) {
+        var d = db(); requireAdmin(d);
+        return wait((d.downloads || []).filter(function (x) { return !userId || x.user_id === userId; })
+          .sort(function (a, b) { return b.created_at < a.created_at ? -1 : 1; }).slice(0, 50));
+      },
       saveLesson: function (l, media) {
         var d = db(); requireAdmin(d);
         if (l.id) Object.assign(d.lessons.find(function (x) { return x.id === l.id; }), l);
