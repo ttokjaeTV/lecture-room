@@ -107,6 +107,12 @@
         return { ok: true, url: d.signedUrl, file_name: r.file_name };
       },
 
+      // 회원 전용 데이터 (tool_data). 권한이 없으면 서버가 행을 주지 않아 null
+      myToolData: async function (key) {
+        var d = chk(await sb.from('tool_data').select('data').eq('key', key).maybeSingle());
+        return d ? d.data : null;
+      },
+
       listCourses: async function () { return chk(await sb.from('courses').select('*').order('sort').order('created_at')); },
       listLessons: async function () { return chk(await sb.from('lessons').select('*').order('sort').order('created_at')); },
       myEnrollments: async function () { return chk(await sb.from('enrollments').select('*').eq('user_id', profile.id)); },
@@ -168,6 +174,14 @@
         },
         deleteCourse: async function (id) { chk(await sb.from('courses').delete().eq('id', id)); return true; },
         // 전자책 PDF 올리기 (ebooks 비공개 버킷). 한글 파일명은 저장소 경로에 못 쓰므로 경로는 영문, 받을 때 이름은 file_name 으로
+        getToolData: async function (key) {
+          var d = chk(await sb.from('tool_data').select('data').eq('key', key).maybeSingle());
+          return d ? d.data : null;
+        },
+        saveToolData: async function (key, slug, data) {
+          chk(await sb.from('tool_data').upsert({ key: key, product_slug: slug, data: data, note: '내 강의실 멤버십 도구 목록', updated_at: new Date().toISOString() }, { onConflict: 'key' }));
+          return true;
+        },
         uploadEbook: async function (courseId, file) {
           var path = courseId + '/' + Date.now() + '.pdf';
           chk(await sb.storage.from('ebooks').upload(path, file, { contentType: 'application/pdf', upsert: false }));

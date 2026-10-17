@@ -108,6 +108,22 @@
   var KIND = { lecture: '강의', ebook: '전자책', membership: '멤버십' };
   function kindOf(c) { return (c && c.kind) || 'lecture'; }
   function isLecture(c) { return kindOf(c) === 'lecture'; }
+  // 멤버십 회원에게만 내 강의실에 보이는 도구 목록. 관리자 화면(상품·회차 → 멤버십)에서 바꾸면
+  // DB(tool_data, 회원만 읽힘)에 저장되고 그 목록이 우선한다. 주소가 비어 있으면 '준비 중'으로 표시
+  var DEFAULT_TOOLS = [
+    { title: '배당 눈덩이 시뮬레이터', url: 'https://ttokjaetv.github.io/ttokjae-div/', desc: '배당을 다시 투자했을 때 자산이 어떻게 불어나는지 차트로 봅니다.' },
+    { title: '절세계좌 비교 계산기', url: '', desc: '연금저축 · IRP · ISA를 나란히 놓고 연봉 구간별로 비교합니다.' },
+    { title: '은퇴 자금 역산 계산기', url: 'https://ttokjaetv.github.io/retirement/', desc: '원하는 은퇴 생활비에서 거꾸로, 필요한 자산과 월 적립액을 계산합니다.' },
+    { title: '물타기 계산기', url: 'https://ttokjaetv.github.io/Water-Calc/', desc: '추가 매수 뒤 평균 단가를 계산하고 시장 지표를 함께 봅니다.' }
+  ];
+  function toolsKey(c) { return 'tools-list-' + (c.slug || c.id); }
+  function toolsToText(list) { return (list || []).map(function (t) { return [t.title, t.url || '', t.desc || ''].join(' | '); }).join('\n'); }
+  function textToTools(text) {
+    return String(text || '').split(/\r?\n/).map(function (ln) { return ln.trim(); }).filter(Boolean).map(function (ln) {
+      var p = ln.split('|').map(function (x) { return x.trim(); });
+      return { title: p[0], url: p[1] || '', desc: p.slice(2).join(' | ') };
+    }).filter(function (t) { return t.title; });
+  }
   var BUY_LABEL = { lecture: '수강 신청하기', ebook: '전자책 구매하기', membership: '멤버십 가입하기' };
   var EBOOK_REASONS = {
     login: '다시 로그인해 주세요.', not_found: '상품을 찾을 수 없어요.', not_enrolled: '구매 후 받을 수 있어요.',
@@ -334,6 +350,15 @@
   async function viewHome() {
     shell('<div class="empty">불러오는 중…</div>', 'home');
     try { await loadMine(); } catch (e) { $('#lr-main').innerHTML = '<div class="msg msg-err">' + esc(errMsg(e)) + '</div>'; return; }
+    // 이용 중인 멤버십만 도구 목록을 받아 온다 (서버도 회원에게만 내줌)
+    S.toolLists = {};
+    await Promise.all(S.courses.filter(function (c) {
+      return kindOf(c) === 'membership' && (S.user.is_admin || enrState(myEnr(c.id)) === 'active');
+    }).map(function (c) {
+      return (B.myToolData ? B.myToolData(toolsKey(c)) : Promise.resolve(null)).then(function (d) {
+        S.toolLists[c.id] = d && Array.isArray(d.items) ? d.items : DEFAULT_TOOLS;
+      }).catch(function () { S.toolLists[c.id] = DEFAULT_TOOLS; });
+    }));
     var cards = S.courses.map(function (c) {
       var e = myEnr(c.id), st = S.user.is_admin ? 'active' : enrState(e);
       return { c: c, e: e, st: st, order: st === 'active' ? 0 : st === 'none' ? 2 : 1 };
@@ -405,13 +430,21 @@
       (S.user.is_admin && !x.e ? '<span class="lchip">관리자 미리보기</span>' : (x.e ? periodChip(x.e) : ''));
     var act = '';
     if (can && k === 'ebook') act = '<button class="lbtn lbtn-primary" data-ebook="' + esc(c.id) + '">PDF 받기</button>';
-    if (can && k === 'membership' && c.link_url) act = '<a class="lbtn lbtn-primary" href="' + esc(c.link_url) + '" target="_blank" rel="noopener">도구 열기 ↗</a>';
+    if (can && k === 'membership' && c.link_url) act = '<a class="lbtn" href="' + esc(c.link_url) + '" target="_blank" rel="noopener">전체 계산기 모음 ↗</a>';
     var note = can ? (k === 'ebook' ? '받을 때마다 다운로드 기록이 남고, 하루 10회까지 받을 수 있어요.'
-      : '이 계정으로 로그인된 브라우저에서 도구를 열면 바로 쓸 수 있어요.') : '';
+      : '이 계정으로 로그인된 브라우저에서 열면 바로 쓸 수 있어요.') : '';
+    // 도구 목록은 이용 중인 회원에게만 그린다
+    var tools = can && k === 'membership' ? (S.toolLists && S.toolLists[c.id]) || DEFAULT_TOOLS : null;
+    var grid = tools ? '<div class="tool-grid">' + (tools.length ? tools.map(function (t) {
+      var inner = '<b>' + esc(t.title) + '</b>' + (t.desc ? '<span>' + esc(t.desc) + '</span>' : '');
+      return t.url
+        ? '<a class="tool-tile" href="' + esc(t.url) + '" target="_blank" rel="noopener">' + inner + '<em>열기 ↗</em></a>'
+        : '<div class="tool-tile soon">' + inner + '<em>준비 중</em></div>';
+    }).join('') : '<div class="empty">도구를 준비하고 있어요.</div>') + '</div>' : '';
     return '<section class="card course product product--' + k + (can ? '' : ' locked') + '" data-kind="' + k + '"><div class="course-head"><div>' +
       '<h2 class="course-title">' + esc(c.title) + '</h2>' + (c.description ? '<p class="course-desc">' + esc(c.description) + '</p>' : '') +
       '<div class="course-meta">' + meta + '</div>' + (note ? '<p class="lsmall muted" style="margin:10px 0 0">' + note + '</p>' : '') + '</div>' +
-      (act ? '<div class="product-act">' + act + '</div>' : '') + '</div>' + (can ? '' : lockCta(x)) + '</section>';
+      (act ? '<div class="product-act">' + act + '</div>' : '') + '</div>' + grid + (can ? '' : lockCta(x)) + '</section>';
   }
 
   // ---------------------------------------------------------------- 시청
@@ -815,6 +848,10 @@
     var c = selCourse === 'new' ? { title: '', description: '', kind: 'lecture', max_views: 3, access_days: 180, sort: A.courses.length + 1, is_published: true } : byId(A.courses, selCourse);
     var k = kindOf(c);
     var ls = c.id ? A.lessons.filter(function (l) { return l.course_id === c.id; }) : [];
+    var toolList = DEFAULT_TOOLS;
+    if (c.id && k === 'membership' && B.admin.getToolData) {
+      try { var td = await B.admin.getToolData(toolsKey(c)); if (td && Array.isArray(td.items)) toolList = td.items; } catch (e) {}
+    }
     var only = function (kinds, inner) { return '<div data-for="' + kinds + '"' + (kinds.split(' ').indexOf(k) < 0 ? ' class="hidden"' : '') + '>' + inner + '</div>'; };
 
     var html = adminTabs('courses') + '<div class="two-col"><div class="card" style="overflow:hidden"><div class="side-head row" style="justify-content:space-between"><b>상품 목록</b><button class="lbtn lbtn-sm lbtn-primary" id="c-new">+ 새 상품</button></div>' +
@@ -837,7 +874,9 @@
       only('ebook', '<div class="row" style="align-items:flex-start"><label class="field grow"><span>PDF 파일</span><input class="input" type="file" name="file" accept="application/pdf,.pdf">' +
         '<em>' + (c.file_path ? '등록됨: ' + esc(c.file_path) + ' · 새 파일을 고르면 바뀌어요' : '아직 파일이 없어요') + '. 비공개 저장소에 올라가고, 권한 있는 회원만 60초짜리 주소로 받아요.</em></label>' +
         '<label class="field grow"><span>받을 때 파일 이름</span><input class="input" name="file_name" value="' + esc(c.file_name || '') + '" placeholder="예: 노후자금 시스템 V5.0.pdf"></label></div>') +
-      only('membership', '<label class="field"><span>도구 주소</span><input class="input" name="link_url" value="' + esc(c.link_url || '') + '" placeholder="https://ttokjaetv.github.io/"><em>내 강의실의 [도구 열기] 버튼이 가는 곳</em></label>') +
+      only('membership', '<label class="field"><span>도구 목록 (회원에게만 내 강의실에 보여요)</span><textarea class="input" name="tools_text" style="min-height:130px" placeholder="이름 | 주소 | 한 줄 설명">' + esc(toolsToText(toolList)) + '</textarea>' +
+        '<em>한 줄에 하나씩 <b>이름 | 주소 | 설명</b>. 주소를 비우면 \'준비 중\'으로 보여요. 목록은 회원만 읽을 수 있는 곳에 저장돼요.</em></label>' +
+        '<label class="field"><span>전체 계산기 모음 주소</span><input class="input" name="link_url" value="' + esc(c.link_url || '') + '" placeholder="https://ttokjaetv.github.io/"><em>내 강의실 멤버십 카드의 [전체 계산기 모음] 버튼이 가는 곳</em></label>') +
       '<div class="row" style="align-items:flex-start"><label class="field grow"><span>기본 이용 기간 (일)</span><input class="input" name="access_days" type="number" min="1" value="' + (c.access_days == null ? '' : esc(c.access_days)) + '" placeholder="비우면 무제한"><em>권한 부여할 때 기본값</em></label>' +
       '<label class="field" style="width:90px"><span>정렬 순서</span><input class="input" name="sort" type="number" value="' + esc(c.sort) + '"></label></div>' +
       '<label class="check" style="margin-bottom:16px"><input type="checkbox" name="is_published"' + (c.is_published ? ' checked' : '') + '> 회원에게 공개</label>' +
@@ -879,9 +918,12 @@
         link_url: kind === 'membership' ? (f.link_url.value.trim() || null) : null,
         sort: parseInt(f.sort.value, 10) || 0, is_published: f.is_published.checked
       };
+      var tools = kind === 'membership' ? textToTools(f.tools_text.value) : null;
+      if (kind === 'membership' && !slug) { toast('멤버십은 영문 이름이 필요해요. 예: tools'); return; }
       var btn = f.querySelector('button.lbtn-primary'); btn.disabled = true;
       try {
         var saved = await B.admin.saveCourse(row);
+        if (tools) await B.admin.saveToolData(toolsKey(saved), saved.slug, { items: tools });
         if (file) {
           btn.textContent = '파일 올리는 중…';
           row.id = saved.id; row.file_path = await B.admin.uploadEbook(saved.id, file);

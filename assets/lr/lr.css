@@ -191,6 +191,16 @@ body.lr { margin: 0; }
 .lr .product .course-head > div:first-child { flex: 1 1 300px; min-width: 0; }
 .lr .product-act { align-self: center; display: flex; gap: 8px; flex-wrap: wrap; }
 .lr .product-act .lbtn { min-width: 140px; justify-content: center; }
+/* 멤버십 카드 안 도구 목록 (회원에게만 그려짐) */
+.lr .tool-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; padding: 0 22px 22px; }
+.lr .tool-tile { display: flex; flex-direction: column; gap: 4px; padding: 14px 16px; border: 1px solid var(--border); border-radius: 14px; background: #fff; text-decoration: none; color: var(--ink); min-width: 0; transition: border-color .15s, transform .15s, box-shadow .15s; }
+.lr a.tool-tile:hover { border-color: var(--accent); transform: translateY(-1px); box-shadow: 0 10px 22px -16px rgba(58,47,38,.45); }
+.lr .tool-tile b { font-size: 15px; font-weight: 800; letter-spacing: -.3px; }
+.lr .tool-tile span { font-size: 13px; color: var(--ink-mute); line-height: 1.5; }
+.lr .tool-tile em { margin-top: auto; padding-top: 6px; font-style: normal; font-size: 12.5px; font-weight: 800; color: var(--accent); }
+.lr .tool-tile.soon { background: transparent; border-style: dashed; }
+.lr .tool-tile.soon em { color: var(--ink-mute); }
+.lr .tool-grid > .empty { grid-column: 1 / -1; }
 .lr .history-list { list-style: none; margin: 0; padding: 0; }
 .lr .history-list li { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
 .lr .history-list li:last-child { border-bottom: 0; }
@@ -338,6 +348,7 @@ body.lr { margin: 0; }
   .lr .course-progress { text-align: left; min-width: 0; width: 100%; }
   .lr .product-act { width: 100%; }
   .lr .product-act .lbtn { flex: 1; }
+  .lr .tool-grid { grid-template-columns: 1fr; padding: 0 16px 16px; }
   .lr .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .lr .stats .lstat:last-child { grid-column: 1 / -1; }
   .lr .watch-title { font-size: 20px; }

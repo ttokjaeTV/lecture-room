@@ -170,6 +170,15 @@
       return wait({ ok: true, url: url, file_name: c.file_name || (c.title + '.pdf') });
     },
 
+    myToolData: function (key) {
+      var d = db(); var u = me(d);
+      var row = (d.tool_data || {})[key];
+      if (!u || !row) return wait(null);
+      var c = d.courses.find(function (x) { return x.slug === row.product_slug; });
+      var okk = u.is_admin || (c && c.is_published && enrollmentState(d, u.id, c.id) === 'ok');
+      return wait(okk ? row.data : null);
+    },
+
     listCourses: function () {
       var d = db(); var u = me(d);
       return wait(d.courses.filter(function (c) { return c.is_published || (u && u.is_admin); }).sort(function (a, b) { return a.sort - b.sort; }));
@@ -303,6 +312,11 @@
         save(d); return wait(true);
       },
       listMedia: function () { var d = db(); requireAdmin(d); return wait(d.media); },
+      getToolData: function (key) { var d = db(); requireAdmin(d); var r = (d.tool_data || {})[key]; return wait(r ? r.data : null); },
+      saveToolData: function (key, slug, data) {
+        var d = db(); requireAdmin(d); d.tool_data = d.tool_data || {};
+        d.tool_data[key] = { product_slug: slug, data: data }; save(d); return wait(true);
+      },
       uploadEbook: function (courseId, file) {
         var d = db(); requireAdmin(d);
         return wait('demo/' + courseId + '-' + Date.now() + '.pdf');
