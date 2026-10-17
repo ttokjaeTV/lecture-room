@@ -168,7 +168,7 @@
       form = '<form id="f-auth"><label class="field"><span>이름</span><input class="input" name="name" autocomplete="name" required></label>' +
         '<label class="field"><span>이메일</span><input class="input" type="email" name="email" autocomplete="email" required><em>강의를 구매할 때 쓴 이메일로 가입하면 수강 권한이 자동으로 연결돼요.</em></label>' +
         '<label class="field"><span>비밀번호 (6자 이상)</span><input class="input" type="password" name="pw" minlength="6" autocomplete="new-password" required></label>' +
-        '<button class="lbtn lbtn-primary lbtn-block">회원가입</button></form>';
+        pw2Field() + '<button class="lbtn lbtn-primary lbtn-block">회원가입</button></form>';
     } else {
       form = '<form id="f-auth"><p class="lsmall muted" style="margin-top:0">가입한 이메일로 비밀번호 재설정 링크를 보내드려요.</p>' +
         '<label class="field"><span>이메일</span><input class="input" type="email" name="email" required></label>' +
@@ -184,6 +184,7 @@
       (msg ? '<div class="msg ' + (msg.ok ? 'msg-ok' : 'msg-err') + '">' + esc(msg.text) + '</div>' : '') + form + '</div>' + demoBox + '</div>');
 
     $$('[data-tab]').forEach(function (b) { b.addEventListener('click', function (e) { e.preventDefault(); viewAuth(b.getAttribute('data-tab')); }); });
+    if (tab === 'signup') bindPw2($('#f-auth'));
     $('#f-auth').addEventListener('submit', async function (e) {
       e.preventDefault();
       var f = e.target, btn = $('button', f); btn.disabled = true;
@@ -204,10 +205,28 @@
     });
   }
 
+  // 비밀번호 확인 칸: 두 칸이 다르면 제출을 막고 바로 아래에 알려 준다
+  function pw2Field() {
+    return '<label class="field"><span>비밀번호 확인</span><input class="input" type="password" name="pw2" minlength="6" autocomplete="new-password" required>' +
+      '<em class="pw2-hint" aria-live="polite"></em></label>';
+  }
+  function bindPw2(f) {
+    var hint = $('.pw2-hint', f);
+    function check() {
+      var a = f.pw.value, b = f.pw2.value, same = a === b;
+      f.pw2.setCustomValidity(b && !same ? '비밀번호가 서로 달라요.' : '');
+      hint.textContent = !b ? '' : same ? '비밀번호가 일치해요.' : '비밀번호가 서로 달라요.';
+      hint.className = 'pw2-hint' + (!b ? '' : same ? ' ok' : ' err');
+    }
+    f.pw.addEventListener('input', check);
+    f.pw2.addEventListener('input', check);
+  }
+
   function viewSetPassword() {
     shell('<div class="auth-wrap"><h1 class="auth-title">새 비밀번호 설정</h1><div class="card card-pad"><form id="f-pw">' +
       '<label class="field"><span>새 비밀번호 (6자 이상)</span><input class="input" type="password" name="pw" minlength="6" required autocomplete="new-password"></label>' +
-      '<button class="lbtn lbtn-primary lbtn-block">저장</button></form></div></div>');
+      pw2Field() + '<button class="lbtn lbtn-primary lbtn-block">저장</button></form></div></div>');
+    bindPw2($('#f-pw'));
     $('#f-pw').addEventListener('submit', async function (e) {
       e.preventDefault();
       try { await B.updatePassword(e.target.pw.value); toast('비밀번호를 바꿨어요.'); go('#/'); }
