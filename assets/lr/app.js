@@ -113,21 +113,38 @@
   var KIND = { lecture: '강의', ebook: '전자책', membership: '멤버십' };
   function kindOf(c) { return (c && c.kind) || 'lecture'; }
   function isLecture(c) { return kindOf(c) === 'lecture'; }
-  // 멤버십 회원에게만 내 강의실에 보이는 도구 목록. 관리자 화면(상품·회차 → 멤버십)에서 바꾸면
-  // DB(tool_data, 회원만 읽힘)에 저장되고 그 목록이 우선한다. 주소가 비어 있으면 '준비 중'으로 표시
-  var DEFAULT_TOOLS = [
-    { title: '배당 눈덩이 시뮬레이터', url: 'https://ttokjaetv.github.io/ttokjae-div/', desc: '배당을 다시 투자했을 때 자산이 어떻게 불어나는지 차트로 봅니다.' },
-    { title: '절세계좌 비교 계산기', url: '', desc: '연금저축 · IRP · ISA를 나란히 놓고 연봉 구간별로 비교합니다.' },
-    { title: '은퇴 자금 역산 계산기', url: 'https://ttokjaetv.github.io/retirement/', desc: '원하는 은퇴 생활비에서 거꾸로, 필요한 자산과 월 적립액을 계산합니다.' },
-    { title: '물타기 계산기', url: 'https://ttokjaetv.github.io/Water-Calc/', desc: '추가 매수 뒤 평균 단가를 계산하고 시장 지표를 함께 봅니다.' }
-  ];
-  function toolsKey(c) { return 'tools-list-' + (c.slug || c.id); }
-  function toolsToText(list) { return (list || []).map(function (t) { return [t.title, t.url || '', t.desc || ''].join(' | '); }).join('\n'); }
-  function textToTools(text) {
-    return String(text || '').split(/\r?\n/).map(function (ln) { return ln.trim(); }).filter(Boolean).map(function (ln) {
-      var p = ln.split('|').map(function (x) { return x.trim(); });
-      return { title: p[0], url: p[1] || '', desc: p.slice(2).join(' | ') };
-    }).filter(function (t) { return t.title; });
+  var HUB_URL = 'https://ttokjaetv.github.io/';
+  // 계산기 허브(같은 주소 ttokjaetv.github.io)를 투자 Tool 탭 안에 맞춘다:
+  // 허브 자체 머리·무료 안내·FAQ는 숨기고, 계산기는 새 탭으로 열고, 높이는 내용에 맞춘다
+  function fitHub(frame) {
+    var doc;
+    try { doc = frame.contentDocument; } catch (e) { doc = null; }
+    if (!doc || !doc.documentElement) { frame.style.height = '80vh'; return; }   // 다른 주소면 그냥 스크롤
+    var root = doc.documentElement;
+    root.classList.remove('pv-locked');            // 공개 전 미리보기 잠금: 회원 확인은 이미 끝남
+    root.classList.add('in-room');
+    if (!doc.getElementById('room-embed-css')) {
+      var st = doc.createElement('style');
+      st.id = 'room-embed-css';
+      st.textContent = 'html.in-room body{background:transparent!important}html.in-room #pv-gate,html.in-room .container>header,' +
+        'html.in-room .top-cta,html.in-room .hero-desc,html.in-room .faq,html.in-room .insight-box{display:none!important}' +
+        'html.in-room .hero-title{font-size:clamp(28px,6.4vw,56px)!important}' +
+        'html.in-room,html.in-room body{overflow:hidden!important}html.in-room .container{padding-top:8px!important}';
+      (doc.head || root).appendChild(st);
+    }
+    Array.prototype.forEach.call(doc.querySelectorAll('a[href]'), function (a) {
+      var h = a.getAttribute('href') || '';
+      if (h.charAt(0) !== '#' && !/^javascript:/i.test(h)) { a.target = '_blank'; a.rel = 'noopener'; }
+    });
+    var size = function () { frame.style.height = Math.max(400, Math.ceil(doc.documentElement.scrollHeight)) + 'px'; };
+    size();
+    try { new (frame.contentWindow.ResizeObserver || ResizeObserver)(size).observe(doc.body); } catch (e) { setInterval(size, 1000); }
+  }
+  function bindHub() {
+    var f = document.getElementById('hub-frame');
+    if (!f) return;
+    f.addEventListener('load', function () { fitHub(f); });
+    try { if (f.contentDocument && f.contentDocument.readyState === 'complete' && f.contentDocument.URL !== 'about:blank') fitHub(f); } catch (e) {}
   }
   var BUY_LABEL = { lecture: '수강 신청하기', ebook: '전자책 구매하기', membership: '멤버십 가입하기' };
   var EBOOK_REASONS = {
@@ -374,12 +391,6 @@
   async function loadRoom() {
     await loadMine();
     S.tabs = myCards().filter(function (x) { return x.st === 'active'; }).map(function (x) { return x.c; });
-    S.toolLists = {};
-    await Promise.all(S.tabs.filter(function (c) { return kindOf(c) === 'membership'; }).map(function (c) {
-      return (B.myToolData ? B.myToolData(toolsKey(c)) : Promise.resolve(null)).then(function (d) {
-        S.toolLists[c.id] = d && Array.isArray(d.items) ? d.items : DEFAULT_TOOLS;
-      }).catch(function () { S.toolLists[c.id] = DEFAULT_TOOLS; });
-    }));
   }
 
   // '#/' : 이용 중인 상품이 있으면 첫 탭으로, 없으면 구매 안내
@@ -415,6 +426,7 @@
     }
     shell(html, 'p:' + id);
     bindEbook();
+    bindHub();
   }
 
   function lectureCard(x) {
@@ -466,17 +478,12 @@
       (S.user.is_admin && !x.e ? '<span class="lchip">관리자 미리보기</span>' : (x.e ? periodChip(x.e) : ''));
     var act = '';
     if (can && k === 'ebook') act = '<button class="lbtn lbtn-primary" data-ebook="' + esc(c.id) + '">PDF 받기</button>';
-    if (can && k === 'membership' && c.link_url) act = '<a class="lbtn" href="' + esc(c.link_url) + '" target="_blank" rel="noopener">전체 계산기 모음 ↗</a>';
+    var hub = k === 'membership' ? (c.link_url || HUB_URL) : '';
+    if (can && hub) act = '<a class="lbtn" href="' + esc(hub) + '" target="_blank" rel="noopener">새 창에서 열기 ↗</a>';
     var note = can ? (k === 'ebook' ? '받을 때마다 다운로드 기록이 남고, 하루 10회까지 받을 수 있어요.'
-      : '이 계정으로 로그인된 브라우저에서 열면 바로 쓸 수 있어요.') : '';
-    // 도구 목록은 이용 중인 회원에게만 그린다
-    var tools = can && k === 'membership' ? (S.toolLists && S.toolLists[c.id]) || DEFAULT_TOOLS : null;
-    var grid = tools ? '<div class="tool-grid">' + (tools.length ? tools.map(function (t) {
-      var inner = '<b>' + esc(t.title) + '</b>' + (t.desc ? '<span>' + esc(t.desc) + '</span>' : '');
-      return t.url
-        ? '<a class="tool-tile" href="' + esc(t.url) + '" target="_blank" rel="noopener">' + inner + '<em>열기 ↗</em></a>'
-        : '<div class="tool-tile soon">' + inner + '<em>준비 중</em></div>';
-    }).join('') : '<div class="empty">도구를 준비하고 있어요.</div>') + '</div>' : '';
+      : '계산기를 누르면 새 탭으로 열려요.') : '';
+    // 이용 중인 회원에게만 계산기 허브 화면을 그대로 넣는다 (권한 없으면 아예 그리지 않음)
+    var grid = can && hub ? '<div class="hub-frame"><iframe id="hub-frame" src="' + esc(hub) + '" title="투자 계산기 모음" loading="eager"></iframe></div>' : '';
     return '<section class="card course product product--' + k + (can ? '' : ' locked') + '" data-kind="' + k + '"><div class="course-head"><div>' +
       '<h2 class="course-title">' + esc(c.title) + '</h2>' + (c.description ? '<p class="course-desc">' + esc(c.description) + '</p>' : '') +
       '<div class="course-meta">' + meta + '</div>' + (note ? '<p class="lsmall muted" style="margin:10px 0 0">' + note + '</p>' : '') + '</div>' +
@@ -886,10 +893,6 @@
     var c = selCourse === 'new' ? { title: '', description: '', kind: 'lecture', max_views: 3, access_days: 180, sort: A.courses.length + 1, is_published: true } : byId(A.courses, selCourse);
     var k = kindOf(c);
     var ls = c.id ? A.lessons.filter(function (l) { return l.course_id === c.id; }) : [];
-    var toolList = DEFAULT_TOOLS;
-    if (c.id && k === 'membership' && B.admin.getToolData) {
-      try { var td = await B.admin.getToolData(toolsKey(c)); if (td && Array.isArray(td.items)) toolList = td.items; } catch (e) {}
-    }
     var only = function (kinds, inner) { return '<div data-for="' + kinds + '"' + (kinds.split(' ').indexOf(k) < 0 ? ' class="hidden"' : '') + '>' + inner + '</div>'; };
 
     var html = adminTabs('courses') + '<div class="two-col"><div class="card" style="overflow:hidden"><div class="side-head row" style="justify-content:space-between"><b>상품 목록</b><button class="lbtn lbtn-sm lbtn-primary" id="c-new">+ 새 상품</button></div>' +
@@ -912,9 +915,7 @@
       only('ebook', '<div class="row" style="align-items:flex-start"><label class="field grow"><span>PDF 파일</span><input class="input" type="file" name="file" accept="application/pdf,.pdf">' +
         '<em>' + (c.file_path ? '등록됨: ' + esc(c.file_path) + ' · 새 파일을 고르면 바뀌어요' : '아직 파일이 없어요') + '. 비공개 저장소에 올라가고, 권한 있는 회원만 60초짜리 주소로 받아요.</em></label>' +
         '<label class="field grow"><span>받을 때 파일 이름</span><input class="input" name="file_name" value="' + esc(c.file_name || '') + '" placeholder="예: 노후자금 시스템 V5.0.pdf"></label></div>') +
-      only('membership', '<label class="field"><span>도구 목록 (회원에게만 내 강의실에 보여요)</span><textarea class="input" name="tools_text" style="min-height:130px" placeholder="이름 | 주소 | 한 줄 설명">' + esc(toolsToText(toolList)) + '</textarea>' +
-        '<em>한 줄에 하나씩 <b>이름 | 주소 | 설명</b>. 주소를 비우면 \'준비 중\'으로 보여요. 목록은 회원만 읽을 수 있는 곳에 저장돼요.</em></label>' +
-        '<label class="field"><span>전체 계산기 모음 주소</span><input class="input" name="link_url" value="' + esc(c.link_url || '') + '" placeholder="https://ttokjaetv.github.io/"><em>내 강의실 멤버십 카드의 [전체 계산기 모음] 버튼이 가는 곳</em></label>') +
+      only('membership', '<label class="field"><span>계산기 허브 주소</span><input class="input" name="link_url" value="' + esc(c.link_url || '') + '" placeholder="' + HUB_URL + '"><em>회원의 내 강의실 [투자 Tool] 탭에 이 화면이 그대로 들어가요. 비우면 ' + HUB_URL + '</em></label>') +
       '<div class="row" style="align-items:flex-start"><label class="field grow"><span>기본 이용 기간 (일)</span><input class="input" name="access_days" type="number" min="1" value="' + (c.access_days == null ? '' : esc(c.access_days)) + '" placeholder="비우면 무제한"><em>권한 부여할 때 기본값</em></label>' +
       '<label class="field" style="width:90px"><span>정렬 순서</span><input class="input" name="sort" type="number" value="' + esc(c.sort) + '"></label></div>' +
       '<label class="check" style="margin-bottom:16px"><input type="checkbox" name="is_published"' + (c.is_published ? ' checked' : '') + '> 회원에게 공개</label>' +
@@ -956,12 +957,10 @@
         link_url: kind === 'membership' ? (f.link_url.value.trim() || null) : null,
         sort: parseInt(f.sort.value, 10) || 0, is_published: f.is_published.checked
       };
-      var tools = kind === 'membership' ? textToTools(f.tools_text.value) : null;
       if (kind === 'membership' && !slug) { toast('멤버십은 영문 이름이 필요해요. 예: tools'); return; }
       var btn = f.querySelector('button.lbtn-primary'); btn.disabled = true;
       try {
         var saved = await B.admin.saveCourse(row);
-        if (tools) await B.admin.saveToolData(toolsKey(saved), saved.slug, { items: tools });
         if (file) {
           btn.textContent = '파일 올리는 중…';
           row.id = saved.id; row.file_path = await B.admin.uploadEbook(saved.id, file);
