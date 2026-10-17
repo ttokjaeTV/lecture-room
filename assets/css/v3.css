@@ -611,3 +611,13 @@ b, strong { font-weight: 700; }
 .lp-bar__r { display: flex; align-items: center; gap: 12px; }
 .lp-ch svg { width: 30px; height: 30px; display: block; transition: transform .2s ease; }
 .lp-ch:hover svg { transform: translateY(-2px); }
+
+/* 소개 페이지(home.html) — 강의 · 전자책 아래 함께 구매 할인 한 줄 */
+.prod-more { margin-top: 18px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px 24px;
+  padding: 20px 24px; border-radius: 18px; background-color: var(--paper, #fff); border: 1.5px solid var(--red-line, #ecd3d1); }
+.prod-more__t { font-size: 17px; font-weight: 800; letter-spacing: -.03em; color: var(--ink); }
+.prod-more__t b { color: var(--red); font-size: 19px; }
+.prod-more__t s { margin-left: 4px; font-size: 14px; font-weight: 600; color: var(--ink-3); }
+.prod-more__t em { margin-left: 6px; padding: 2px 9px; border-radius: 999px; background: var(--yellow); color: var(--on-yellow, #3a0d0e); font-style: normal; font-size: 12.5px; font-weight: 900; vertical-align: 2px; }
+.prod-more__d { margin-top: 4px; font-size: 14px; color: var(--ink-2); line-height: 1.6; }
+.prod-more__d b { color: var(--cocoa); }

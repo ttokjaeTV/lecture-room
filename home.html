@@ -23,7 +23,7 @@
 
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-<link rel="stylesheet" href="assets/css/v3.css">
+<link rel="stylesheet" href="assets/css/v3.css?v=20261017c">
 <link rel="stylesheet" href="assets/css/landing.css">
 <link rel="stylesheet" href="assets/css/depth.css">
 <link rel="stylesheet" href="assets/css/fx.css">
@@ -196,10 +196,12 @@
     <a class="bar__logo" href="index.html" aria-label="똑재TV 홈">
       <img src="assets/img/logo.png" alt="똑재TV" width="271" height="113">
     </a>
-    <!-- 이 사이트의 본론: 강의·전자책은 늘 로고 바로 옆에 -->
+    <!-- 파는 것 네 가지는 늘 로고 바로 옆에 -->
     <nav class="bar__prim" aria-label="상품">
       <a class="bar__p" href="lectures-shop.html">강의</a>
       <a class="bar__p" href="ebooks-shop.html">전자책</a>
+      <a class="bar__p" href="usstock-shop.html">미국주식</a>
+      <a class="bar__p" href="https://ttokjaetv.github.io/" target="_blank" rel="noopener">투자 Tool</a>
     </nav>
     <nav class="bar__nav" aria-label="주요 메뉴">
       <a class="bar__room" href="classroom.html"><svg viewBox="0 0 24 24" aria-hidden="true"><rect class="ic-frame" x="2.5" y="4.5" width="19" height="15" rx="4"/><path class="ic-play" d="M10 8.6v6.8l5.6-3.4z"/></svg><span>내 강의실</span></a>
@@ -545,7 +547,7 @@
               <li>실전 2주로 내 포트폴리오를 직접 짜고 굴립니다</li>
               <li>종목 추천·매매 신호·1:1 상담은 없습니다</li>
             </ul>
-            <p class="prod__price">수강료 <b><span class="todo">미정</span></b></p>
+            <p class="prod__price">수강료 <b>298,000원</b></p>
             <div class="prod__acts">
               <a class="btn btn--red" href="lectures-shop.html">커리큘럼 보기</a>
             </div>
@@ -565,12 +567,21 @@
               <li>계좌별 과세 비교표와 판단 흐름도 수록</li>
               <li>헷갈릴 때마다 펼쳐 보는 색인처럼 한자리에 정리</li>
             </ul>
-            <p class="prod__price">가격 <b><span class="todo">미정</span></b></p>
+            <p class="prod__price">가격 <b>89,000원</b></p>
             <div class="prod__acts">
               <a class="btn btn--line" href="ebooks-shop.html">자세히 보기</a>
             </div>
           </div>
         </article>
+      </div>
+
+      <!-- 함께 구매 할인 — 값은 assets/js/shop.js 의 TJ_SHOP 표와 같게 맞춘다 -->
+      <div class="prod-more spot">
+        <div>
+          <p class="prod-more__t">강의 + 전자책을 함께 사면 <b>349,000원</b> <s>387,000원</s> <em>10% 할인</em></p>
+          <p class="prod-more__d">미국주식 기초반(129,000원)까지 세 가지를 묶으면 <b>449,000원</b>, 13% 할인됩니다. 투자 Tool 멤버십은 월 8,900원 구독입니다.</p>
+        </div>
+        <a class="btn btn--line" href="index.html">상품 4종 한눈에 보기 <span aria-hidden="true">→</span></a>
       </div>
     </div>
   </section>
@@ -664,10 +675,12 @@
         <ul role="list" class="foot__list">
           <li><a href="lectures-shop.html">강의</a></li>
           <li><a href="ebooks-shop.html">전자책</a></li>
+          <li><a href="usstock-shop.html">미국주식 기초반</a></li>
+          <li><a href="https://ttokjaetv.github.io/" target="_blank" rel="noopener">투자 Tool 멤버십</a></li>
           <li><a href="https://www.youtube.com/@ttok_jae" target="_blank" rel="noopener">유튜브 채널</a></li>
           <li><a href="https://cafe.naver.com/ttokjae" target="_blank" rel="noopener">평생 ETF 투자 카페</a></li>
           <li><a href="#intro" data-replay>처음 화면 다시 보기</a></li>
-          <li><a href="classroom.html">강의실 (예시)</a></li>
+          <li><a href="classroom.html">내 강의실</a></li>
           <li><a href="legal/terms.html">이용약관</a></li>
           <li><a href="legal/privacy.html"><b>개인정보처리방침</b></a></li>
           <li><a href="legal/refund.html">환불 규정</a></li>
@@ -702,11 +715,11 @@
 <nav class="dock" aria-label="바로 구매">
   <a class="dock__i dock__i--lec" href="lectures-shop.html#apply">
     <span class="dock__ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M12 16v4M8 20h8"/><path d="M10 8v5l4-2.5z" fill="currentColor" stroke="none"/></svg></span>
-    <span class="dock__txt"><b>강의 신청</b><small>평생 마르지 않는 월 현금흐름 포트폴리오 완성반 · <em>모집 예정</em></small></span>
+    <span class="dock__txt"><b>강의 신청</b><small>298,000원 · <em>모집 예정</em></small></span>
   </a>
   <a class="dock__i dock__i--book" href="ebooks-shop.html#buy">
     <img class="dock__cover" src="assets/img/ebook-cover.png" alt="" width="468" height="723">
-    <span class="dock__txt"><b>전자책 구매</b><small>PDF 410쪽 · <em>판매 예정</em></small></span>
+    <span class="dock__txt"><b>전자책 구매</b><small>PDF 410쪽 · 89,000원 · <em>판매 예정</em></small></span>
   </a>
 </nav>
 

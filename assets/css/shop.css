@@ -664,3 +664,103 @@
 .cov__t--3 { font-size: clamp(27px, 3.7vw, 40px); }
 .cov.is-play .cov__t .ln:nth-child(3) > span { animation-delay: .24s; }
 .xsell__v--lec { font-size: 12px; }
+
+/* ========================================================================== 주문 · 결제 (checkout.html)
+   PG(결제대행사) 연결 전 틀. 상품 · 가격은 shop.js 의 TJ_SHOP 표에서 그린다. */
+.co { padding: 18px var(--gut) clamp(56px, 7vw, 88px); }
+.co__in { max-width: var(--shop-max); margin: 0 auto; }
+.co__t { margin-top: 6px; font-size: clamp(26px, 3.2vw, 34px); font-weight: 900; letter-spacing: -.045em; color: var(--cocoa); }
+.co__d { margin-top: 6px; font-size: 15px; color: var(--ink-2); }
+.co__d b { color: var(--cocoa); }
+.co__grid { display: grid; gap: 18px; margin-top: 24px; }
+@media (min-width: 900px) {
+  .co__grid { grid-template-columns: minmax(0, 1fr) 340px; gap: 28px; align-items: start; }
+  .co__side { position: sticky; top: 92px; }
+}
+.co__main { display: grid; gap: 16px; }
+
+.co-box { padding: 22px 22px 20px; border-radius: 18px; background: var(--paper); border: 1px solid var(--line); box-shadow: var(--lift-1, none); }
+.co-box__t { display: flex; align-items: center; gap: 10px; font-size: 17.5px; font-weight: 900; letter-spacing: -.03em; color: var(--cocoa); }
+.co-box__n { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--cocoa); color: var(--yellow); font-size: 12.5px; font-weight: 900; }
+.co-help { margin-top: 12px; font-size: 13px; color: var(--ink-3); line-height: 1.65; }
+.co-help a, .co-agrees a { color: var(--red); font-weight: 700; text-underline-offset: 3px; }
+
+/* 1. 주문 상품 */
+.co-items { margin-top: 14px; display: grid; gap: 10px; }
+.co-item { display: grid; grid-template-columns: 56px minmax(0, 1fr) auto auto; align-items: center; gap: 14px; padding: 12px 14px; border-radius: 14px; background: var(--paper-gray); }
+.co-th { display: grid; place-items: center; width: 56px; height: 56px; border-radius: 10px; overflow: hidden; font-size: 9.5px; font-weight: 900; line-height: 1.25; text-align: center; }
+.co-th--lec { background: linear-gradient(150deg, #3A2F26, #2B221B); color: var(--yellow); padding: 4px; }
+.co-th--eb { background: #EFE6D8; }
+.co-th--eb img { width: 62%; height: auto; border-radius: 2px; box-shadow: 0 4px 8px -3px rgba(43, 34, 27, .5); }
+.co-th--us { background: linear-gradient(150deg, #96181a, #6b1013); color: #fff; font-size: 17px; letter-spacing: -.02em; }
+.co-th--tools { background: linear-gradient(150deg, #3A2F26, #2B221B); color: var(--yellow); font-size: 12px; letter-spacing: .06em; }
+.co-item__b { display: grid; gap: 2px; min-width: 0; }
+.co-item__k { font-size: 12px; font-weight: 700; color: var(--ink-3); }
+.co-item__n { font-size: 15px; font-weight: 800; letter-spacing: -.025em; line-height: 1.4; color: var(--ink); text-decoration: none; }
+.co-item__n:hover { color: var(--red); }
+.co-item__v { font-size: 15.5px; font-weight: 900; color: var(--cocoa); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.co-item__x { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--line); background: var(--paper); color: var(--ink-3); font-size: 17px; line-height: 1; cursor: pointer; }
+.co-item__x:hover { color: var(--red); border-color: var(--red); }
+@media (max-width: 520px) {
+  .co-item { grid-template-columns: 48px minmax(0, 1fr) auto; gap: 10px; }
+  .co-th { width: 48px; height: 48px; }
+  .co-item__v { grid-column: 2; }
+  .co-item__x { grid-column: 3; grid-row: 1; }
+}
+.co-adds { margin-top: 14px; padding: 14px; border-radius: 14px; background: var(--red-soft); border: 1.5px solid var(--red-line); }
+.co-adds__h { font-size: 12.5px; font-weight: 800; color: var(--red); }
+.co-adds__list { display: grid; gap: 8px; margin-top: 8px; }
+.co-add { display: grid; grid-template-columns: 24px minmax(0, 1fr) auto; align-items: center; gap: 12px; width: 100%; padding: 11px 14px; border-radius: 11px; border: 1px solid var(--line); background: var(--paper); text-align: left; font: inherit; cursor: pointer; transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; }
+.co-add:hover { transform: translateY(-1px); border-color: var(--red); box-shadow: 0 8px 18px -12px rgba(58, 47, 38, .35); }
+.co-add__plus { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 6px; background: var(--red); color: #fff; font-weight: 900; }
+.co-add__n { font-size: 14px; font-weight: 800; color: var(--ink); line-height: 1.4; letter-spacing: -.02em; }
+.co-add__n small { display: block; font-size: 12.5px; font-weight: 600; color: var(--red); letter-spacing: 0; }
+.co-add__v { font-size: 13.5px; font-weight: 800; color: var(--ink-2); white-space: nowrap; }
+.co-mnote { margin-top: 12px; font-size: 13px; color: var(--ink-3); }
+
+/* 2. 주문자 정보 */
+.co-fields { display: grid; gap: 12px; margin-top: 14px; }
+@media (min-width: 640px) { .co-fields { grid-template-columns: 1fr 1.4fr; } }
+.co-f { display: grid; gap: 6px; }
+.co-f__l { font-size: 13px; font-weight: 800; color: var(--ink-2); }
+.co-f input { width: 100%; padding: 13px 14px; border-radius: 11px; border: 1.5px solid var(--line); background: var(--paper); font: inherit; font-size: 15.5px; color: var(--ink); transition: border-color .2s ease, box-shadow .2s ease; }
+.co-f input:focus { outline: none; border-color: var(--cocoa); box-shadow: 0 0 0 3px rgba(58, 47, 38, .1); }
+
+/* 3. 결제 수단 */
+.co-methods { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; margin-top: 14px; }
+.co-m { position: relative; cursor: pointer; }
+.co-m input { position: absolute; opacity: 0; }
+.co-m span { display: grid; place-items: center; min-height: 50px; padding: 10px; border-radius: 11px; border: 1.5px solid var(--line); background: var(--paper); font-size: 14.5px; font-weight: 800; color: var(--ink-2); text-align: center; transition: border-color .2s ease, background-color .2s ease, color .2s ease; }
+.co-m:hover span { border-color: #CFC3B3; }
+.co-m input:checked + span { border-color: var(--cocoa); background: var(--cocoa); color: var(--yellow); }
+.co-m input:focus-visible + span { outline: 2px solid var(--red); outline-offset: 2px; }
+
+/* 4. 약관 동의 */
+.co-all, .co-agrees label { position: relative; display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; align-items: start; cursor: pointer; }
+.co-all input, .co-agrees input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.co-all { margin-top: 14px; padding: 13px 14px; border-radius: 12px; background: var(--paper-gray); font-size: 15px; color: var(--ink); }
+.co-agrees { display: grid; gap: 10px; margin-top: 12px; padding: 0 14px; font-size: 13.5px; color: var(--ink-2); line-height: 1.6; }
+.co-agrees em { font-style: normal; font-weight: 800; color: var(--red); }
+.co-chk { width: 20px; height: 20px; margin-top: 1px; border-radius: 6px; border: 2px solid #CFC3B3; display: grid; place-items: center; background: var(--paper); transition: background-color .2s ease, border-color .2s ease; }
+.co-chk::after { content: ''; width: 5px; height: 10px; margin-top: -2px; border: solid #fff; border-width: 0 2.5px 2.5px 0; transform: rotate(45deg) scale(.4); opacity: 0; transition: transform .2s ease, opacity .2s ease; }
+input:checked + .co-chk { background: var(--red); border-color: var(--red); }
+input:checked + .co-chk::after { opacity: 1; transform: rotate(45deg) scale(1); }
+input:focus-visible + .co-chk { outline: 2px solid var(--red); outline-offset: 2px; }
+
+/* 오른쪽 결제 금액 */
+.co-sum { position: relative; padding: 22px 22px 18px; border-radius: 18px; background-color: var(--paper); border: 1px solid var(--line);
+  box-shadow: 0 1px 2px rgba(58, 47, 38, .05), 0 16px 30px -20px rgba(58, 47, 38, .3); }
+.co-sum__h { font-size: 17px; font-weight: 900; letter-spacing: -.03em; color: var(--cocoa); }
+.co-sum__row { display: flex; justify-content: space-between; gap: 12px; margin-top: 12px; font-size: 14.5px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.co-sum__row span:last-child { font-weight: 800; color: var(--ink); }
+.co-sum__row--off span, .co-sum__row--off span:last-child { color: var(--red); }
+.co-sum__total { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--line); font-size: 15px; font-weight: 800; color: var(--ink-2); }
+.co-sum__total b { font-size: 26px; font-weight: 900; letter-spacing: -.04em; color: var(--red); font-variant-numeric: tabular-nums; }
+.co-pay { width: 100%; margin-top: 16px; padding: 16px; font-size: 17px; font-weight: 900; }
+.co-pay:disabled { opacity: .45; cursor: not-allowed; transform: none; box-shadow: none; }
+.co-hint { margin-top: 10px; font-size: 12.5px; color: var(--ink-3); text-align: center; line-height: 1.55; }
+.co-msg { margin-top: 12px; padding: 12px 14px; border-radius: 12px; background: var(--red-soft); border: 1px solid var(--red-line); font-size: 13.5px; color: var(--ink); line-height: 1.6; }
+.co-msg b { color: var(--red); }
+.co-msg small { display: block; margin-top: 4px; color: var(--ink-3); }
+.co-safe { display: flex; gap: 8px; align-items: flex-start; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 12px; color: var(--ink-3); line-height: 1.55; }
+.co-safe .ico { flex: none; width: 15px; height: 15px; margin-top: 1px; fill: none; stroke: currentColor; stroke-width: 2; }

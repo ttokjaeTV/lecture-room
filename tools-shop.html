@@ -22,7 +22,7 @@
 <link rel="stylesheet" href="assets/css/fx.css">
 <link rel="stylesheet" href="assets/css/ace.css">
 <link rel="stylesheet" href="assets/css/shell.css">
-<link rel="stylesheet" href="assets/css/shop.css">
+<link rel="stylesheet" href="assets/css/shop.css?v=20261017c">
 </head>
 <body class="shop-page">
 
@@ -104,7 +104,7 @@
           <div class="total"><span class="total__l">총 결제금액</span><span class="total__v">월 8,900원</span></div>
         </div>
         <div class="buy">
-          <a class="btn btn--red" href="#join" data-todo="join" aria-disabled="true" data-magnet>멤버십 시작하기</a>
+          <a class="btn btn--red" href="checkout.html?items=tools" data-checkout-link data-magnet>멤버십 시작하기</a>
           <a class="btn btn--line" href="https://cafe.naver.com/ttokjae" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" fill="#03C75A"/><path d="M8 7h3l2.6 4V7H16v10h-3l-2.6-4v4H8z" fill="#fff"/></svg>오픈 소식 받기</a>
         </div>
         <p class="buy__note">멤버십은 정식 오픈과 함께 열립니다. 오픈 소식은 평생 ETF 투자 카페에 먼저 올라옵니다.<br>이미 멤버십 회원이라면 <a href="classroom.html">내 강의실</a>에서 [도구 열기]를 누르면 같은 계정으로 바로 열립니다.</p>
@@ -209,13 +209,13 @@
 <!-- 바로 구매 바 — 위 상품 블록의 구매 버튼이 화면 밖으로 나가면 아래에 떠오른다. 결제가 열리면 href 를 결제 주소로 바꾼다 -->
 <div class="bbar" role="region" aria-label="바로 구매">
   <span class="bbar__txt"><b>투자 Tool 멤버십</b><small>월 8,900원 · 오픈 예정</small></span>
-  <a class="btn btn--red" href="#join" data-todo="join" aria-disabled="true">멤버십 시작</a>
+  <a class="btn btn--red" href="checkout.html?items=tools" data-checkout-link>멤버십 시작</a>
 </div>
 
 <script src="assets/js/v3.js" defer></script>
 <script src="assets/js/depth.js" defer></script>
 <script src="assets/js/fx.js" defer></script>
 <script src="assets/js/ace.js" defer></script>
-<script src="assets/js/shop.js" defer></script>
+<script src="assets/js/shop.js?v=20261017c" defer></script>
 </body>
 </html>
