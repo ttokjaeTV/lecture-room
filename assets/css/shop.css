@@ -841,3 +841,6 @@ input:focus-visible + .co-chk { outline: 2px solid var(--red); outline-offset: 2
 @media (max-width: 640px) {
   .cov .cov__scene--mcf { left: 6%; width: 88%; }
 }
+
+/* 소개 페이지의 [묶음 할인 보기]로 들어올 때 상단바에 가리지 않게 */
+#bundle { scroll-margin-top: 96px; }

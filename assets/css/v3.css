@@ -621,3 +621,14 @@ b, strong { font-weight: 700; }
 .prod-more__t em { margin-left: 6px; padding: 2px 9px; border-radius: 999px; background: var(--yellow); color: var(--on-yellow, #3a0d0e); font-style: normal; font-size: 12.5px; font-weight: 900; vertical-align: 2px; }
 .prod-more__d { margin-top: 4px; font-size: 14px; color: var(--ink-2); line-height: 1.6; }
 .prod-more__d b { color: var(--cocoa); }
+/* 소개 페이지(home.html) — 강의·전자책 아래 나머지 두 상품(미국주식 기초반 · 투자 Tool 멤버십) 작은 카드 */
+.prod-mini { margin-top: 18px; display: grid; grid-template-columns: 1fr; gap: 12px; }
+@media (min-width: 720px) { .prod-mini { grid-template-columns: 1fr 1fr; } }
+.prod-mini__i { display: grid; gap: 4px; height: 100%; padding: 18px 22px; border-radius: 18px; text-decoration: none; color: var(--ink);
+  background-color: var(--paper, #fff); border: 1.5px solid var(--line); transition: border-color .2s ease, transform .2s ease, box-shadow .2s ease; }
+.prod-mini__i:hover { border-color: var(--line-2); transform: translateY(-2px); box-shadow: 0 14px 28px -18px rgba(58, 47, 38, .35); }
+.prod-mini__k { font-size: 12.5px; font-weight: 700; color: var(--ink-3); }
+.prod-mini__k em { font-style: normal; color: var(--red); }
+.prod-mini__n { font-size: 18px; font-weight: 800; letter-spacing: -.03em; }
+.prod-mini__d { font-size: 14px; color: var(--ink-2); line-height: 1.55; }
+.prod-mini__p { margin-top: 4px; font-size: 15.5px; font-weight: 800; color: var(--cocoa); }
