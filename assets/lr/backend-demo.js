@@ -36,7 +36,7 @@
     var c1 = { id: 'c_basic', title: 'ETF 노후 시스템 기본반 (데모)', description: '월배당 ETF로 노후 현금흐름을 설계하는 기본 과정', max_views: 3, access_days: 180, sort: 1, is_published: true, kind: 'lecture', slug: 'nubugong', shop_url: 'lectures-shop.html', created_at: iso(now - 60 * DAY) };
     var c2 = { id: 'c_adv', title: '연금계좌 절세 심화반 (데모)', description: '연금저축·IRP 인출 순서와 세금', max_views: 2, access_days: 90, sort: 2, is_published: true, kind: 'lecture', slug: 'usstock', shop_url: 'usstock-shop.html', created_at: iso(now - 30 * DAY) };
     var c3 = { id: 'c_ebook', title: '노후자금 시스템 만들기 노하우 (데모 전자책)', description: 'PDF · V5.0 개정판', max_views: null, access_days: null, sort: 50, is_published: true, kind: 'ebook', slug: 'ebook-v5', file_path: 'demo/ebook.pdf', file_name: '노후자금 시스템 만들기 (데모).pdf', shop_url: 'ebooks-shop.html', created_at: iso(now - 60 * DAY) };
-    var c4 = { id: 'c_tools', title: '투자 Tool 멤버십 (데모)', description: '배당 · 절세계좌 · 은퇴 자금 · 물타기 계산기', max_views: null, access_days: 365, sort: 90, is_published: true, kind: 'membership', slug: 'tools', link_url: 'https://ttokjaetv.github.io/', shop_url: 'tools-shop.html', created_at: iso(now - 60 * DAY) };
+    var c4 = { id: 'c_tools', title: '투자 Tool 멤버십 (데모)', description: '월배당 적립 · 종합과세·건보료 · 현금흐름 역산 · 물타기 계산기', max_views: null, access_days: 365, sort: 90, is_published: true, kind: 'membership', slug: 'tools', link_url: 'https://ttokjaetv.github.io/', shop_url: 'tools-shop.html', created_at: iso(now - 60 * DAY) };
     db.courses.push(c1, c2, c3, c4);
 
     // 공개된 Vimeo 영상으로 시연 (실제 강의는 관리자 화면에서 교체)
