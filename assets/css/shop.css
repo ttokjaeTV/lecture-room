@@ -659,6 +659,18 @@
 .bset__i--best .bset__rate { color: var(--yellow); }
 .bset__i--best .bset__was { color: rgba(251, 247, 240, .6); }
 .bset__tag { justify-self: start; padding: 3px 9px; border-radius: 999px; background: var(--yellow); color: var(--on-yellow); font-size: 11.5px; font-weight: 900; }
+/* 묶음 카드 → 결제 화면 바로 가기 */
+.bset__list > li { display: grid; }   /* 카드 높이를 한 줄 안에서 맞춤 */
+a.bset__i { text-decoration: none; color: inherit; cursor: pointer; transition: transform .2s ease, box-shadow .2s ease, background-color .2s ease; }
+a.bset__i:hover { transform: translateY(-3px); box-shadow: 0 10px 22px rgba(60, 40, 25, .12); }
+a.bset__i:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
+a.bset__i:active { transform: translateY(-1px); }
+.bset__go { justify-self: end; font-size: 13px; font-weight: 800; color: var(--red); letter-spacing: -.02em; }
+.bset__go span { display: inline-block; transition: transform .2s ease; }
+a.bset__i:hover .bset__go span { transform: translateX(3px); }
+.bset__i--best .bset__go { color: var(--yellow); }
+a.bset__i--best:hover { box-shadow: 0 12px 26px rgba(40, 28, 20, .3); }
+@media (prefers-reduced-motion: reduce) { a.bset__i, .bset__go span { transition: none; } a.bset__i:hover, a.bset__i:active { transform: none; } }
 
 /* 강의 표지 — 이름이 세 줄(평생 마르지 않는 / 월 현금흐름 / 포트폴리오 완성반)이라 글자를 한 단계 줄인다 */
 .cov__t--3 { font-size: clamp(27px, 3.7vw, 40px); }
