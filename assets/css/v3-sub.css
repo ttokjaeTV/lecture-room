@@ -1,0 +1,64 @@
+@charset "utf-8";
+/* ==========================================================================
+   똑재TV 3안 — 강의·전자책 상세 페이지용 덮어쓰기
+   상세 페이지의 틀(담긴 것·구성 번호·꾸러미·FAQ 등)은 1안 tj.css 를 그대로 쓰고,
+   색과 서체만 3안(크림 베이지 + 빨강·노랑 포인트)으로 바꾼다.
+   tj.css 를 고치면 이 파일 아래쪽의 덮어쓰기와 어긋나지 않는지 같이 확인할 것.
+   ========================================================================== */
+
+:root {
+  --cream:      #F5EFE6;
+  --paper:      #FBF7F0;
+  --paper-gray: #EDE3D3;
+  --red-soft:   #F1DDD3;
+  --red-line:   #E2D6C3;
+  --line:       #E2D6C3;
+  --ink:        #3A2F26;
+  --ink-2:      #5E4E3F;
+  --ink-3:      #6B5946;
+  --cocoa:      #3A2F26;
+  --cocoa-2:    #2B221B;
+  --on-yellow:  #3A2F26;
+  --font: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont,
+          system-ui, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+}
+
+body { background: var(--cream); font-size: 17px; font-weight: 500; }
+
+/* 상단바 */
+.bar { background: rgba(245, 239, 230, .9); border-bottom-color: transparent; transition: border-color .2s ease, box-shadow .2s ease; }
+.bar.is-scrolled { border-bottom-color: var(--line); box-shadow: 0 6px 20px rgba(58, 47, 38, .06); }
+.bar__in { max-width: 1080px; height: 68px; }
+.bar__logo img { height: 30px; }
+.bar__nav a:not(.btn) { font-size: 15.5px; }
+.bar__state { display: none !important; }
+.bar__progress {
+  position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
+  background: var(--red); transform-origin: 0 50%; transform: scaleX(0);
+}
+.prelaunch { display: block !important; background: var(--cocoa); color: var(--paper); font-size: 13px; padding: 9px 20px; }
+.prelaunch::before {
+  content: ''; display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+  background: var(--yellow); margin-right: 8px; vertical-align: 1px;
+}
+@media (max-width: 860px) { .bar__nav .hide-sm { display: none; } }
+
+/* 빨간 면 → 다크 브라운 면. 빨강은 버튼·숫자 같은 포인트에만 남긴다. */
+.phead { background: linear-gradient(160deg, var(--cocoa) 0%, var(--cocoa-2) 100%); }
+.phead .hero__deco--a { background: rgba(248, 224, 74, .05); }
+.phead__pill { background: rgba(251, 247, 240, .08); border-color: rgba(251, 247, 240, .2); }
+.lec__thumb--red { background: linear-gradient(135deg, var(--cocoa) 0%, var(--cocoa-2) 100%); }
+.lec__thumb--gray { background: var(--paper-gray); }
+.lec__badge--dark { background: var(--cocoa); }
+.phead :focus-visible { outline-color: var(--yellow); }
+
+/* 카드·면 */
+.prod__card, .qa, .pack, .week { background: var(--paper); }
+.foot { background: var(--paper-gray); }
+.toast { background: var(--cocoa); color: var(--paper); }
+
+/* 전자책 상세: 표지를 감싼 .cover3d 가 원래 표지 자리를 그대로 차지하게 */
+.lec__thumb .cover3d { position: absolute; inset: 9% 0; width: auto; height: 82%; }
+.lec__thumb .cover3d img { position: static; inset: auto; width: 100%; height: 100%; object-fit: contain; }
+.lec__thumb .cover3d__glare { -webkit-mask-size: contain; mask-size: contain; }
+.lec__thumb.prod__vis--book::after { bottom: 6%; }

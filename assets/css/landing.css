@@ -1,0 +1,190 @@
+@charset "utf-8";
+/* ==========================================================================
+   똑재TV 3안 — 랜딩(첫 화면) 전용. 토큰·버튼은 v3.css 를 그대로 쓴다.
+   첫 화면은 본론 대신 "고민"부터 보여준다:
+     ① 공감 — 고민 다섯 장(사진 아코디언, React Bits AccordionGallery 의 움직임을 GSAP 없이 옮김)
+     ② 반전 — 다섯 고민의 공통점은 "순서"
+     ③ 들어가기 — 홈의 5계단으로
+   ========================================================================== */
+
+.lp-bar { position: absolute; top: 0; left: 0; right: 0; z-index: 10; }
+.lp-bar__in { max-width: var(--max); margin: 0 auto; padding: 0 var(--gut); height: 68px; display: flex; align-items: center; justify-content: space-between; }
+.lp-bar__logo img { height: 30px; width: auto; }
+.lp-skip { font-size: 15px; font-weight: 700; color: var(--ink-2); text-decoration: none; padding: 8px 2px; border-bottom: 1.5px solid var(--line-2); }
+.lp-skip:hover { color: var(--red); border-color: var(--red); }
+
+/* ---------------------------------------------------------------- ① 공감 */
+.lp-open {
+  min-height: 100vh; min-height: 100svh;
+  display: flex; flex-direction: column;
+  padding: 96px 0 40px;
+}
+.lp-open__head { max-width: var(--max); width: 100%; margin: 0 auto; padding: 0 var(--gut); margin-bottom: clamp(24px, 3.5vh, 40px); }
+.lp-lead { font-size: 17px; font-weight: 700; color: var(--red); margin-bottom: 12px; }
+.lp-t {
+  font-size: clamp(34px, 5.6vw, 64px); font-weight: 800; line-height: 1.18;
+  letter-spacing: -.045em;
+}
+.lp-t .ln { display: block; overflow: hidden; padding-bottom: .05em; }
+.lp-t .ln > span { display: inline-block; }
+.lp-open__body { flex: 1; display: flex; flex-direction: column; max-width: var(--max); width: 100%; margin: 0 auto; padding: 0 var(--gut); }
+.lp-hint { margin-top: 18px; display: flex; align-items: center; gap: 10px; font-size: 15px; color: var(--ink-3); font-weight: 600; }
+.lp-hint svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* 아코디언 — 펼친 칸이 52%, 나머지가 나눠 갖는다 */
+.acc {
+  --gap: 10px; --media: 560px;
+  display: flex; gap: var(--gap);
+  height: clamp(340px, 52vh, 520px);
+  perspective: 1400px;
+}
+.acc__p {
+  position: relative; flex: 1 1 0; min-width: 0; min-height: 0;
+  border-radius: 18px; overflow: hidden;
+  display: block; text-decoration: none; color: var(--paper);
+  background: var(--sand); cursor: pointer;
+  transform-style: preserve-3d;
+  transform: rotateY(var(--tilt, 0deg));
+  transition: flex-grow .6s cubic-bezier(.215, .61, .355, 1), transform .6s cubic-bezier(.215, .61, .355, 1);
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+}
+.acc__p.is-on { flex-grow: var(--grow, 4.33); --tilt: 0deg; }
+.acc__p:focus-visible { box-shadow: 0 0 0 3px var(--red); }
+.acc__media {
+  position: absolute; top: 0; left: 50%; height: 100%; width: var(--media);
+  transform: translateX(calc(-50% + var(--drift, 0px)));
+  filter: grayscale(var(--gray, 1)) saturate(.9);
+  transition: transform .6s cubic-bezier(.215, .61, .355, 1), filter .6s ease;
+}
+.acc__media img { width: 100%; height: 100%; object-fit: cover; display: block; user-select: none; -webkit-user-drag: none; }
+.acc__p.is-on .acc__media { --gray: 0; --drift: 0px; }
+/* 가독성 그라데이션 + 접힌 칸 어둡게 (다크 브라운 계열) */
+.acc__shade {
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(58, 47, 38, 0) 38%, rgba(43, 34, 27, .82) 100%),
+    rgba(58, 47, 38, var(--dim, .38));
+  transition: background-color .6s ease;
+}
+.acc__p.is-on .acc__shade { --dim: 0; }
+/* 접힌 칸: 번호만 */
+.acc__n {
+  position: absolute; left: 50%; bottom: 20px; transform: translateX(-50%);
+  width: 34px; height: 34px; border-radius: 50%;
+  display: grid; place-items: center;
+  font-size: 15px; font-weight: 800; color: var(--paper);
+  border: 1.5px solid rgba(251, 247, 240, .7);
+  transition: opacity .3s ease;
+}
+.acc__p.is-on .acc__n { opacity: 0; }
+/* 펼친 칸: 노란 막대 + 고민 문장 */
+.acc__cap { position: absolute; left: 24px; right: 24px; bottom: 24px; display: flex; gap: 14px; align-items: stretch; pointer-events: none; }
+.acc__bar { flex: none; width: 4px; border-radius: 4px; background: var(--yellow); opacity: 0; transform: translateX(-14px); transition: opacity .35s ease, transform .5s cubic-bezier(.215, .61, .355, 1); }
+.acc__txt { opacity: 0; transform: translateX(-14px); transition: opacity .35s ease, transform .5s cubic-bezier(.215, .61, .355, 1); text-shadow: 0 2px 14px rgba(0, 0, 0, .35); }
+.acc__k { display: block; font-size: 14px; font-weight: 700; color: var(--yellow); margin-bottom: 4px; }
+.acc__q { display: block; font-size: clamp(19px, 1.9vw, 25px); font-weight: 800; letter-spacing: -.03em; line-height: 1.38; max-width: 18em; }
+.acc__p.is-on .acc__bar { opacity: 1; transform: none; transition-delay: .18s; }
+.acc__p.is-on .acc__txt { opacity: 1; transform: none; transition-delay: .24s; }
+.acc__short { display: none; }
+
+/* 좁은 화면: 세로로 쌓고, 접힌 칸에도 짧은 제목을 보여 준다 */
+@media (max-width: 640px) {
+  .lp-open { padding-top: 84px; }
+  .acc { flex-direction: column; height: 520px; perspective: none; }
+  .acc__p { transform: none !important; border-radius: 14px; }
+  .acc__media { left: 0; top: 50%; width: 100%; height: var(--media); transform: translateY(calc(-50% + var(--drift, 0px))); }
+  .acc__n { left: 16px; top: 50%; bottom: auto; transform: translateY(-50%); width: 28px; height: 28px; font-size: 13.5px; }
+  .acc__short { display: block; position: absolute; left: 56px; right: 16px; top: 50%; transform: translateY(-50%); font-size: 15.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: opacity .25s ease; }
+  .acc__p.is-on .acc__short { opacity: 0; }
+  .acc__cap { left: 18px; right: 18px; bottom: 18px; }
+  .acc__shade { background: linear-gradient(180deg, rgba(58, 47, 38, .1) 30%, rgba(43, 34, 27, .82) 100%), rgba(58, 47, 38, var(--dim, .5)); }
+}
+
+/* ---------------------------------------------------------------- ② 반전 */
+.lp-turn { padding: clamp(80px, 12vw, 140px) 0; background: var(--paper); border-top: 1px solid var(--line); }
+.lp-turn__t { font-size: clamp(30px, 4.6vw, 52px); font-weight: 800; letter-spacing: -.045em; line-height: 1.25; margin-bottom: 18px; }
+.lp-turn__d { font-size: 18px; color: var(--ink-2); max-width: 34em; }
+
+/* 다섯 고민이 한 줄의 계단이 된다 */
+.path { margin: clamp(40px, 6vw, 64px) 0 0; position: relative; }
+.path svg { width: 100%; height: auto; overflow: visible; }
+.path__line { fill: none; stroke: var(--red); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.path__dot { fill: var(--paper); stroke: var(--red); stroke-width: 3; }
+.path__dot--end { fill: var(--red); }
+.path__labels { display: grid; grid-template-columns: repeat(5, 1fr); margin-top: 14px; }
+.path__labels li { font-size: 15px; color: var(--ink-2); line-height: 1.45; }
+.path__labels b { display: block; font-size: 19px; color: var(--cocoa); letter-spacing: -.02em; }
+.path__labels li:last-child b { color: var(--red); }
+@media (max-width: 640px) {
+  .path__labels li { font-size: 12.5px; }
+  .path__labels b { font-size: 15px; }
+}
+.js-motion .path:not(.is-in) .path__line { stroke-dashoffset: 1; }
+.js-motion .path .path__line { stroke-dasharray: 1; transition: stroke-dashoffset 1.4s cubic-bezier(.45, .05, .25, 1); }
+.js-motion .path:not(.is-in) .path__dot { transform: scale(0); }
+.js-motion .path .path__dot { transform-box: fill-box; transform-origin: center; transition: transform .4s cubic-bezier(.3, 1.8, .5, 1); transition-delay: calc(.2s + var(--i) * .25s); }
+
+/* ---------------------------------------------------------------- ③ 들어가기 */
+.lp-go { padding: clamp(72px, 10vw, 120px) 0; text-align: center; }
+.lp-go__char { width: 66px; height: auto; margin: 0 auto 18px; }
+.lp-go__t { font-size: clamp(28px, 4vw, 42px); font-weight: 800; letter-spacing: -.04em; line-height: 1.3; margin-bottom: 14px; }
+.lp-go__d { font-size: 17px; color: var(--ink-2); margin-bottom: 30px; }
+.lp-go__acts { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+.lp-go__acts .btn { padding: 17px 32px; font-size: 16.5px; }
+.lp-go__more { margin-top: 22px; font-size: 15px; color: var(--ink-3); }
+@media (max-width: 520px) { .lp-go__acts .btn { flex: 1 1 100%; } }
+
+.lp-foot { border-top: 1px solid var(--line); background: var(--sand); }
+.lp-foot__in { max-width: var(--max); margin: 0 auto; padding: 28px var(--gut); font-size: 13.5px; color: var(--ink-3); line-height: 1.8; }
+.lp-foot__in a { color: var(--ink-2); text-underline-offset: 3px; }
+.lp-foot__links { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 8px; }
+
+/* ---------------------------------------------------------------- 첫 장면 (한 번) */
+@media (prefers-reduced-motion: no-preference) {
+  .js-motion .lp-lead { animation: fadeUp .7s ease both; }
+  .js-motion .lp-t .ln > span { animation: lnUp .9s cubic-bezier(.2, .7, .2, 1) both; animation-delay: .1s; }
+  .js-motion .lp-t .ln:nth-child(2) > span { animation-delay: .22s; }
+  .js-motion .acc__p { animation: accIn .8s cubic-bezier(.215, .61, .355, 1) backwards; animation-delay: calc(.45s + var(--i) * .08s); }
+  .js-motion .lp-hint { animation: fadeUp .7s ease 1.2s both; }
+}
+@keyframes accIn { from { opacity: 0; transform: translateY(40px) rotateY(var(--tilt, 0deg)); } to { opacity: 1; } }
+
+/* 깊이감: 고민 칸 그림자, 반전 계단의 구슬 점과 선 그림자 */
+.acc__p { box-shadow: 0 2px 4px rgba(58, 47, 38, .08), 0 22px 40px -18px rgba(58, 47, 38, .45); }
+.path__dot { fill: url(#pBall); stroke: none; }
+.path__dot--end { r: 12px; }
+.path__shadow { fill: none; stroke: rgba(58, 47, 38, .25); stroke-width: 8; stroke-linecap: round; stroke-linejoin: round; }
+.js-motion .path:not(.is-in) .path__shadow { stroke-dashoffset: 1; }
+.js-motion .path .path__shadow { stroke-dasharray: 1; transition: stroke-dashoffset 1.4s cubic-bezier(.45, .05, .25, 1); }
+
+/* ================================================================ 랜딩이 메인 위에 붙은 뒤 (intro.js 와 짝)
+   html.intro-on   — 랜딩이 펼쳐져 있음. 아래 메인 히어로의 첫 장면은 들어설 때까지 멈춰 둔다
+   html.intro-skip — 이미 들어갔음(이번 창) 또는 #주소로 바로 옴. 랜딩을 그리지 않는다 */
+.intro { position: relative; }
+html.intro-skip .intro { display: none; }
+html.intro-on .hero *, html.intro-on .hero *::before, html.intro-on .hero *::after { animation-play-state: paused !important; }
+/* '들어가기'를 누르면 랜딩이 위로 접히며 날아가고, 그 밑에 이미 메인이 와 있다 */
+.intro.is-folding {
+  position: fixed; left: 0; right: 0; z-index: 300; background: var(--cream);
+  transform-origin: 50% 0;
+  box-shadow: 0 30px 60px -20px rgba(58, 47, 38, .45);
+  animation: introFold .95s cubic-bezier(.65, 0, .3, 1) forwards;
+  pointer-events: none;
+}
+@keyframes introFold {
+  0%   { transform: perspective(1400px) rotateX(0deg) translateY(0); opacity: 1; }
+  35%  { transform: perspective(1400px) rotateX(10deg) translateY(-4vh) scale(.98); opacity: 1; }
+  100% { transform: perspective(1400px) rotateX(24deg) translateY(-115vh) scale(.94); opacity: 0; }
+}
+/* 아래로 내려가라는 작은 화살표 (문구 없이) */
+a.lp-hint {
+  align-self: center; margin-top: 18px; width: 44px; height: 44px; border-radius: 50%;
+  display: grid; place-items: center; color: var(--ink-3); text-decoration: none;
+  border: 1px solid var(--line-2); background: rgba(251, 247, 240, .6);
+}
+a.lp-hint svg { width: 20px; height: 20px; }
+@media (prefers-reduced-motion: no-preference) {
+  .js-motion a.lp-hint { animation: fadeUp .7s ease 1.2s both, hintBob 1.8s ease-in-out 2s infinite; }
+}
+@keyframes hintBob { 50% { transform: translateY(5px); } }

@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<script src="assets/lr/gate.js"></script>
+<script src="assets/lr/site-gate.js"></script>
+<title>누구나 부자 되는 공식 — 똑재TV</title>
+<meta name="description" content="누구나 부자 되는 공식 — 5주 과정. ETF 구조와 절세계좌를 정리하고 포트폴리오까지 완성합니다. 종목은 추천하지 않습니다.">
+<meta name="theme-color" content="#F5EFE6">
+<script>if(!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches))document.documentElement.classList.add('js-motion');</script>
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="assets/img/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="assets/img/favicon-180.png">
+
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/tj.css">
+<link rel="stylesheet" href="assets/css/v3-sub.css">
+<link rel="stylesheet" href="assets/css/depth.css">
+<link rel="stylesheet" href="assets/css/fx.css">
+<link rel="stylesheet" href="assets/css/ace.css">
+<link rel="stylesheet" href="assets/css/shell.css">
+<link rel="stylesheet" href="assets/css/shop.css">
+</head>
+<body class="shop-page">
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4 4 10-10"/></symbol>
+</svg>
+
+<a class="skip" href="#main">본문으로 건너뛰기</a>
+
+<header class="bar">
+  <div class="bar__in">
+    <a class="bar__logo" href="index.html" aria-label="똑재TV 처음 화면">
+      <img src="assets/img/logo.png" alt="똑재TV" width="271" height="113">
+    </a>
+    <!-- 파는 것 네 가지는 늘 로고 바로 옆에. 좁은 화면에서는 상단바 아래 한 줄로 내려온다 -->
+    <nav class="bar__prim" aria-label="상품">
+      <a class="bar__p" href="lectures-shop.html" aria-current="page">강의</a>
+      <a class="bar__p" href="ebooks-shop.html">전자책</a>
+      <a class="bar__p" href="usstock-shop.html">미국주식</a>
+      <a class="bar__p" href="https://ttokjaetv.github.io/" target="_blank" rel="noopener">투자 Tool</a>
+    </nav>
+    <nav class="bar__nav" aria-label="주요 메뉴">
+      <a class="bar__room" href="classroom.html"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="12" rx="2.5"/><path d="M10.5 9v4l3.5-2z" fill="currentColor" stroke="none"/><path d="M8 20h8"/></svg><span>내 강의실</span></a>
+      <a class="hide-sm" href="home.html#topics">주제별 영상</a>
+      <a class="sns sns--yt" href="https://www.youtube.com/@ttok_jae" target="_blank" rel="noopener" aria-label="똑재TV 유튜브"><svg class="sns__ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="1.5" y="5" width="21" height="14" rx="4.5" fill="#fff"/><path d="M10 9v6l5.2-3z" fill="#E62117"/></svg><span>유튜브</span></a>
+      <a class="sns sns--nv" href="https://cafe.naver.com/ttokjae" target="_blank" rel="noopener" aria-label="네이버 카페 가입"><svg class="sns__ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" fill="#fff"/><path d="M8 7h3l2.6 4V7H16v10h-3l-2.6-4v4H8z" fill="#03C75A"/></svg><span>카페 가입</span></a>
+    </nav>
+  </div>
+</header>
+<p class="prelaunch">유사투자자문업 신고 후 문을 엽니다</p>
+
+<main id="main">
+
+  <nav class="crumb" aria-label="현재 위치">
+    <ol role="list">
+      <li><a href="index.html">홈</a></li>
+      <li><span aria-current="page">누구나 부자 되는 공식</span></li>
+    </ol>
+  </nav>
+
+  <!-- ================================================================ 상품 블록
+       쇼핑몰 상세처럼 사진 · 이름 · 가격 · 구매 버튼이 첫 화면에서 끝난다.
+       빨간 점선(.todo)은 확정 전 값. 값이 정해지면 .todo 만 지우고 채운다.
+       가격을 바꿀 때는 이 블록의 가격 · 「선택한 상품」 · 「총 결제금액」 · 아래 바로 구매 바(.bbar) 네 곳을 함께 고친다. -->
+  <section class="shop" aria-labelledby="lec-t">
+    <div class="shop__in">
+
+      <!-- 사진 -->
+      <div class="shop__gal gal">
+        <div class="gal__stage" data-tilt>
+          <div class="gal__slide" id="lg1" role="tabpanel" aria-label="강의 표지">
+            <!-- 강의 표지 — 4단 계단(1–2주 ETF → 3주 세금·계좌 → 4주 포트폴리오 → 5주 현금흐름)이 차례로 솟고,
+                 우상향 선이 그려진 뒤 캐릭터가 계단을 한 칸씩 올라 꼭대기에 선다(유튜브 인트로와 같은 언어).
+                 움직임은 .is-play 가 붙어 있을 때만. 움직임 줄이기를 켠 사람에게는 완성된 장면이 보인다. -->
+            <div class="cov is-play" data-cov>
+              <span class="cov__glow" aria-hidden="true"></span>
+              <span class="cov__dust" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+              <div class="cov__head">
+                <p class="cov__kind"><span>ONLINE CLASS</span><span class="cov__dot"></span><span>5 WEEKS</span></p>
+                <p class="cov__t"><span class="ln"><span>누구나</span></span><span class="ln"><span><em>부자 되는<svg class="cov__swash" viewBox="0 0 200 16" preserveAspectRatio="none" aria-hidden="true"><path d="M3 11 C 50 4, 120 3, 197 8"/></svg></em> 공식</span></span></p>
+                <p class="cov__sub"><span class="key key--a"></span>개념 3주 <span class="key key--b"></span>실전 2주</p>
+              </div>
+              <svg class="cov__scene" viewBox="0 0 600 330" aria-label="1–2주 ETF, 3주 세금·계좌, 4주 포트폴리오, 5주 현금흐름 순서로 올라가는 계단" role="img">
+                <defs>
+                  <linearGradient id="cvLine" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#F8E04A" stop-opacity=".25"/><stop offset="1" stop-color="#F8E04A"/></linearGradient>
+                  <linearGradient id="cvFloor" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".35"/></linearGradient>
+                </defs>
+                <rect x="0" y="300" width="600" height="30" fill="url(#cvFloor)"/>
+                <g class="cv-grid" stroke="#FBF7F0" stroke-opacity=".06">
+                  <path d="M0 300 H600"/><path d="M60 300 L20 330"/><path d="M160 300 L140 330"/><path d="M260 300 L255 330"/><path d="M360 300 L370 330"/><path d="M460 300 L485 330"/><path d="M560 300 L600 326"/>
+                </g>
+                <!-- 계단: 앞면 · 윗면 · 옆면. 개념은 브라운, 실전은 빨강 -->
+                <g class="cv-step" style="--d:0">
+                  <path class="s-side" d="M190 236 l18 -12 v76 l-18 0 z" fill="#2B221B"/>
+                  <path class="s-top" d="M40 236 l18 -12 h150 l-18 12 z" fill="#6A584A"/>
+                  <rect class="s-front" x="40" y="236" width="150" height="64" fill="#4A3C30"/>
+                  <text x="56" y="260" class="t-wk">1–2주</text><text x="56" y="284" class="t-tp">ETF</text>
+                </g>
+                <g class="cv-step" style="--d:1">
+                  <path class="s-side" d="M300 188 l18 -12 v124 l-18 0 z" fill="#2B221B"/>
+                  <path class="s-top" d="M190 188 l18 -12 h110 l-18 12 z" fill="#6A584A"/>
+                  <rect class="s-front" x="190" y="188" width="110" height="112" fill="#4A3C30"/>
+                  <text x="204" y="212" class="t-wk">3주</text><text x="204" y="236" class="t-tp">세금·계좌</text>
+                </g>
+                <g class="cv-step" style="--d:2">
+                  <path class="s-side" d="M410 140 l18 -12 v172 l-18 0 z" fill="#5E0E10"/>
+                  <path class="s-top" d="M300 140 l18 -12 h110 l-18 12 z" fill="#C0392B"/>
+                  <rect class="s-front" x="300" y="140" width="110" height="160" fill="#96181A"/>
+                  <text x="314" y="164" class="t-wk">4주</text><text x="314" y="188" class="t-tp">포트폴리오</text>
+                </g>
+                <g class="cv-step" style="--d:3">
+                  <path class="s-side" d="M520 92 l18 -12 v220 l-18 0 z" fill="#5E0E10"/>
+                  <path class="s-top" d="M410 92 l18 -12 h110 l-18 12 z" fill="#C0392B"/>
+                  <rect class="s-front" x="410" y="92" width="110" height="208" fill="#96181A"/>
+                  <text x="424" y="116" class="t-wk">5주</text><text x="424" y="140" class="t-tp">현금흐름</text>
+                </g>
+                <!-- 우상향 선 + 끝점 -->
+                <path class="cv-line" d="M24 262 C 90 250, 130 222, 196 200 S 300 150, 360 118 S 470 64, 566 30" fill="none" stroke="url(#cvLine)" stroke-width="4" stroke-linecap="round" pathLength="1"/>
+                <g class="cv-end" transform="translate(566 30)">
+                  <circle class="cv-ring" r="9" fill="none" stroke="#F8E04A" stroke-width="2"/>
+                  <circle r="6.5" fill="#F8E04A"/><circle r="2.5" cx="-1.6" cy="-1.6" fill="#fff" fill-opacity=".8"/>
+                </g>
+                <!-- 캐릭터: 계단을 한 칸씩 올라 꼭대기에 선다 -->
+                <g class="cv-char"><image class="cv-bob" href="assets/img/character.png" width="44" height="66"/></g>
+              </svg>
+            </div>
+          </div>
+          <div class="gal__slide" id="lg2" role="tabpanel" aria-label="커리큘럼 한눈에">
+            <div class="ovw">
+              <p class="ovw__h">CURRICULUM</p>
+              <p class="ovw__t">앞 3주는 순서를 익히고,<br>뒤 2주는 내 포트폴리오를 짭니다</p>
+              <div class="ovw__list">
+                <div class="ovw__row"><span class="ovw__n">1–2주차</span><span class="ovw__k">ETF</span><span class="ovw__p">개념</span></div>
+                <div class="ovw__row"><span class="ovw__n">3주차</span><span class="ovw__k">세금과 절세계좌</span><span class="ovw__p">개념</span></div>
+                <div class="ovw__row"><span class="ovw__n">4주차</span><span class="ovw__k">자산배분과 포트폴리오</span><span class="ovw__p ovw__p--x">실전</span></div>
+                <div class="ovw__row"><span class="ovw__n">5주차</span><span class="ovw__k">현금흐름과 리밸런싱</span><span class="ovw__p ovw__p--x">실전</span></div>
+              </div>
+            </div>
+          </div>
+          <!-- 강의실 화면 캡처가 생기면 아래 .gal__todo 를 <img src="..." alt="강의실 화면"> 으로 바꾼다 -->
+          <div class="gal__slide" id="lg3" role="tabpanel" aria-label="강의실 화면">
+            <div class="gal__todo"><p>강의실 화면 캡처 자리<small>강의 영상 연결 후 실제 수강 화면(진도율·이어보기)을 넣습니다</small></p></div>
+          </div>
+        </div>
+        <div class="gal__thumbs" role="tablist" aria-label="상품 사진">
+          <button class="gal__th" type="button" role="tab" aria-controls="lg1" style="background:linear-gradient(150deg,#3A2F26,#2B221B);color:#F8E04A;font-weight:900;font-size:13px;line-height:1.3">누구나<br>부자 되는 공식</button>
+          <button class="gal__th" type="button" role="tab" aria-controls="lg2" style="background:#FBF7F0;color:#3A2F26;font-weight:900;font-size:13px;line-height:1.35">5주<br>커리큘럼</button>
+          <button class="gal__th gal__th--todo" type="button" role="tab" aria-controls="lg3">강의실 화면<br>캡처 자리</button>
+        </div>
+      </div>
+
+      <!-- 상품 정보 -->
+      <div class="shop__info">
+        <div class="info__badges">
+          <span class="badge badge--hot">모집 예정</span>
+          <span class="badge">온라인 강의</span>
+          <span class="badge badge--dark"><span class="todo">0기</span></span>
+        </div>
+        <h1 class="info__t" id="lec-t">누구나 부자 되는 공식</h1>
+        <p class="info__lead">새 ETF가 나올 때마다 물어보지 않도록, <b>상품을 뜯어보는 순서</b>를 5주 동안 손에 붙입니다. 3주는 개념, 2주는 내 포트폴리오를 짜는 실전입니다.</p>
+
+        <div class="price">
+          <div class="price__row">
+            <span class="price__rate"><span class="todo">00%</span></span>
+            <span class="price__now"><span class="todo">000,000</span><small>원</small></span>
+            <span class="price__was"><span class="todo">000,000원</span></span>
+          </div>
+          <p class="price__note">수강료·할인은 모집 공지와 함께 확정됩니다.</p>
+        </div>
+
+        <dl class="spec">
+          <div><dt>구성</dt><dd>5주 · 개념 3주 + 실전 2주</dd></div>
+          <div><dt>신청 기간</dt><dd><span class="todo">00.00 ~ 00.00</span></dd></div>
+          <div><dt>진행 방식</dt><dd><span class="todo">확정 후 기재</span></dd></div>
+          <div><dt>수강 기간</dt><dd><span class="todo">확정 후 기재</span></dd></div>
+          <div><dt>제공 자료</dt><dd><span class="todo">구성 확정 후 기재</span></dd></div>
+        </dl>
+
+        <div class="pick spot glowbd" aria-label="선택한 상품">
+          <p class="pick__h">선택한 상품</p>
+          <div class="pick__row">
+            <span class="pick__n">누구나 부자 되는 공식 · <span class="todo">0기</span></span>
+            <span class="pick__v"><span class="todo">000,000원</span></span>
+          </div>
+          <div class="total">
+            <span class="total__l">총 결제금액</span>
+            <span class="total__v"><span class="todo">000,000원</span></span>
+          </div>
+        </div>
+
+        <div class="buy">
+          <a class="btn btn--red" href="#apply" data-todo="apply" aria-disabled="true" data-magnet>수강 신청하기</a>
+          <a class="btn btn--line" href="https://cafe.naver.com/ttokjae" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" fill="#03C75A"/><path d="M8 7h3l2.6 4V7H16v10h-3l-2.6-4v4H8z" fill="#fff"/></svg>모집 소식 받기</a>
+        </div>
+        <p class="buy__note">신청은 유사투자자문업 신고 후 정식 오픈과 함께 열립니다. 모집 공지는 평생 ETF 투자 카페에 먼저 올라옵니다.</p>
+        <p class="buy__room">이미 수강 중이신가요? <a class="tlink" href="classroom.html">내 강의실로 가기 →</a></p>
+
+        <ul role="list" class="sure">
+          <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>종목 추천 · 매매 신호 · 1:1 투자상담은 하지 않습니다. 스스로 고르는 기준을 만드는 강의입니다.</span></li>
+          <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>세법·제도 내용은 촬영 시점 기준이며 이후 개정될 수 있습니다.</span></li>
+          <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>환불 기준은 결제 전 <a href="legal/refund.html">환불 규정</a>에서 확인하실 수 있습니다.</span></li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================================================================ 탭 — 아래 설명으로 바로 간다 -->
+  <nav class="tabs" aria-label="상품 설명">
+    <div class="tabs__in">
+      <a class="tab" href="#detail">상세정보</a>
+      <a class="tab" href="#curri">커리큘럼</a>
+      <a class="tab" href="#review">수강 후기</a>
+      <a class="tab" href="#faq">자주 묻는 질문</a>
+      <a class="tab" href="#notice">유의사항</a>
+    </div>
+  </nav>
+
+  <div class="desc">
+    <div class="desc__in">
+
+      <section class="dsec" id="detail" aria-labelledby="d1">
+        <div class="sec__head">
+          <span class="dsec__k">ABOUT</span>
+          <h2 class="dsec__t" id="d1">이런 강의입니다</h2>
+        </div>
+        <p class="prod__d">
+          한 번 듣고 끝나는 요령이 아니라, 상품이 바뀌어도 똑같이 적용할 수 있는 판단 기준을 만드는 강의입니다.
+          ETF가 어떻게 만들어지고 비용이 어디서 빠지는지, 세금과 건강보험료는 어느 지점에서 갈리는지를 먼저 정리합니다.
+        </p>
+        <p class="prod__d">
+          그다음 자산배분의 원리로 나에게 맞는 포트폴리오를 직접 짜고, 현금흐름을 세우고 리밸런싱하는 방법까지
+          손에 익힙니다.
+        </p>
+        <p class="pull">종목을 찍어 주는 강의가 아니라,<br><em>상품이 바뀌어도 혼자 고를 수 있는 기준</em>을 만드는 강의입니다.</p>
+
+        <h3 class="sub-h">5주가 끝나면 남는 것</h3>
+        <ul role="list" class="keeps">
+          <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>내 나이 · 성향 · 금액에 맞춰 <b>직접 짠 포트폴리오 한 장</b></span></li>
+          <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>연금저축 · IRP · ISA를 <b>어떤 순서로 채울지 정한 나만의 순서</b></span></li>
+          <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>하락장에 흔들릴 때 꺼내 보는 <b>리밸런싱 규칙</b></span></li>
+          <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>상품이 바뀌어도 그대로 쓰는 <b>ETF 판단 기준과 체크리스트</b></span></li>
+        </ul>
+
+        <h3 class="sub-h">이런 분께 맞습니다</h3>
+        <ul role="list" class="fits">
+          <li>ETF를 갖고는 있지만 왜 그 상품인지 설명하기 어려운 분</li>
+          <li>연금저축·IRP·ISA를 어떤 순서로 채울지 정리하고 싶은 분</li>
+          <li>은퇴 뒤 현금흐름을 미리 설계하고 싶은 분</li>
+          <li>추천에 기대지 않고 스스로 고르는 기준을 갖고 싶은 분</li>
+        </ul>
+      </section>
+
+      <section class="dsec" id="curri" aria-labelledby="d2">
+        <div class="sec__head">
+          <span class="dsec__k">CURRICULUM</span>
+          <h2 class="dsec__t" id="d2">주차별 커리큘럼</h2>
+        </div>
+        <ol role="list" class="weeks" data-stack>
+          <li class="week">
+            <span class="week__n">1–2주차</span>
+            <span class="week__phase">개념</span>
+            <h3 class="week__t">ETF</h3>
+            <p class="week__d">ETF가 만들어지는 구조와 기본 개념, 수수료와 세금, 대표지수·채권·금리·배당·커버드콜·금·리츠로 나뉘는 분류, 고를 때 확인할 체크리스트와 조회 사이트까지.</p>
+          </li>
+          <li class="week">
+            <span class="week__n">3주차</span>
+            <span class="week__phase">개념</span>
+            <h3 class="week__t">세금과 절세계좌</h3>
+            <p class="week__d">금융소득종합과세와 건강보험료가 어디서 갈리는지, 3층 연금의 구조, 연금저축·IRP·ISA를 어떤 순서로 채우는지.</p>
+          </li>
+          <li class="week">
+            <span class="week__n">4주차</span>
+            <span class="week__phase">실전</span>
+            <h3 class="week__t">자산배분과 포트폴리오</h3>
+            <p class="week__d">자산배분 기초와 심화, 대표 포트폴리오와 한국판 포트폴리오, 연령대·투자성향·투자금액·목표 현금흐름별 구성, 그리고 나만의 포트폴리오 완성.</p>
+          </li>
+          <li class="week">
+            <span class="week__n">5주차</span>
+            <span class="week__phase">실전</span>
+            <h3 class="week__t">현금흐름과 리밸런싱</h3>
+            <p class="week__d">현금흐름 시스템을 세우는 법, 실전 리밸런싱 방법, 하락장 대응, 그리고 오래 끌고 가는 투자 마인드와 운영 방법.</p>
+          </li>
+        </ol>
+        <p class="aside-note">커리큘럼은 교안 개정에 따라 일부 조정될 수 있습니다.</p>
+
+        <!-- 제공 자료 — [종류] 이름 + 설명 한두 줄. 줄 수는 임시다 -->
+        <h3 class="sub-h">제공 자료</h3>
+        <ul role="list" class="packs">
+          <li class="pack">
+            <span class="pack__tag"><span class="todo">종류</span></span>
+            <h4 class="pack__t"><span class="todo">자료 이름</span></h4>
+            <p class="pack__d"><span class="todo">무엇이고, 언제 어떻게 받는지 한두 줄</span></p>
+          </li>
+          <li class="pack">
+            <span class="pack__tag"><span class="todo">종류</span></span>
+            <h4 class="pack__t"><span class="todo">자료 이름</span></h4>
+            <p class="pack__d"><span class="todo">무엇이고, 언제 어떻게 받는지 한두 줄</span></p>
+          </li>
+        </ul>
+      </section>
+
+      <!-- 후기 — 실제 수강생 후기만 올린다. 예시·가짜 후기로 채우지 않는다 -->
+      <section class="dsec" id="review" aria-labelledby="d3">
+        <div class="sec__head">
+          <span class="dsec__k">REVIEW</span>
+          <h2 class="dsec__t" id="d3">수강 후기</h2>
+        </div>
+        <div class="rv-empty spot glowbd">
+          <p class="rv-empty__t">첫 기수가 끝나면 이 자리에 실제 후기가 올라옵니다</p>
+          <p class="rv-empty__d">예시로 지어낸 후기는 올리지 않습니다.<br>강의가 궁금하시면 카페에 먼저 질문을 남겨 주세요.</p>
+          <a class="btn btn--line" href="https://cafe.naver.com/ttokjae" target="_blank" rel="noopener">카페에 질문하기</a>
+        </div>
+      </section>
+
+      <!-- 자주 묻는 질문 — 답은 사이트에 이미 적힌 사실만 채웠고 나머지는 미정이다 -->
+      <section class="dsec" id="faq" aria-labelledby="d4">
+        <div class="sec__head">
+          <span class="dsec__k">FAQ</span>
+          <h2 class="dsec__t" id="d4">자주 묻는 질문</h2>
+        </div>
+        <ul role="list" class="faq">
+          <li class="qa">
+            <h3 class="qa__q">ETF를 한 번도 사본 적이 없는데 따라갈 수 있나요?</h3>
+            <p class="qa__a">1–2주차에 ETF가 만들어지는 구조와 기본 개념부터 시작합니다. <span class="todo">필요한 사전 지식 — 확정 후 기재</span></p>
+          </li>
+          <li class="qa">
+            <h3 class="qa__q">직장을 다니는데, 일주일에 시간을 얼마나 내야 하나요?</h3>
+            <p class="qa__a"><span class="todo">주당 학습 시간과 진행 방식 — 확정 후 기재</span></p>
+          </li>
+          <li class="qa">
+            <h3 class="qa__q">종목이나 사고팔 시점을 알려주나요?</h3>
+            <p class="qa__a">아니요. 특정 종목의 매매를 권유하지 않으며, 1:1 개별 투자상담이나 매매 신호도 제공하지 않습니다. 상품이 바뀌어도 스스로 고를 수 있는 판단 기준을 만드는 강의입니다.</p>
+          </li>
+          <li class="qa">
+            <h3 class="qa__q">신청하면 개강 전까지 무엇을 하나요?</h3>
+            <p class="qa__a"><span class="todo">신청 직후 받는 것과 개강 후 받는 것 — 확정 후 기재</span></p>
+          </li>
+          <li class="qa">
+            <h3 class="qa__q">수강 기간이 끝난 뒤에도 다시 볼 수 있나요?</h3>
+            <p class="qa__a"><span class="todo">수강 기간과 다시 보기 — 확정 후 기재</span></p>
+          </li>
+          <li class="qa">
+            <h3 class="qa__q">듣다가 생긴 질문은 어디에 하나요?</h3>
+            <p class="qa__a"><span class="todo">질문 창구 — 확정 후 기재</span> 다만 개별 종목이나 개인 계좌에 대한 1:1 투자상담은 하지 않습니다.</p>
+          </li>
+          <li class="qa">
+            <h3 class="qa__q">전자책을 먼저 읽어야 하나요?</h3>
+            <p class="qa__a"><span class="todo">강의와 전자책의 관계 — 확정 후 기재</span></p>
+          </li>
+          <li class="qa">
+            <h3 class="qa__q">환불되나요?</h3>
+            <p class="qa__a"><span class="todo">환불 조건 요약 — 확정 후 기재</span> 자세한 기준은 <a href="legal/refund.html">환불 규정</a>에서 확인하실 수 있습니다.</p>
+          </li>
+        </ul>
+      </section>
+
+      <section class="dsec" id="notice" aria-labelledby="d5">
+        <div class="sec__head">
+          <span class="dsec__k">NOTICE</span>
+          <h2 class="dsec__t" id="d5">수강 전 꼭 확인해 주세요</h2>
+        </div>
+        <ul role="list" class="caution__list caution__list--one">
+          <li>본 강의는 투자 교육 자료이며, 특정 종목의 매매를 권유하지 않습니다.</li>
+          <li>1:1 개별 투자상담이나 매매 신호는 제공하지 않습니다.</li>
+          <li>수강으로 인한 투자 성과를 보장하지 않으며, 투자 판단의 책임은 본인에게 있습니다.</li>
+          <li>강의에 사용되는 세법·제도 내용은 촬영 시점 기준이며 이후 개정될 수 있습니다.</li>
+          <li>디지털 콘텐츠 특성상 청약철회가 제한될 수 있습니다. 자세한 내용은 <a href="legal/refund.html">환불 규정</a>을 확인해 주세요.</li>
+        </ul>
+      </section>
+
+      <a class="xsell spot glowbd" href="ebooks-shop.html">
+        <span class="xsell__v"><img src="assets/img/ebook-cover.png" alt="" width="468" height="723"></span>
+        <span>
+          <span class="xsell__k">함께 보면 좋은 전자책</span>
+          <span class="xsell__t" style="display:block">평생 돈 걱정 없는 노후자금 시스템 만들기 노하우</span>
+          <span class="xsell__d" style="display:block">강의가 이해하는 도구라면, 전자책은 필요할 때 펼쳐보는 색인입니다. <span class="xsell__go">보러 가기 →</span></span>
+        </span>
+      </a>
+
+    </div>
+  </div>
+
+</main>
+
+<footer class="foot">
+  <div class="foot__in">
+    <div class="foot__grid">
+      <div>
+        <a class="foot__logo" href="index.html" aria-label="똑재TV 홈">
+          <img src="assets/img/logo.png" alt="똑재TV" width="271" height="113">
+        </a>
+        <p class="foot__about">
+          ETF의 구조와 비용, 노후자금과 절세계좌를 원리부터 정리합니다.
+          종목 추천이 아니라 판단 기준을 다룹니다.
+        </p>
+      </div>
+      <div>
+        <p class="foot__h">고객센터</p>
+        <ul role="list" class="foot__list">
+          <li><b>이메일</b> <span class="todo" data-biz="email">000@000.com</span></li>
+          <li><b>대표번호</b> <span class="todo" data-biz="tel">00-0000-0000</span></li>
+          <li><b>운영시간</b> <span class="todo">평일 00:00 ~ 00:00</span></li>
+        </ul>
+      </div>
+      <div>
+        <p class="foot__h">둘러보기</p>
+        <ul role="list" class="foot__list">
+          <li><a href="lectures-shop.html">강의</a></li>
+          <li><a href="ebooks-shop.html">전자책</a></li>
+          <li><a href="usstock-shop.html">미국주식 기초반</a></li>
+          <li><a href="https://ttokjaetv.github.io/" target="_blank" rel="noopener">투자 Tool 멤버십</a></li>
+          <li><a href="classroom.html">내 강의실</a></li>
+          <li><a href="https://www.youtube.com/@ttok_jae" target="_blank" rel="noopener">유튜브 채널</a></li>
+          <li><a href="https://cafe.naver.com/ttokjae" target="_blank" rel="noopener">평생 ETF 투자 카페</a></li>
+          <li><a href="legal/terms.html">이용약관</a></li>
+          <li><a href="legal/privacy.html"><b>개인정보처리방침</b></a></li>
+          <li><a href="legal/refund.html">환불 규정</a></li>
+          <li><a href="legal/disclaimer.html">투자 유의사항</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- @business-info : tools/apply_business_info.py 로 일괄 교체 -->
+    <div class="biz">
+      <b>상호</b> <span class="todo" data-biz="company">(주)000</span>
+      <span class="biz__sep">|</span> <b>대표자</b> <span class="todo" data-biz="ceo">000</span>
+      <span class="biz__sep">|</span> <b>사업자등록번호</b> <span class="todo" data-biz="bizno">000-00-00000</span><br>
+      <b>통신판매업신고번호</b> <span class="todo" data-biz="ecno">제0000-지역-0000호</span>
+      <span class="biz__sep">|</span> <b>유사투자자문업 신고번호</b> <span class="todo" data-biz="advno">제0000-00호</span>
+      <span class="biz__sep">|</span> <b>원격평생교육원 신고번호</b> <span class="todo" data-biz="eduno">제0000-00호</span><br>
+      <b>주소</b> <span class="todo" data-biz="addr">서울특별시 ...</span>
+      <span class="biz__sep">|</span> <b>개인정보보호책임자</b> <span class="todo" data-biz="privacy-officer">000</span>
+    </div>
+
+    <p class="foot__legal">
+      <b>똑재TV는 금융투자업자가 아닌 유사투자자문업자로, 개별적인 투자 상담과 자금 운용이 불가합니다.</b><br>
+      본 사이트에서 제공되는 모든 정보는 투자 판단의 참고자료이며, 특정 금융투자상품의 매매를 권유하지 않습니다.
+      원금 손실이 발생할 수 있고 과거 수익률이 미래 수익을 보장하지 않으며, 그 손실은 투자자에게 귀속됩니다.
+    </p>
+    <p class="foot__copy">&copy; <span id="yr">2026</span> 똑재TV. All rights reserved.</p>
+  </div>
+</footer>
+
+
+<!-- 바로 구매 바 — 위 상품 블록의 구매 버튼이 화면 밖으로 나가면 아래에 떠오른다. 결제가 열리면 href 를 결제 주소로 바꾼다 -->
+<div class="bbar" role="region" aria-label="바로 구매">
+  <span class="bbar__txt"><b>누구나 부자 되는 공식</b><small><span class="todo">000,000원</span> · 모집 예정</small></span>
+  <a class="btn btn--red" href="#apply" data-todo="apply" aria-disabled="true">수강 신청</a>
+</div>
+
+<script src="assets/js/v3.js" defer></script>
+<script src="assets/js/depth.js" defer></script>
+<script src="assets/js/fx.js" defer></script>
+<script src="assets/js/ace.js" defer></script>
+<script src="assets/js/shop.js" defer></script>
+</body>
+</html>

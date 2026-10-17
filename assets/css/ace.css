@@ -1,0 +1,123 @@
+@charset "utf-8";
+/* ==========================================================================
+   똑재TV 3안 — Aceternity UI(ui.aceternity.com)에서 '아이디어만' 가져와 새로 짠 효과들 (ace.js 와 짝)
+   원본 코드는 쓰지 않았다(React·Tailwind·Motion 없이 직접 작성).
+     [floatnav]    스크롤하면 상단바가 떠 있는 알약 모양으로       ← Floating / Resizable Navbar
+     [textgen]     히어로 설명이 단어마다 흐릿하다 또렷해짐        ← Text Generate Effect
+     [movingbd]    주 버튼 테두리를 빛 한 점이 돈다              ← Moving Border
+     [contscroll]  계산기 화면이 누운 상태에서 일어선다           ← Container Scroll Animation
+     [focus]       카드 하나에 마우스를 올리면 나머지가 흐려짐     ← Focus Cards
+     [glowbd]      카드 테두리가 마우스 쪽만 빛남                 ← Glowing Effect
+     [dirhover]    주제 칩이 마우스가 들어온 방향에서 채워짐       ← Direction Aware Hover
+     [timeline]    걸어온 길 — 스크롤을 따라 빛줄기가 내려옴       ← Timeline / Tracing Beam
+     [lamp]        카페·유튜브 띠 제목 위 조명                   ← Lamp Section Header
+   ========================================================================== */
+
+/* [floatnav] */
+@media (min-width: 761px) {
+  .bar { transition: background-color .3s ease, border-color .3s ease, box-shadow .3s ease; }
+  .bar__in { transition: max-width .45s cubic-bezier(.2, .7, .2, 1), height .35s ease, margin .35s ease, padding .35s ease, background-color .3s ease, box-shadow .3s ease, border-radius .45s ease; border: 1px solid transparent; }
+  .bar.is-float { background: transparent !important; border-bottom-color: transparent !important; box-shadow: none !important; backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .bar.is-float .bar__in {
+    max-width: 980px; height: 58px; margin-top: 10px; padding: 0 10px 0 22px; border-radius: 999px;
+    background: rgba(251, 247, 240, .86); border-color: var(--line, #E2D6C3);
+    backdrop-filter: saturate(140%) blur(14px); -webkit-backdrop-filter: saturate(140%) blur(14px);
+    box-shadow: 0 1px 2px rgba(58, 47, 38, .06), 0 16px 34px -14px rgba(58, 47, 38, .28);
+  }
+  .bar.is-float .bar__progress { opacity: 0; }
+}
+
+/* [textgen] */
+.tg-w { display: inline; }
+.js-motion .hero__sub.is-tg { animation: none; }
+.js-motion .is-tg .tg-w { opacity: 0; filter: blur(6px); animation: tgIn .55s ease forwards; animation-delay: calc(.45s + var(--i) * .04s); }
+@keyframes tgIn { to { opacity: 1; filter: blur(0); } }
+
+/* [movingbd] @property 를 지원하는 브라우저에서만 빛이 돈다. 아니면 그냥 버튼 */
+@property --mb-a { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+.btn[data-moving-border] { position: relative; isolation: isolate; }
+.btn[data-moving-border]::before {
+  content: ''; position: absolute; inset: -3px; border-radius: inherit; z-index: -1; padding: 2px;
+  background: conic-gradient(from var(--mb-a), transparent 0 72%, rgba(248, 224, 74, .2) 80%, #F8E04A 90%, transparent 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+          mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  animation: mbSpin 3.6s linear infinite;
+}
+@keyframes mbSpin { to { --mb-a: 360deg; } }
+
+/* [contscroll] */
+.cs { perspective: 1300px; margin: 0 auto clamp(40px, 6vw, 64px); max-width: 980px; }
+.cs__frame {
+  display: block; text-decoration: none; border-radius: 18px; overflow: hidden;
+  background: #2B221B; padding: 0 10px 10px; border: 1px solid #1f1813;
+  transform-origin: 50% 0%;
+  transform: rotateX(calc((1 - var(--p, 1)) * 26deg)) scale(calc(.88 + var(--p, 1) * .12)) translateY(calc((1 - var(--p, 1)) * -10px));
+  box-shadow: 0 2px 4px rgba(58, 47, 38, .1), 0 40px 80px -30px rgba(58, 47, 38, .55);
+  will-change: transform;
+}
+.cs__bar { display: flex; align-items: center; gap: 7px; height: 38px; padding: 0 6px; }
+.cs__bar i { width: 10px; height: 10px; border-radius: 50%; background: #5A4A3C; }
+.cs__bar i:first-child { background: #b02a27; } .cs__bar i:nth-child(2) { background: #c9ad1c; }
+.cs__bar span { margin: 0 auto; padding: 4px 14px; border-radius: 8px; background: rgba(255, 255, 255, .07); color: rgba(251, 247, 240, .6); font-size: 12.5px; font-weight: 600; }
+.cs__frame img { display: block; width: 100%; height: auto; border-radius: 10px; }
+.cs__cap { margin-top: 14px; text-align: center; font-size: 14.5px; color: var(--ink-3); }
+
+/* [focus] */
+@media (hover: hover) and (pointer: fine) {
+  .tools .tool { transition: filter .3s ease, opacity .3s ease, transform .5s cubic-bezier(.2, .7, .2, 1), box-shadow .3s ease; }
+  .tools:hover .tool:not(:hover) { filter: blur(1.6px) saturate(.85); opacity: .62; }
+}
+
+/* [glowbd] */
+.prod, .ch, .tool { position: relative; }
+.glowbd::before {
+  content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1.5px; z-index: 4; pointer-events: none;
+  background: radial-gradient(260px circle at var(--sx, -400px) var(--sy, -400px), #F8E04A, rgba(150, 24, 26, .7) 38%, transparent 68%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+          mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  opacity: 0; transition: opacity .3s ease;
+}
+.glowbd:hover::before { opacity: 1; }
+
+/* [dirhover] */
+.chip { position: relative; overflow: hidden; isolation: isolate; }
+.chip::before {
+  content: ''; position: absolute; inset: 0; z-index: -1; background: var(--red-tint, #F1DDD3);
+  transform: translate(var(--fx, -101%), var(--fy, 0)); transition: transform .32s cubic-bezier(.2, .7, .2, 1);
+}
+.chip.is-in::before { transform: translate(0, 0); }
+
+/* [timeline] */
+.tl { position: relative; max-width: 760px; margin-left: 6px; padding-left: 46px; }
+.tl__rail, .tl__beam { position: absolute; left: 13px; top: 6px; width: 3px; border-radius: 3px; }
+.tl__rail { bottom: 6px; background: var(--line-2, #D3C3AA); }
+.tl__beam { height: calc(var(--p, 0) * (100% - 12px)); background: linear-gradient(180deg, #F8E04A, #96181a); box-shadow: 0 0 12px rgba(248, 224, 74, .55); }
+.tl__item { position: relative; padding: 4px 0 34px; }
+.tl__item:last-child { padding-bottom: 0; }
+.tl__dot { position: absolute; left: -41px; top: 6px; width: 19px; height: 19px; border-radius: 50%; background: var(--paper); border: 3px solid var(--line-2, #D3C3AA); transition: border-color .3s ease, background-color .3s ease, box-shadow .3s ease; }
+.tl__item.is-lit .tl__dot { border-color: var(--red); background: var(--yellow); box-shadow: 0 0 0 5px rgba(248, 224, 74, .25); }
+.tl__when { display: block; font-size: 15px; font-weight: 800; color: var(--red); margin-bottom: 2px; font-variant-numeric: tabular-nums; }
+.tl__what { font-size: clamp(20px, 2.2vw, 26px); font-weight: 800; letter-spacing: -.03em; line-height: 1.35; }
+.tl__item { opacity: .45; transition: opacity .4s ease; }
+.tl__item.is-lit { opacity: 1; }
+
+/* [lamp] */
+.lamp { display: block; position: relative; height: 70px; margin-bottom: 8px; pointer-events: none; }
+.lamp::before {
+  content: ''; position: absolute; left: 0; top: 18px; height: 2px; width: var(--lw, 30%); border-radius: 2px;
+  background: #F8E04A; box-shadow: 0 0 14px 2px rgba(248, 224, 74, .8);
+  transition: width 1.1s cubic-bezier(.2, .7, .2, 1);
+}
+.lamp::after {
+  content: ''; position: absolute; left: -10%; top: 19px; height: 120px; width: calc(var(--lw, 30%) + 20%);
+  background: radial-gradient(60% 100% at 50% 0%, rgba(248, 224, 74, .28), transparent 70%);
+  filter: blur(8px); transition: width 1.1s cubic-bezier(.2, .7, .2, 1);
+}
+.lamp.is-on { --lw: 78%; }
+
+@media (prefers-reduced-motion: reduce) {
+  .cs__frame { transform: none; }
+  .btn[data-moving-border]::before { animation: none; }
+  .tl__beam { height: calc(100% - 12px); }
+  .tl__item { opacity: 1; }
+}

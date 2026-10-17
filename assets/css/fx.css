@@ -1,0 +1,182 @@
+@charset "utf-8";
+/* ==========================================================================
+   똑재TV 3안 — React Bits 에서 골라 온 효과들 (React 없이 옮김, fx.js 와 짝)
+   하나씩 빼기 쉽도록 효과마다 블록을 나눴다. 블록을 지우고 fx.js 의 같은 이름 블록을 지우면 끝.
+     [noise]       종이 질감          — 모든 페이지
+     [stroke]      윤곽 → 채움 제목   — 홈 히어로 "내 기준으로."
+     [count]       숫자 올라가기      — 홈 구독자 수, 랜딩 고민 2
+     [rotate]      바뀌는 단어        — 랜딩 제목
+     [flap]        출발 안내판 글자   — 홈 카페 띠
+     [reveal]      스크롤로 드러나는 문장 — 랜딩 반전 문단
+     [stack]       쌓이는 카드        — 강의 상세 주차별 커리큘럼
+     [masonry]     후기 벽돌 배치     — 홈 후기 (후기가 생기면 켜짐)
+   React Bits: MIT + Commons Clause, © David Haz — 사이트 안에서 쓰는 것은 허용
+   ========================================================================== */
+
+/* [noise] 크림 바닥에 아주 옅은 종이 질감. 클릭·스크롤을 막지 않는다. */
+body::after {
+  content: ''; position: fixed; inset: -50%; z-index: 9999; pointer-events: none;
+  opacity: .07; mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .23  0 0 0 0 .18  0 0 0 0 .15  0 0 0 1.4 -.35'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+/* [stroke] 실제 글자는 투명하게 남기고(검색·화면낭독기·형광펜 자리) SVG 윤곽을 겹친다 */
+.stroke-host { position: relative; }
+.stroke-host.is-stroked { color: transparent; }
+.stroke-svg { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
+.stroke-svg text {
+  fill: var(--cocoa); fill-opacity: 0;
+  stroke: var(--cocoa); stroke-width: 1.6px; stroke-linejoin: round;
+  stroke-dasharray: 1600; stroke-dashoffset: 1600;
+  animation: strokeDraw 1.5s cubic-bezier(.55, .1, .3, 1) forwards, strokeFill .6s ease forwards;
+  animation-delay: calc(.55s + var(--i) * .11s), calc(1.5s + var(--i) * .11s);
+}
+@keyframes strokeDraw { to { stroke-dashoffset: 0; } }
+@keyframes strokeFill { to { fill-opacity: 1; stroke-opacity: 0; } }
+
+/* [count] 숫자가 바뀌어도 옆 글자가 흔들리지 않게 */
+[data-count] { font-variant-numeric: tabular-nums; }
+
+/* [rotate] 단어가 위로 넘어가며 바뀐다. 줄 폭은 새 단어에 맞춰 부드럽게 */
+.rot { position: relative; display: inline-block; vertical-align: top; overflow: hidden; padding-bottom: .06em;
+  transition: width .45s cubic-bezier(.2, .7, .2, 1); perspective: 600px; color: var(--red); }
+.rot__w { display: inline-block; white-space: nowrap; transform-origin: 50% 100%; }
+.rot__w.is-in  { animation: rotIn .55s cubic-bezier(.2, .7, .2, 1) both; }
+.rot__w.is-out { position: absolute; left: 0; top: 0; animation: rotOut .4s ease-in both; }
+@keyframes rotIn  { from { transform: translateY(70%) rotateX(-70deg); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes rotOut { to { transform: translateY(-70%) rotateX(70deg); opacity: 0; } }
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+@media (max-width: 640px) { .rot { display: block; } }   /* 좁은 화면: 바뀌는 단어가 제 줄을 차지해 아래 글이 들썩이지 않게 */
+
+/* [flap] 화면에 들어오면 글자판이 넘어가다 제 글자에서 멈추고, 다 멈추면 판이 사라져 보통 글자로 붙는다 */
+.flap { display: inline; }
+.flap__w { display: inline-block; white-space: nowrap; }
+.flap__c {
+  position: relative; display: inline-block; text-align: center;
+  min-width: 1em; padding: 2px 1px; margin-right: 1px;
+  border-radius: 3px; background: rgba(0, 0, 0, .22); color: var(--paper);
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, .06), 0 1px 0 rgba(0, 0, 0, .3);
+  line-height: 1.2;
+  transition: background-color .4s ease, box-shadow .4s ease, padding .4s ease, margin .4s ease, min-width .4s ease;
+}
+.flap__c::after { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: rgba(0, 0, 0, .45); transition: opacity .4s ease; }
+.flap__c--sp { background: transparent; box-shadow: none; min-width: .3em; }
+.flap__c--sp::after { content: none; }
+.flap__c.is-flip { animation: flapTick .07s linear; }
+/* 다 멈춘 뒤: 판·가운데 선·사이 간격을 걷어 내 원래 글자 간격으로 */
+.flap.is-done .flap__c { background-color: transparent; box-shadow: none; padding: 0; margin-right: 0; min-width: 0; }
+.flap.is-done .flap__c::after { opacity: 0; }
+@keyframes flapTick { 50% { transform: scaleY(.65); } }
+
+/* [reveal] 단어마다 흐릿하다가 스크롤을 따라 또렷해진다 (fx.js 가 --v 를 0→1 로) */
+.rv-word { display: inline; opacity: calc(.18 + .82 * var(--v, 1)); filter: blur(calc((1 - var(--v, 1)) * 3px)); transition: opacity .15s linear, filter .15s linear; }
+
+/* [stack] 강의 주차 카드가 위로 쌓인다 (fx.js 가 --s 로 뒤 카드를 살짝 줄인다) */
+.weeks.is-stack { display: block; }
+.weeks.is-stack .week {
+  position: sticky; top: calc(88px + var(--i) * 16px);
+  margin-bottom: 22px;
+  background: var(--paper, #FBF7F0);
+  border: 1px solid rgba(58, 47, 38, .08); border-radius: 16px;
+  box-shadow: 0 1px 2px rgba(58, 47, 38, .06), 0 14px 30px -12px rgba(58, 47, 38, .22);
+  transform: scale(var(--s, 1)); transform-origin: 50% 0;
+  filter: brightness(var(--b, 1));
+  transition: transform .1s linear, filter .1s linear;
+}
+.weeks.is-stack .week:last-child { margin-bottom: 0; }
+
+/* [masonry] 후기가 생기면 높이가 달라도 벽돌처럼 빈틈없이 쌓인다 */
+.rv-list { columns: 3 280px; column-gap: 14px; }
+.rv-list > .rv { break-inside: avoid; margin-bottom: 14px; display: block; }
+
+@media (prefers-reduced-motion: reduce) {
+  .stroke-svg { display: none; }
+  .stroke-host.is-stroked { color: inherit; }
+  .weeks.is-stack .week { position: static; transform: none; filter: none; }
+}
+
+/* ========================================================================== 2차로 더한 효과
+     [pillnav]  메뉴 하이라이트가 미끄러진다      — 상단 메뉴
+     [magnet]   버튼이 마우스 쪽으로 살짝 끌린다   — 주요 버튼
+     [spot]     카드 위에 노란 빛이 따라온다       — 계산기·상품·채널 카드
+     [shiny]    딱지에 빛이 한 번씩 스친다         — 모집 예정·판매 예정
+     [marq]     흐르는 주제 띠                     — 홈 계단과 계산기 사이
+     [spark]    누르면 불꽃이 튄다                 — 계단 채우기 칸
+     [appear]   섹션 제목이 한 번 떠오른다         — 홈 섹션 제목
+     [xp]       스크롤하면 사진이 화면 가득 커진다 — 랜딩
+   ========================================================================== */
+
+/* [pillnav] */
+.bar__nav { position: relative; }
+.bar__nav a:not(.btn):not(.sns) { position: relative; z-index: 1; padding: 6px 2px; }   /* 유튜브·카페 버튼은 제외 — 버튼 안 여백이 사라져 글자가 끝에 붙던 문제 */
+.nav-pill {
+  position: absolute; z-index: 0; top: 50%; height: 36px; margin-top: -18px; left: 0; width: 0;
+  border-radius: 999px; background: rgba(58, 47, 38, .07); opacity: 0; pointer-events: none;
+  transition: left .35s cubic-bezier(.2, .7, .2, 1), width .35s cubic-bezier(.2, .7, .2, 1), opacity .2s ease;
+}
+.nav-pill.is-on { opacity: 1; }
+
+/* [magnet] translate 는 transform 과 따로 놀아서 버튼의 눌림·기울기와 겹치지 않는다 */
+[data-magnet] { transition: translate .35s cubic-bezier(.2, .7, .2, 1); }
+[data-magnet].is-pulled { transition: translate .08s linear; }
+
+/* [spot] 마우스 위치에 노란 빛 */
+.spot { background-image: radial-gradient(380px circle at var(--sx, -400px) var(--sy, -400px), rgba(248, 224, 74, .16), transparent 46%); }
+.dark .spot { background-image: radial-gradient(320px circle at var(--sx, -400px) var(--sy, -400px), rgba(248, 224, 74, .13), transparent 50%); }
+.tool.spot { background-color: var(--paper); }
+.prod.spot { background-color: var(--paper); }
+
+/* [shiny] */
+.prod__badge, .lec__badge { overflow: hidden; }
+.prod__badge::after, .lec__badge::after {
+  content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: linear-gradient(110deg, transparent 35%, rgba(255, 255, 255, .75) 50%, transparent 65%);
+  background-size: 250% 100%; background-position: 130% 0;
+  animation: shiny 4.5s ease-in-out infinite;
+}
+@keyframes shiny { 0%, 62% { background-position: 130% 0; } 92%, 100% { background-position: -30% 0; } }
+
+/* [marq] */
+.marq { overflow: hidden; padding: 34px 0 30px; background: var(--cream); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.marq__row { overflow: hidden; white-space: nowrap; }
+.marq__track { display: inline-flex; align-items: center; will-change: transform; }
+.marq__w { font-size: clamp(34px, 5.4vw, 64px); font-weight: 800; letter-spacing: -.04em; color: var(--cocoa); padding: 0 22px; line-height: 1.25; }
+.marq__row--line .marq__w { color: transparent; -webkit-text-stroke: 1.4px var(--cocoa); }
+.marq__dot { width: 12px; height: 12px; border-radius: 50%; background: var(--red); flex: none;
+  box-shadow: inset -2px -2px 3px rgba(0, 0, 0, .3), inset 2px 2px 3px rgba(255, 255, 255, .45); }
+.marq__row--line .marq__dot { background: var(--yellow); }
+
+/* [spark] */
+.spark { position: fixed; z-index: 120; width: 2px; height: 10px; border-radius: 2px; pointer-events: none; transform-origin: 50% 100%; }
+
+/* [appear] */
+.js-motion .sec__head.will-appear { opacity: 0; transform: translateY(26px); transition: opacity .8s ease, transform .9s cubic-bezier(.2, .7, .2, 1); }
+.js-motion .sec__head.will-appear.is-in { opacity: 1; transform: none; }
+
+/* [xp] 랜딩: 둥근 액자가 스크롤을 따라 화면 가득 커진다 (fx.js 가 --p 를 0→1) */
+.xp { position: relative; height: 210vh; background: var(--paper); }
+.xp__stick { position: sticky; top: 0; height: 100vh; display: grid; place-items: center; overflow: hidden; }
+.xp__fig {
+  position: relative; margin: 0; overflow: hidden;
+  width: calc(58vw + var(--p, 0) * 42vw); height: calc(52vh + var(--p, 0) * 48vh);
+  border-radius: calc(28px * (1 - var(--p, 0)));
+  box-shadow: 0 30px 70px -30px rgba(58, 47, 38, calc(.45 * (1 - var(--p, 0))));
+}
+.xp__fig img { width: 100%; height: 100%; object-fit: cover; transform: scale(calc(1.18 - var(--p, 0) * .18)); }
+.xp__fig::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(43, 34, 27, 0) 30%, rgba(43, 34, 27, .62) 100%); opacity: var(--p, 0); }
+.xp__cap {
+  position: absolute; left: 0; right: 0; bottom: 9vh; z-index: 1; text-align: center; color: var(--paper);
+  font-size: clamp(30px, 5vw, 60px); font-weight: 800; letter-spacing: -.045em; line-height: 1.2;
+  opacity: calc((var(--p, 0) - .55) * 2.4); transform: translateY(calc((1 - var(--p, 0)) * 40px));
+  text-shadow: 0 4px 24px rgba(0, 0, 0, .35);
+}
+.xp__cap span { display: block; }
+.xp__cap span:last-child { color: var(--yellow); }
+@media (max-width: 640px) { .xp__fig { width: calc(84vw + var(--p, 0) * 16vw); height: calc(46vh + var(--p, 0) * 54vh); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .prod__badge::after, .lec__badge::after { animation: none; }
+  .xp { height: auto; }
+  .xp__stick { position: static; height: auto; padding: 60px 0; }
+  .xp__fig { --p: 1; width: 100%; height: 60vh; }
+}

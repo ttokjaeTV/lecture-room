@@ -1,0 +1,515 @@
+@charset "utf-8";
+/* ==========================================================================
+   똑재TV — 강의·전자책 사이트
+   틀은 곰희스쿨(gomheeschool.com)의 섹션 구성을 따르고, 색은 실제 브랜드 자산에서 뽑았다.
+     빨강  #96181a  로고 글자·캐릭터 망토   → 히어로·CTA 바탕, 버튼, 아이콘, 카드 테두리
+     노랑  #f8e04a  전자책 표지 바탕         → 어두운 바탕 위 강조 한 줄, 숫자, 배지
+   이모지 대신 가는 선 아이콘(각 페이지 상단의 SVG 스프라이트)을 쓴다.
+   모션은 첫 화면이 열릴 때 한 번뿐이다.
+   ========================================================================== */
+
+:root {
+  --red:        #96181a;
+  --red-deep:   #6b1013;
+  --red-hover:  #7f1416;
+  --red-mid:    #7c1315;   /* 빨간 면 그라데이션의 중간값 */
+  --red-soft:   #fbf4f2;   /* 옅은 빨강 띠 (곰희스쿨의 옅은 보라 자리) */
+  --red-line:   #ecd3d1;   /* 빨강 계열 카드 테두리 */
+  --yellow:     #f8e04a;
+  --yellow-hover: #fde85e;
+  --on-yellow:  #3a0d0e;   /* 노랑 위 글자 */
+
+  --ink:        #1c1815;
+  --ink-2:      #5f5a55;
+  --ink-3:      #6e6862;
+  --paper:      #ffffff;
+  --paper-gray: #f6f4f1;
+  --line:       #e7e2dc;
+
+  --max:  960px;
+  --gut:  20px;
+  --r:    14px;
+  --r-sm: 8px;
+
+  --font: 'Wanted Sans Variable', 'Wanted Sans', 'Pretendard Variable',
+          -apple-system, BlinkMacSystemFont, system-ui, 'Malgun Gothic', sans-serif;
+}
+
+/* ---------------------------------------------------------------- 기본 */
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 80px; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.75;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+img, svg { display: block; max-width: 100%; }
+a { color: inherit; }
+h1, h2, h3, h4, p, ul, ol, dl, dd, figure { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
+b, strong { font-weight: 700; }
+:focus-visible { outline: 2px solid var(--red); outline-offset: 3px; border-radius: 3px; }
+/* 빨간 면 위에서는 빨간 링이 안 보이므로 흰 링으로 바꾼다 */
+.hero :focus-visible, .phead :focus-visible, .cta :focus-visible { outline-color: #fff; }
+
+.skip {
+  position: absolute; left: 12px; top: -60px; z-index: 200;
+  background: var(--ink); color: #fff; padding: 10px 16px;
+  font-weight: 700; text-decoration: none; transition: top .18s ease;
+}
+.skip:focus { top: 12px; }
+
+/* 아직 안 정해진 값. 값이 채워지면 이 클래스만 지우면 된다. tools/check.py 가 센다. */
+.todo { color: var(--red); border-bottom: 1px dashed rgba(150, 24, 26, .55); padding-bottom: 1px; }
+.hero .todo, .phead .todo, .cta .todo {
+  color: var(--yellow); border-bottom-color: rgba(248, 224, 74, .6);
+}
+
+/* ---------------------------------------------------------------- 아이콘 */
+.ico {
+  width: 22px; height: 22px; flex: none;
+  fill: none; stroke: currentColor; stroke-width: 1.6;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+.ico--lg { width: 38px; height: 38px; stroke-width: 1.3; }
+.ico-wrap {
+  width: 46px; height: 46px; border-radius: 13px;
+  background: var(--red-soft); color: var(--red);
+  display: grid; place-items: center;
+}
+
+/* ---------------------------------------------------------------- 버튼 */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 14px 28px; border-radius: 999px; border: 1px solid transparent;
+  font-size: 15px; font-weight: 700; letter-spacing: -.01em; line-height: 1.2;
+  text-decoration: none; cursor: pointer; white-space: nowrap;
+  transition: background .18s ease, border-color .18s ease, color .18s ease, transform .18s ease;
+}
+.btn--yellow { background: var(--yellow); color: var(--on-yellow); }
+.btn--yellow:hover { background: var(--yellow-hover); }
+.btn--red { background: var(--red); color: #fff; }
+.btn--red:hover { background: var(--red-hover); }
+.btn--ghost { border-color: rgba(255, 255, 255, .45); color: #fff; background: transparent; }
+.btn--ghost:hover { border-color: #fff; background: rgba(255, 255, 255, .08); }
+.btn--sm { padding: 9px 16px; font-size: 13.5px; }
+.btn--block { width: 100%; }
+
+/* ---------------------------------------------------------------- 상단바 */
+.bar {
+  position: sticky; top: 0; z-index: 90;
+  background: rgba(255, 255, 255, .92);
+  backdrop-filter: saturate(160%) blur(12px);
+  -webkit-backdrop-filter: saturate(160%) blur(12px);
+  border-bottom: 1px solid var(--line);
+}
+.bar__in {
+  max-width: var(--max); margin: 0 auto; padding: 0 var(--gut);
+  height: 64px; display: flex; align-items: center; gap: 22px;
+}
+.bar__logo { display: block; flex: none; }
+.bar__logo img { height: 26px; width: auto; }
+.bar__nav { display: flex; align-items: center; gap: 22px; margin-left: auto; }
+.bar__nav a:not(.btn) { text-decoration: none; font-size: 15px; font-weight: 600; color: var(--ink-2); }
+.bar__nav a:not(.btn):hover { color: var(--ink); }
+.bar__nav a[aria-current="page"] {
+  color: var(--red); text-decoration: underline; text-underline-offset: 7px; text-decoration-thickness: 2px;
+}
+.bar__nav .btn, .bar__nav .btn:hover { color: #fff; }
+
+/* 아직 판매 전이라는 사실은 숨기지 않고 한 줄로 말한다. 오픈하면 지운다. */
+.bar__state {
+  display: none; align-items: center; gap: 8px;
+  font-size: 12.5px; color: var(--ink-3);
+}
+.bar__state::before {
+  content: ''; width: 7px; height: 7px; border-radius: 50%;
+  background: var(--yellow); box-shadow: 0 0 0 1px rgba(0, 0, 0, .1) inset;
+}
+@media (min-width: 720px) { .bar__state { display: inline-flex; } }
+.prelaunch {
+  margin: 0; padding: 10px var(--gut);
+  background: var(--yellow); color: var(--on-yellow);
+  font-size: 12.5px; font-weight: 600; text-align: center;
+}
+@media (min-width: 720px) { .prelaunch { display: none; } }
+
+/* ---------------------------------------------------------------- 히어로
+   곰희스쿨과 같은 구성: 알약 라벨 → 한 줄 → 큰 제목(마지막 줄 노랑) → 설명 → 버튼 둘 → 괘선 → 숫자 셋.
+   바탕은 로고 빨강에서 더 깊은 빨강으로 내려가는 면. */
+.hero {
+  position: relative; overflow: hidden;
+  background: linear-gradient(160deg, var(--red) 0%, var(--red-mid) 58%, var(--red-deep) 100%);
+  color: #fff;
+  min-height: min(calc(100vh - 64px), 780px);
+  min-height: min(calc(100svh - 64px), 780px);
+  display: flex; align-items: center;
+  padding: 0 var(--gut);
+}
+.hero__deco { position: absolute; border-radius: 50%; pointer-events: none; }
+.hero__deco--a { width: 620px; height: 620px; right: -200px; top: -180px; background: rgba(255, 255, 255, .05); }
+.hero__deco--b { width: 360px; height: 360px; left: -120px; bottom: -120px; background: rgba(248, 224, 74, .07); }
+.hero__in {
+  position: relative; z-index: 1;
+  width: 100%; max-width: 720px; margin: 0 auto;
+  padding: 76px 0 60px;
+  display: flex; flex-direction: column; align-items: flex-start;
+}
+
+.hero__pill, .phead__pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 9px 18px; border-radius: 999px;
+  background: rgba(255, 255, 255, .09); border: 1px solid rgba(255, 255, 255, .22);
+  font-size: 13.5px; font-weight: 600; color: rgba(255, 255, 255, .86);
+  margin-bottom: 32px;
+}
+.hero__eyebrow { font-size: 15.5px; font-weight: 600; color: rgba(255, 255, 255, .76); margin-bottom: 16px; }
+.hero__t {
+  font-size: clamp(38px, 7.4vw, 72px); font-weight: 900; line-height: 1.12;
+  letter-spacing: -.045em; color: #fff; margin-bottom: 22px;
+}
+.hero__t em { font-style: normal; color: var(--yellow); position: relative; display: inline-block; }
+.hero__t em::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: .04em; height: .07em;
+  background: var(--yellow); opacity: .38; border-radius: 2px;
+}
+.hero__sub {
+  font-size: clamp(15.5px, 1.5vw, 17px); line-height: 1.85;
+  color: rgba(255, 255, 255, .74); max-width: 34em; margin-bottom: 36px;
+}
+.hero__acts { display: flex; flex-wrap: wrap; gap: 12px; width: 100%; margin-bottom: 52px; }
+.hero__acts .btn { padding: 17px 36px; font-size: 16px; }
+.hero__rule { width: 100%; height: 1px; background: rgba(255, 255, 255, .14); margin-bottom: 30px; }
+
+.hero__stats { display: flex; flex-wrap: wrap; gap: 14px 0; width: 100%; }
+.stat { padding-right: 28px; margin-right: 28px; border-right: 1px solid rgba(255, 255, 255, .14); }
+.stat:last-child { padding-right: 0; margin-right: 0; border-right: 0; }
+.stat__v {
+  display: block; font-size: 26px; font-weight: 800; letter-spacing: -.03em; line-height: 1.25;
+  color: var(--yellow); font-variant-numeric: tabular-nums;
+}
+.stat__l { display: block; font-size: 13px; font-weight: 600; color: rgba(255, 255, 255, .74); margin-top: 4px; }
+
+/* 페이지가 열릴 때 한 번만 일어나는 동작 */
+@media (prefers-reduced-motion: no-preference) {
+  .hero__in > * { animation: rise .8s cubic-bezier(.2, .7, .2, 1) both; }
+  .hero__in > :nth-child(2) { animation-delay: .06s; }
+  .hero__in > :nth-child(3) { animation-delay: .12s; }
+  .hero__in > :nth-child(4) { animation-delay: .18s; }
+  .hero__in > :nth-child(5) { animation-delay: .24s; }
+  .hero__in > :nth-child(n+6) { animation-delay: .32s; }
+}
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+/* ---------------------------------------------------------------- 섹션 골격
+   흰 띠 → 옅은 빨강 띠 → 회색 띠가 번갈아 온다 (곰희스쿨의 흰/보라/회색 순서). */
+.sec { padding: clamp(56px, 7vw, 80px) var(--gut); }
+.sec--soft { background: var(--red-soft); }
+.sec--gray { background: var(--paper-gray); }
+.sec--tight { padding-top: 40px; padding-bottom: 40px; }
+.sec__in { max-width: var(--max); margin: 0 auto; }
+
+.sec__tag { font-size: 14px; font-weight: 700; color: var(--red); margin-bottom: 8px; }
+.sec__t {
+  font-size: clamp(24px, 3.2vw, 30px); font-weight: 800; line-height: 1.3;
+  letter-spacing: -.035em; margin-bottom: 8px;
+}
+.sec__t--sm { font-size: 18px; margin-bottom: 16px; }
+.sec__sub { font-size: 16px; color: var(--ink-2); max-width: 40em; margin-bottom: 28px; }
+
+/* ---------------------------------------------------------------- 모집 중인 상품 카드 (곰희스쿨 lec-card) */
+.lec-grid { display: grid; gap: 16px; }
+@media (min-width: 640px) { .lec-grid { grid-template-columns: repeat(2, 1fr); } }
+
+.lec {
+  background: var(--paper); border: 1.5px solid var(--line); border-radius: var(--r);
+  overflow: hidden; display: flex; flex-direction: column;
+  transition: border-color .18s ease;
+}
+.lec--red { border-color: var(--red-line); }
+.lec--red:hover { border-color: var(--red); }
+.lec--gray:hover { border-color: var(--ink-3); }
+
+.lec__thumb {
+  position: relative; aspect-ratio: 16 / 10; display: flex; align-items: center; justify-content: center;
+  padding: 20px; text-decoration: none; overflow: hidden;
+}
+.lec__thumb--red { background: linear-gradient(135deg, var(--red) 0%, var(--red-deep) 100%); color: #fff; }
+.lec__thumb--gray { background: var(--paper-gray); }
+.lec__thumb:focus-visible { outline-offset: -4px; }
+.lec__badge {
+  position: absolute; top: 12px; left: 12px; z-index: 1;
+  font-size: 11.5px; font-weight: 700; padding: 4px 10px; border-radius: 999px;
+  background: var(--yellow); color: var(--on-yellow);
+}
+.lec__badge--dark { background: var(--ink); color: #fff; }
+.lec__thumb-in { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.lec__thumb-t { font-size: 26px; font-weight: 800; line-height: 1.3; letter-spacing: -.03em; }
+/* 표지 원본이 작으므로(468×723) 늘리지 않고 칸 높이의 78% 안에 담는다 */
+.lec__cover {
+  position: absolute; inset: 11% 0; width: 100%; height: 78%;
+  object-fit: contain; filter: drop-shadow(6px 10px 22px rgba(28, 24, 21, .22));
+}
+
+.lec__body { padding: 18px 18px 20px; flex: 1; display: flex; flex-direction: column; gap: 10px; }
+.lec__tag { font-size: 13.5px; font-weight: 700; color: var(--red); }
+.lec__tag--ink { color: var(--ink-2); }
+.lec__name { font-size: 16.5px; font-weight: 700; line-height: 1.45; letter-spacing: -.02em; }
+.lec__list { display: grid; gap: 5px; margin-bottom: 6px; }
+.lec__list li { font-size: 14px; color: var(--ink-2); display: flex; align-items: baseline; gap: 8px; }
+.lec__list li::before {
+  content: ''; flex: none; width: 5px; height: 5px; border-radius: 50%;
+  background: var(--red); transform: translateY(-2px);
+}
+.lec__cta {
+  margin-top: auto; display: block; text-align: center; padding: 12px;
+  border-radius: 999px; font-size: 14px; font-weight: 700; text-decoration: none;
+  background: var(--red); color: #fff; transition: background .18s ease;
+}
+.lec__cta:hover { background: var(--red-hover); }
+.lec__cta--line { background: var(--paper); color: var(--ink); border: 1px solid var(--line); }
+.lec__cta--line:hover { background: var(--paper-gray); }
+
+/* ---------------------------------------------------------------- 이런 분들께 (곰희스쿨 target-card) */
+.target-grid { display: grid; gap: 12px; grid-template-columns: repeat(2, 1fr); }
+@media (min-width: 720px) { .target-grid { grid-template-columns: repeat(3, 1fr); gap: 14px; } }
+.target {
+  background: var(--paper); border: 1.5px solid var(--line); border-radius: var(--r);
+  padding: 24px 16px 22px; text-align: center;
+}
+.target .ico-wrap { margin: 0 auto 12px; }
+.target__l { font-size: 13px; color: var(--ink-3); line-height: 1.5; }
+.target__n { font-size: 15px; font-weight: 700; line-height: 1.45; margin-top: 3px; }
+
+/* ---------------------------------------------------------------- 후기 (곰희스쿨 rv-card) */
+.rv-list { display: grid; gap: 10px; }
+.rv { background: var(--paper); border: 1px solid var(--red-line); border-radius: var(--r); padding: 16px 18px; }
+.rv__top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 6px; }
+.rv__id { font-size: 13.5px; font-weight: 700; }
+.rv__stars { font-size: 13px; color: var(--red); letter-spacing: .06em; }
+.rv__text { font-size: 14.5px; color: var(--ink-2); line-height: 1.75; }
+.rv--empty { border-style: dashed; border-color: rgba(150, 24, 26, .45); background: transparent; padding: 22px 20px; }
+
+/* ---------------------------------------------------------------- CTA 띠 */
+.cta {
+  background: linear-gradient(160deg, var(--red) 0%, var(--red-deep) 100%);
+  color: #fff; padding: clamp(56px, 7vw, 76px) var(--gut); text-align: center;
+}
+.cta__t { font-size: clamp(25px, 3.4vw, 32px); font-weight: 800; line-height: 1.4; letter-spacing: -.035em; margin-bottom: 10px; }
+.cta__t span { color: var(--yellow); }
+.cta__sub { font-size: 15.5px; color: rgba(255, 255, 255, .78); margin-bottom: 28px; }
+.cta__acts { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+
+/* ---------------------------------------------------------------- 유의사항 */
+.caution__list { display: grid; gap: 8px 32px; max-width: 62em; }
+@media (min-width: 800px) { .caution__list { grid-template-columns: 1fr 1fr; } }
+.caution__list.caution__list--one { grid-template-columns: 1fr; }
+.caution__list li { position: relative; padding-left: 16px; font-size: 14px; color: var(--ink-2); line-height: 1.7; }
+.caution__list li::before { content: ''; position: absolute; left: 0; top: .78em; width: 7px; height: 1.5px; background: var(--red); }
+.caution__list a { color: var(--red); font-weight: 600; text-underline-offset: 3px; }
+
+/* ---------------------------------------------------------------- 바닥글 (곰희스쿨처럼 밝은 바탕에 세 열) */
+.foot { background: var(--paper-gray); border-top: 1px solid var(--line); }
+.foot__in { max-width: var(--max); margin: 0 auto; padding: clamp(48px, 6vw, 64px) var(--gut) 40px; }
+.foot__grid { display: grid; gap: 36px; }
+@media (min-width: 800px) { .foot__grid { grid-template-columns: 1.5fr 1fr 1fr; gap: 48px; } }
+.foot__logo { display: inline-block; }
+.foot__logo img { height: 30px; width: auto; }
+.foot__about { margin-top: 16px; max-width: 30em; font-size: 14.5px; color: var(--ink-2); }
+.foot__h { font-size: 14px; font-weight: 700; margin-bottom: 12px; }
+.foot__list { display: grid; gap: 9px; font-size: 14.5px; color: var(--ink-2); }
+.foot__list a { text-decoration: none; }
+.foot__list a:hover { color: var(--red); text-decoration: underline; text-underline-offset: 3px; }
+.foot__list li > b { color: var(--ink); font-weight: 600; margin-right: 6px; }
+
+.biz {
+  margin-top: 44px; padding-top: 24px; border-top: 1px solid var(--line);
+  font-size: 13px; line-height: 2; color: var(--ink-3);
+}
+.biz b { color: var(--ink-2); font-weight: 600; }
+.biz__sep { opacity: .35; margin: 0 5px; }
+.foot__legal { margin-top: 18px; font-size: 12.5px; line-height: 1.85; color: var(--ink-3); max-width: 74em; }
+.foot__legal b { color: var(--ink-2); font-weight: 600; }
+.foot__copy { margin-top: 18px; font-size: 12.5px; color: var(--ink-3); }
+
+/* ==========================================================================
+   상세 페이지 — 강의 / 전자책
+   ========================================================================== */
+.phead {
+  position: relative; overflow: hidden;
+  background: linear-gradient(160deg, var(--red) 0%, var(--red-deep) 100%);
+  color: #fff; padding: clamp(52px, 7vw, 76px) var(--gut) clamp(44px, 6vw, 60px);
+}
+.phead__in { max-width: var(--max); margin: 0 auto; position: relative; z-index: 1; }
+.phead .hero__deco--a { width: 460px; height: 460px; right: -160px; top: -200px; }
+.phead__pill { margin-bottom: 24px; }
+.phead__t {
+  font-size: clamp(30px, 4.6vw, 48px); font-weight: 900; line-height: 1.16;
+  letter-spacing: -.04em; color: #fff; margin-bottom: 16px;
+}
+.phead__lead { font-size: clamp(15.5px, 1.5vw, 17px); color: rgba(255, 255, 255, .74); max-width: 34em; line-height: 1.8; }
+.phead .hero__stats { margin-top: 30px; padding-top: 26px; border-top: 1px solid rgba(255, 255, 255, .14); }
+
+.prod { padding: clamp(44px, 6vw, 64px) var(--gut) clamp(56px, 7vw, 80px); }
+.prod__grid { display: grid; gap: 32px; }
+@media (min-width: 900px) {
+  .prod__grid { grid-template-columns: 320px 1fr; gap: 56px; align-items: start; }
+}
+/* 카드가 화면보다 길면 붙여 두었을 때 아래 버튼이 잘린다. 「담긴 것」이 들어가 카드가 630px쯤 되므로
+   화면 높이가 넉넉할 때만 붙인다. 「담긴 것」 줄이 많이 늘면 이 값도 함께 올린다. */
+@media (min-width: 900px) and (min-height: 740px) {
+  .prod__side { position: sticky; top: 84px; }
+}
+/* 한 열일 때는 사이드 카드가 화면 폭만큼 늘어나지 않게 */
+@media (max-width: 899px) { .prod__side { max-width: 420px; } }
+.prod__card { background: var(--paper); border: 1.5px solid var(--red-line); border-radius: var(--r); overflow: hidden; }
+.prod__card-in { padding: 18px 18px 20px; }
+.prod__card .btn { margin-top: 16px; }
+.prod__card .lec__thumb--gray { aspect-ratio: 4 / 3; }
+.prod__card .lec__cover { inset: 9% 0; height: 82%; }
+.prod__d { font-size: 16px; color: var(--ink-2); max-width: 44em; line-height: 1.85; }
+.prod__d + .prod__d { margin-top: 12px; }
+
+.sub-h { font-size: clamp(21px, 2.4vw, 23px); font-weight: 800; letter-spacing: -.035em; margin: 48px 0 16px; }
+.sub-h:first-child { margin-top: 0; }
+
+.facts { display: grid; }
+.facts div { display: grid; grid-template-columns: 88px 1fr; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.facts div:last-child { border-bottom: 0; }
+.facts dt { font-size: 13.5px; color: var(--ink-3); }
+.facts dd { font-size: 14.5px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.weeks { display: grid; gap: 12px; }
+.week {
+  display: grid; grid-template-columns: 64px 1fr; gap: 2px 18px;
+  padding: 18px 20px; background: var(--paper); border: 1.5px solid var(--red-line); border-radius: var(--r);
+}
+@media (min-width: 680px) { .week { grid-template-columns: 80px 1fr; gap: 2px 24px; } }
+.week__n { grid-row: 1 / span 3; font-size: 13px; font-weight: 700; color: var(--red); font-variant-numeric: tabular-nums; padding-top: 3px; }
+.week__phase { grid-column: 2; font-size: 11.5px; font-weight: 700; color: var(--ink-3); }
+.week__t { grid-column: 2; font-size: 17px; font-weight: 800; letter-spacing: -.025em; line-height: 1.4; }
+.week__d { grid-column: 2; font-size: 14.5px; color: var(--ink-2); line-height: 1.7; margin-top: 4px; }
+
+/* 수료하면 남는 것 — "무엇을 배우는가"가 아니라 끝나고 손에 남는 것을 적는다.
+   세인투(seintu.co.kr) 상세페이지의 ✓ 블록 형식. REFERENCE.md 참고. */
+.keeps {
+  display: grid; gap: 11px; max-width: 46em;
+  margin-top: 16px; padding: 22px 24px;
+  background: var(--red-soft); border: 1px solid var(--red-line); border-radius: var(--r);
+}
+.keeps li { display: flex; align-items: baseline; gap: 10px; font-size: 15px; line-height: 1.7; color: var(--ink-2); }
+.keeps b { color: var(--ink); font-weight: 700; }
+.keeps .ico { flex: none; width: 16px; height: 16px; stroke-width: 2.2; color: var(--red); transform: translateY(2px); }
+
+/* ---- 판매 페이지 틀 — 세인투(seintu.co.kr) 상세페이지에서 가져온 형식. REFERENCE.md 참고.
+   값이 정해지기 전이라 자리만 잡아 두었다. 빨간 점선(.todo)을 채우면 된다. */
+
+/* 담긴 것 — 사이드 카드에서 조건(.facts)보다 먼저 온다. 한 줄 = "이름 — 한 줄 설명".
+   세인투는 이 목록을 스크롤 상자에 가둬 석 줄만 보이게 했는데 그건 따라 하지 않는다. 전부 펼쳐 둔다. */
+.incl__h { font-size: 12.5px; font-weight: 700; color: var(--red); margin-bottom: 9px; }
+.incl { display: grid; gap: 7px; padding-bottom: 14px; margin-bottom: 4px; border-bottom: 1px solid var(--line); }
+.incl li { position: relative; padding-left: 14px; font-size: 14px; line-height: 1.6; color: var(--ink-2); }
+.incl li::before { content: ''; position: absolute; left: 0; top: .74em; width: 6px; height: 1.5px; background: var(--red); }
+.incl b { color: var(--ink); font-weight: 700; }
+.incl a { color: inherit; text-decoration: none; }
+.incl a:hover b { color: var(--red); }
+
+/* 구성 번호 — 「담긴 것」의 한 줄이 본문의 한 장(章)과 짝을 이룬다. 줄을 더하면 장도 더한다 */
+.chap { margin: 48px 0 16px; }
+.chap__n {
+  display: inline-block; padding: 4px 11px; border-radius: 999px;
+  background: var(--ink); color: #fff;
+  font-size: 11.5px; font-weight: 700; letter-spacing: .03em; font-variant-numeric: tabular-nums;
+}
+.chap .sub-h { margin: 10px 0 0; }
+
+/* 꾸러미 목록 — [라벨] 이름 + 설명 한두 줄. 목차·제공 자료처럼 여러 개를 늘어놓을 때 */
+.packs { display: grid; max-width: 46em; border-top: 1px solid var(--line); }
+.pack { display: grid; grid-template-columns: 58px 1fr; gap: 3px 14px; padding: 15px 0; border-bottom: 1px solid var(--line); }
+.pack__tag { grid-row: 1 / span 2; font-size: 13px; font-weight: 700; line-height: 24px; color: var(--red); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pack__tag::before { content: '['; }
+.pack__tag::after { content: ']'; }
+.pack__t { font-size: 16px; font-weight: 700; letter-spacing: -.02em; line-height: 24px; }
+.pack__d { grid-column: 2; font-size: 14.5px; color: var(--ink-2); line-height: 1.7; }
+
+/* 자주 묻는 질문 — 질문은 "안 살 이유"를 그대로 옮겨 적는다. 접지 않고 전부 펼쳐 둔다.
+   Q./A. 머리글자는 절대 위치로 둔다. flex 로 하면 답 안의 링크·미정 표시가 낱낱이 떨어진다. */
+.faq { display: grid; gap: 12px; max-width: 46em; }
+.qa { background: var(--paper); border: 1.5px solid var(--red-line); border-radius: var(--r); overflow: hidden; }
+.qa__q, .qa__a { position: relative; padding: 15px 20px 15px 46px; }
+.qa__q::before, .qa__a::before { position: absolute; left: 20px; font-weight: 800; }
+.qa__q { font-size: 16px; font-weight: 700; letter-spacing: -.02em; line-height: 1.5; color: var(--red); border-bottom: 1px solid var(--red-line); }
+.qa__q::before { content: 'Q.'; }
+.qa__a { font-size: 15px; color: var(--ink-2); line-height: 1.75; }
+.qa__a::before { content: 'A.'; color: var(--ink); }
+.qa__a a { color: var(--red); font-weight: 600; text-underline-offset: 3px; }
+
+.fits { display: grid; gap: 8px; max-width: 46em; }
+.fits li { position: relative; padding-left: 18px; font-size: 15px; color: var(--ink-2); }
+.fits li::before { content: ''; position: absolute; left: 0; top: .82em; width: 8px; height: 1.5px; background: var(--red); }
+
+.aside-note { margin-top: 14px; font-size: 13px; color: var(--ink-3); line-height: 1.6; }
+.aside-note a { color: var(--red); }
+
+/* ==========================================================================
+   약관·정책 문서 — 읽으라고 만든 페이지. 글줄을 짧게 잡고 여백을 넉넉히 준다.
+   ========================================================================== */
+.wrap { max-width: var(--max); margin: 0 auto; padding: 0 var(--gut); }
+.wrap--narrow { max-width: 800px; }
+.doc { padding: clamp(48px, 6vw, 80px) 0 clamp(64px, 8vw, 100px); }
+.doc h1 { font-size: clamp(28px, 3.6vw, 40px); font-weight: 800; letter-spacing: -.04em; line-height: 1.2; }
+.doc__updated { margin-top: 12px; font-size: 13.5px; color: var(--ink-3); }
+.doc h2 { margin-top: 44px; padding-top: 20px; border-top: 1px solid var(--line); font-size: 19px; font-weight: 800; letter-spacing: -.025em; }
+.doc h3 { margin-top: 28px; font-size: 16px; font-weight: 700; }
+.doc p { margin-top: 12px; color: var(--ink-2); max-width: 70ch; }
+.doc ol, .doc ul { margin-top: 12px; padding-left: 20px; color: var(--ink-2); max-width: 70ch; list-style: revert; }
+.doc li { margin: 6px 0; }
+.doc li::marker { color: var(--red); }
+.doc table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 14.5px; }
+.doc th, .doc td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.doc th { color: var(--ink-3); font-weight: 600; font-size: 13px; }
+.doc a { color: var(--red); }
+.doc .small { font-size: 13.5px; color: var(--ink-3); }
+
+/* 게시 전 확인이 필요한 초안이라는 경고. 눈에 띄어야 한다. */
+.notice {
+  margin-top: 28px; padding: 18px 20px; background: var(--red-soft);
+  border-left: 3px solid var(--red); border-radius: 0 var(--r-sm) var(--r-sm) 0;
+}
+.notice__t { margin: 0; font-size: 15px; font-weight: 700; color: var(--red); }
+.notice p { margin: 8px 0 0; font-size: 14px; color: var(--ink-2); }
+
+/* 아직 열지 않은 버튼(data-todo)을 눌렀을 때 화면 아래에 잠깐 뜨는 안내. tj.js 가 만든다. */
+.toast {
+  position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%);
+  z-index: 100; max-width: calc(100% - 40px); padding: 12px 20px; border-radius: 999px;
+  background: var(--ink); color: #fff; font-size: 14px; font-weight: 600; text-align: center;
+  box-shadow: 0 10px 30px rgba(28, 24, 21, .25); opacity: 0; pointer-events: none;
+  transition: opacity .2s ease;
+}
+.toast.is-on { opacity: 1; }
+
+/* ---------------------------------------------------------------- 좁은 화면 */
+@media (max-width: 640px) {
+  .bar__in { gap: 14px; }
+  .bar__nav { gap: 14px; }
+  .bar__nav a:not(.btn) { font-size: 14px; }
+  .hero__in { padding: 56px 0 48px; }
+  .hero__acts .btn { width: 100%; }
+  .hero__acts { margin-bottom: 40px; }
+  .stat { padding-right: 18px; margin-right: 18px; }
+  .cta__acts .btn { width: 100%; }
+  .lec__thumb-t { font-size: 22px; }
+  .br-lg { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script src="assets/lr/gate.js"></script>
+<script src="assets/lr/site-gate.js"></script>
+<title>강의실 — 누구나 부자 되는 공식</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#F5EFE6">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="assets/img/favicon-32.png" sizes="32x32">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/v3.css">
+<link rel="stylesheet" href="assets/css/depth.css">
+<link rel="stylesheet" href="assets/css/shell.css">
+<link rel="stylesheet" href="assets/css/classroom.css">
+</head>
+<body>
+
+<a class="skip" href="#main">본문으로 건너뛰기</a>
+
+<header class="bar">
+  <div class="bar__in">
+    <a class="bar__logo" href="index.html" aria-label="똑재TV 홈"><img src="assets/img/logo.png" alt="똑재TV" width="271" height="113"></a>
+    <span class="cr-badge">강의실</span>
+    <nav class="bar__nav" aria-label="강의실 메뉴">
+      <a class="bar__room" href="classroom.html"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="12" rx="2.5"/><path d="M10.5 9v4l3.5-2z" fill="currentColor" stroke="none"/><path d="M8 20h8"/></svg><span>내 강의실</span></a>
+      <a class="hide-sm" href="lectures.html">강의 소개</a>
+      <a class="sns sns--nv" href="https://cafe.naver.com/ttokjae" target="_blank" rel="noopener" aria-label="질문하러 네이버 카페로"><svg class="sns__ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" fill="#fff"/><path d="M8 7h3l2.6 4V7H16v10h-3l-2.6-4v4H8z" fill="#03C75A"/></svg><span>질문하러 카페로</span></a>
+      <a class="btn btn--line btn--sm" href="index.html">홈으로</a>
+    </nav>
+  </div>
+</header>
+<!-- 예시 페이지 안내. 실제 운영 때 지운다 -->
+<p class="prelaunch">예시 페이지입니다. 영상은 비메오 샘플이고, 진도는 이 브라우저에만 저장됩니다.</p>
+
+<main id="main">
+
+  <!-- 과정 머리: 전체 진도. 캐릭터가 진도만큼 걸어간다 ----------------------->
+  <section class="cr-head dark" aria-labelledby="cr-t">
+    <div class="wrap cr-head__in">
+      <div class="cr-head__txt">
+        <p class="cr-head__kicker"><span class="todo">0기</span> 온라인 강의 · 수강 기간 <span class="todo">0000.00.00까지</span></p>
+        <h1 class="cr-head__t" id="cr-t">누구나 부자 되는 공식</h1>
+      </div>
+      <div class="cr-total" aria-live="polite">
+        <div class="cr-total__nums"><b class="cr-total__pct">0%</b><span class="cr-total__sub">15강 중 0강 완료</span></div>
+        <div class="cr-track" role="progressbar" aria-label="전체 진도" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <span class="cr-track__fill"></span>
+          <img class="cr-track__char" src="assets/img/character.png" alt="" width="66" height="99">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap cr-grid">
+
+    <!-- 영상 + 지금 강의 -->
+    <section class="cr-main" aria-label="지금 보는 강의">
+      <div class="cr-player">
+        <div class="cr-player__frame" id="player"></div>
+      </div>
+
+      <div class="cr-now">
+        <p class="cr-now__week">1–2주차 · ETF</p>
+        <h2 class="cr-now__t">ETF 구조와 기본 개념</h2>
+        <p class="cr-now__resume" hidden></p>
+        <div class="cr-now__bar"><span class="cr-now__fill"></span></div>
+        <p class="cr-now__meta"><span class="cr-now__pct">0%</span> 시청 <span class="cr-now__dur"></span></p>
+        <div class="cr-now__acts">
+          <button type="button" class="btn btn--line btn--sm" data-act="prev">이전 강의</button>
+          <button type="button" class="btn btn--line btn--sm" data-act="done">완료로 표시</button>
+          <button type="button" class="btn btn--red btn--sm" data-act="next">다음 강의</button>
+        </div>
+      </div>
+
+      <div class="cr-files">
+        <h3 class="cr-files__t">이 강의 자료</h3>
+        <p class="cr-files__d"><span class="todo">교안 PDF·엑셀 등 자료 링크 — 확정 후 기재</span></p>
+        <p class="cr-files__d">궁금한 점은 <a class="tlink" href="https://cafe.naver.com/ttokjae" target="_blank" rel="noopener">평생 ETF 투자 카페</a>에 남겨 주세요. 개별 종목이나 개인 계좌에 대한 1:1 투자상담은 하지 않습니다.</p>
+      </div>
+    </section>
+
+    <!-- 커리큘럼: 실제 5주 구성(교안 15쪽). data-vimeo 에 강의별 비메오 영상 번호를 넣는다.
+         지금은 모두 비메오 공개 샘플(76979871)이다. -->
+    <aside class="cr-side" aria-label="커리큘럼">
+      <h2 class="cr-side__t">커리큘럼</h2>
+      <div class="cr-week">
+        <p class="cr-week__t"><span>1–2주차</span>ETF</p>
+        <ol class="cr-list" role="list">
+          <li><button type="button" class="cr-l" data-id="w1-1" data-vimeo="76979871">ETF 구조와 기본 개념</button></li>
+          <li><button type="button" class="cr-l" data-id="w1-2" data-vimeo="76979871">수수료와 세금</button></li>
+          <li><button type="button" class="cr-l" data-id="w1-3" data-vimeo="76979871">ETF 분류 — 대표지수·채권·금리·배당·커버드콜·금·리츠</button></li>
+          <li><button type="button" class="cr-l" data-id="w1-4" data-vimeo="76979871">체크리스트와 조회 사이트</button></li>
+        </ol>
+      </div>
+      <div class="cr-week">
+        <p class="cr-week__t"><span>3주차</span>세금과 절세계좌</p>
+        <ol class="cr-list" role="list">
+          <li><button type="button" class="cr-l" data-id="w3-1" data-vimeo="76979871">금융소득종합과세와 건강보험료</button></li>
+          <li><button type="button" class="cr-l" data-id="w3-2" data-vimeo="76979871">3층 연금</button></li>
+          <li><button type="button" class="cr-l" data-id="w3-3" data-vimeo="76979871">연금저축·IRP·ISA</button></li>
+        </ol>
+      </div>
+      <div class="cr-week">
+        <p class="cr-week__t"><span>4주차</span>자산배분과 포트폴리오</p>
+        <ol class="cr-list" role="list">
+          <li><button type="button" class="cr-l" data-id="w4-1" data-vimeo="76979871">자산배분 기초와 심화</button></li>
+          <li><button type="button" class="cr-l" data-id="w4-2" data-vimeo="76979871">대표 포트폴리오와 한국판 포트폴리오</button></li>
+          <li><button type="button" class="cr-l" data-id="w4-3" data-vimeo="76979871">연령대·성향·금액·목표 현금흐름별 구성</button></li>
+          <li><button type="button" class="cr-l" data-id="w4-4" data-vimeo="76979871">나만의 포트폴리오 완성</button></li>
+        </ol>
+      </div>
+      <div class="cr-week">
+        <p class="cr-week__t"><span>5주차</span>현금흐름과 리밸런싱</p>
+        <ol class="cr-list" role="list">
+          <li><button type="button" class="cr-l" data-id="w5-1" data-vimeo="76979871">현금흐름 시스템 세우기</button></li>
+          <li><button type="button" class="cr-l" data-id="w5-2" data-vimeo="76979871">실전 리밸런싱</button></li>
+          <li><button type="button" class="cr-l" data-id="w5-3" data-vimeo="76979871">하락장 대응</button></li>
+          <li><button type="button" class="cr-l" data-id="w5-4" data-vimeo="76979871">오래 끌고 가는 투자 마인드</button></li>
+        </ol>
+      </div>
+      <button type="button" class="cr-reset">진도 기록 지우기</button>
+    </aside>
+  </div>
+
+  <section class="caution" aria-labelledby="cau-t">
+    <div class="wrap">
+      <h2 class="caution__t" id="cau-t">수강 전 꼭 확인해 주세요</h2>
+      <ul role="list" class="caution__list">
+        <li>본 강의는 투자 교육 자료이며, 특정 종목의 매매를 권유하지 않습니다.</li>
+        <li>1:1 개별 투자상담이나 매매 신호는 제공하지 않습니다.</li>
+        <li>강의 영상과 자료의 녹화·복제·공유·재배포는 금지됩니다.</li>
+        <li>강의에 사용되는 세법·제도 내용은 촬영 시점 기준이며 이후 개정될 수 있습니다.</li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="foot__in">
+    <p class="foot__legal"><b>똑재TV는 금융투자업자가 아닌 유사투자자문업자로, 개별적인 투자 상담과 자금 운용이 불가합니다.</b></p>
+    <p class="foot__copy">&copy; <span id="yr">2026</span> 똑재TV. All rights reserved.</p>
+  </div>
+</footer>
+
+<!-- 비메오 플레이어 SDK (영상이 몇 초째인지, 끝났는지를 알려 준다). 못 불러오면 데모 재생으로 대신한다 -->
+<script src="https://cdn.jsdelivr.net/npm/@vimeo/player@2.29.7/dist/player.min.js" defer></script>
+<script src="assets/js/v3.js" defer></script>
+<script src="assets/js/classroom.js" defer></script>
+</body>
+</html>

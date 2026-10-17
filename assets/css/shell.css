@@ -1,0 +1,119 @@
+@charset "utf-8";
+/* ==========================================================================
+   똑재TV 3안 — 모든 페이지 공통 틀: 상단바(강의·전자책 우선, 유튜브·카페 색 버튼) + 바로 구매 바
+   v3.css(홈) 또는 tj.css+v3-sub.css(상세) 뒤에 읽힌다.
+   ========================================================================== */
+
+/* ---------------------------------------------------------------- 상단바 */
+.bar__in { gap: 20px; }
+.bar__prim { display: flex; align-items: center; gap: 4px; margin-left: 10px; }
+.bar__p {
+  position: relative; display: inline-flex; align-items: center; height: 38px; padding: 0 16px; border-radius: 999px; text-decoration: none;
+  font-size: 16.5px; font-weight: 800; letter-spacing: -.02em; color: var(--cocoa, #3A2F26);
+  transition: background-color .2s ease, color .2s ease;
+}
+.bar__p:hover { background: rgba(58, 47, 38, .07); }
+.bar__p[aria-current="page"] { background: var(--cocoa, #3A2F26); color: var(--yellow, #F8E04A); }
+.bar__nav { gap: 22px; }
+
+/* 유튜브(빨강)·네이버 카페(초록) — 각 서비스 색과 마크 그대로 */
+.sns {
+  display: inline-flex; align-items: center; flex: none; gap: 7px; height: 38px; padding: 0 16px 0 12px; border-radius: 999px;
+  font-size: 14.5px; font-weight: 800; line-height: 1.2; text-decoration: none; white-space: nowrap; color: #fff !important;
+  transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+}
+.sns__ico { width: 20px; height: 20px; flex: none; }
+/* 두께는 버튼 안쪽(inset)에만 — 바깥으로 튀어나오지 않게 */
+.sns--yt { background: #E62117; box-shadow: inset 0 -2px 0 rgba(0, 0, 0, .2), 0 6px 14px -8px rgba(230, 33, 23, .55); }
+.sns--nv { background: linear-gradient(180deg, #03C75A, #02B350); box-shadow: inset 0 -2px 0 rgba(0, 0, 0, .16), 0 6px 14px -8px rgba(3, 199, 90, .55); text-shadow: 0 1px 1px rgba(0, 0, 0, .18); }
+.sns:hover { filter: brightness(1.05); transform: translateY(-1px); }
+.sns:active { transform: translateY(1px); box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .2); }
+.sns + .sns { margin-left: -12px; }   /* 유튜브·카페 두 버튼 사이는 10px 로 붙여 한 묶음으로 */
+
+/* 스크롤하면 뜨는 알약 상단바: 본문 폭(1080)에 맞추고, 버튼 위아래로 11px 씩 숨 쉴 자리 */
+@media (min-width: 761px) {
+  .bar.is-float .bar__in { max-width: 1080px; height: 60px; padding: 0 11px 0 24px; }
+  .bar__nav, .bar__prim { flex: none; }
+}
+@media (max-width: 860px) {
+  .bar__in { gap: 10px; }
+  .bar__prim { margin-left: 2px; gap: 0; }
+  .bar__p { height: 36px; padding: 0 12px; font-size: 15.5px; }
+  .bar__nav { gap: 8px; }
+  .sns { width: 38px; padding: 0; justify-content: center; }
+  .sns + .sns { margin-left: -2px; }
+  .sns span { display: none; }          /* 좁은 화면: 마크만 */
+  .sns__ico { width: 22px; height: 22px; }
+}
+@media (max-width: 380px) { .bar__logo img { height: 24px; } }
+
+/* ---------------------------------------------------------------- 바로 구매 바 */
+.dock {
+  position: fixed; z-index: 95; left: 50%; bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  display: flex; gap: 6px; padding: 6px; border-radius: 999px;
+  background: rgba(43, 34, 27, .94); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .15), 0 20px 40px -14px rgba(43, 34, 27, .6);
+  transition: transform .45s cubic-bezier(.2, .7, .2, 1), opacity .3s ease;
+}
+.dock.is-tucked { transform: translate(-50%, 140%); opacity: 0; pointer-events: none; }
+.dock__i {
+  display: flex; align-items: center; gap: 10px; padding: 7px 18px 7px 8px; border-radius: 999px;
+  text-decoration: none; color: #FBF7F0; transition: background-color .2s ease;
+}
+.dock__i:hover { background: rgba(251, 247, 240, .08); }
+.dock__i--lec { background: #96181a; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .15); }
+.dock__i--lec:hover { background: #a91d1f; }
+.dock__i[aria-current="page"] { outline: 2px solid #F8E04A; outline-offset: -2px; }
+.dock__ico { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: rgba(0, 0, 0, .22); flex: none; }
+.dock__ico svg { width: 22px; height: 22px; fill: none; stroke: #F8E04A; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.dock__ico svg path[fill] { fill: #F8E04A; }
+.dock__cover { width: 28px; height: auto; border-radius: 3px; margin: 0 5px; box-shadow: 0 4px 8px rgba(0, 0, 0, .4); flex: none; }
+.dock__txt { display: grid; line-height: 1.25; }
+.dock__txt b { font-size: 15.5px; font-weight: 800; letter-spacing: -.02em; }
+.dock__txt small { font-size: 12px; color: rgba(251, 247, 240, .7); font-weight: 600; white-space: nowrap; }
+.dock__txt em { font-style: normal; color: #F8E04A; }
+/* 바에 가려지지 않도록 페이지 맨 아래에 여유 */
+body { padding-bottom: 96px; }
+
+@media (max-width: 640px) {
+  .dock {
+    left: 0; right: 0; bottom: 0; transform: none; border-radius: 18px 18px 0 0;
+    padding: 8px 10px calc(8px + env(safe-area-inset-bottom, 0px)); gap: 8px;
+  }
+  .dock.is-tucked { transform: translateY(110%); }
+  .dock__i { flex: 1 1 0; min-width: 0; justify-content: center; padding: 8px 10px; border-radius: 14px; }
+  .dock__i--book { background: rgba(251, 247, 240, .08); }
+  .dock__ico { width: 32px; height: 32px; }
+  .dock__txt small { display: none; }
+  .dock__cover { width: 22px; margin: 0 2px; }
+  body { padding-bottom: 84px; }
+}
+@media (prefers-reduced-motion: reduce) { .dock { transition: none; } }
+
+/* 메뉴 글자 규칙(tj.css·v3-sub.css 의 .bar__nav a)이 버튼까지 덮지 않게 */
+.bar__nav a.sns { font-size: 14.5px; }
+
+/* ---------------------------------------------------------------- 내 강의실 입구 (2026-10-17) */
+.bar__room {
+  display: inline-flex; align-items: center; flex: none; gap: 6px; height: 38px; padding: 0 14px 0 11px; border-radius: 999px;
+  font-size: 14.5px; font-weight: 800; letter-spacing: -.02em; text-decoration: none; white-space: nowrap;
+  color: var(--cocoa, #3A2F26); background: rgba(58, 47, 38, .06); box-shadow: inset 0 0 0 1.5px rgba(58, 47, 38, .7);
+  transition: background-color .2s ease, color .2s ease;
+}
+.bar__room svg { width: 19px; height: 19px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.bar__room:hover, .bar__room[aria-current="page"] { background: var(--cocoa, #3A2F26); color: var(--yellow, #F8E04A); box-shadow: none; }
+/* 상단바 글자 메뉴 규칙(tj.css .bar__nav a · aria-current 밑줄)이 이 버튼을 덮지 않게 */
+.bar__nav a.bar__room { font-size: 14.5px; font-weight: 800; padding-top: 0; padding-bottom: 0; text-decoration: none; color: var(--cocoa, #3A2F26); }
+.bar__nav a.bar__room:hover, .bar__nav a.bar__room[aria-current="page"] { color: var(--yellow, #F8E04A); text-decoration: none; }
+.bar__room + .hide-sm, .bar__room + .sns { margin-left: 0; }
+@media (max-width: 860px) {
+  .bar__room { width: 38px; padding: 0; justify-content: center; }
+  .bar__room span { display: none; }      /* 좁은 화면: 아이콘만 */
+  .bar__room svg { width: 21px; height: 21px; }
+}
+.buy__room { margin-top: 10px; font-size: 14px; color: var(--ink-2); }
+
+/* 강의실 페이지: 강의실 화면이 본문 폭을 쓴다 */
+.room-page main { min-height: 60vh; }
+.room-page .lr .lr-main { padding-top: 26px; }
