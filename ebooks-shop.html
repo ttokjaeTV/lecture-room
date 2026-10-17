@@ -154,11 +154,9 @@
 
         <div class="price">
           <div class="price__row">
-            <span class="price__rate"><span class="todo">00%</span></span>
-            <span class="price__now"><span class="todo">00,000</span><small>원</small></span>
-            <span class="price__was"><span class="todo">00,000원</span></span>
+            <span class="price__now">89,000<small>원</small></span>
           </div>
-          <p class="price__note">판매가는 정식 오픈과 함께 확정됩니다.</p>
+          <p class="price__note">강의 · 미국주식 기초반과 함께 사면 최대 13% 할인됩니다.</p>
         </div>
 
         <dl class="spec">
@@ -168,15 +166,22 @@
           <div><dt>이용 기간</dt><dd><span class="todo">00개월</span></dd></div>
         </dl>
 
+        <!-- 함께 구매 할인 — 묶음가를 바꿀 때는 assets/js/shop.js 의 BUNDLE 표와 index.html 의 묶음 표(.bset)도 함께 고친다 -->
+        <div class="bundle" data-bundle="eb" role="group" aria-labelledby="bd-h">
+          <p class="bundle__h" id="bd-h">함께 구매하면 더 저렴해요</p>
+            <label class="bundle__opt"><input type="checkbox" value="lec"><span class="bundle__chk" aria-hidden="true"></span><span class="bundle__n">+ 평생 마르지 않는 월 현금흐름 포트폴리오 완성반 함께<small>단품 298,000원 · 둘이 합쳐 349,000원</small></span><span class="bundle__off">10% 할인</span></label>
+            <label class="bundle__opt"><input type="checkbox" value="us"><span class="bundle__chk" aria-hidden="true"></span><span class="bundle__n">+ 미국주식 기초반 함께<small>단품 129,000원 · 둘이 합쳐 198,000원</small></span><span class="bundle__off">9% 할인</span></label>
+          <p class="bundle__all">둘 다 담으면 3개 묶음 <b>13% 할인 · 449,000원</b></p>
+        </div>
         <div class="pick spot glowbd" aria-label="선택한 상품">
           <p class="pick__h">선택한 상품</p>
           <div class="pick__row">
             <span class="pick__n">노후자금 시스템 만들기 노하우 · PDF</span>
-            <span class="pick__v"><span class="todo">00,000원</span></span>
+            <span class="pick__v">89,000원</span>
           </div>
           <div class="total">
             <span class="total__l">총 결제금액</span>
-            <span class="total__v"><span class="todo">00,000원</span></span>
+            <span class="total__v">89,000원</span>
           </div>
         </div>
 
@@ -229,18 +234,52 @@
         </ul>
       </section>
 
-      <!-- 목차 — [장] 제목 + 설명 한두 줄. 줄 수는 임시다 -->
+      <!-- 목차 — 강의 「주차별 커리큘럼」과 같은 쌓이는 카드(.weeks[data-stack]).
+           지금 다섯 장은 사이트 소개 문구에 이미 적힌 내용(상단 카드와 같음)이다.
+           실제 장 목차가 정해지면 .week 를 장 수만큼 복사해 번호·구분·제목·설명을 바꾸고, 아래 안내 한 줄은 지운다. -->
       <section class="dsec" id="toc" aria-labelledby="d2">
         <div class="sec__head">
           <span class="dsec__k">CONTENTS</span>
-          <h2 class="dsec__t" id="d2">목차</h2>
+          <h2 class="dsec__t" id="d2">이 책에서 다루는 것</h2>
         </div>
-        <ul role="list" class="packs">
-          <li class="pack"><span class="pack__tag">1장</span><h3 class="pack__t"><span class="todo">장 제목</span></h3><p class="pack__d"><span class="todo">이 장에서 다루는 것 한두 줄</span></p></li>
-          <li class="pack"><span class="pack__tag">2장</span><h3 class="pack__t"><span class="todo">장 제목</span></h3><p class="pack__d"><span class="todo">이 장에서 다루는 것 한두 줄</span></p></li>
-          <li class="pack"><span class="pack__tag">3장</span><h3 class="pack__t"><span class="todo">장 제목</span></h3><p class="pack__d"><span class="todo">이 장에서 다루는 것 한두 줄</span></p></li>
-          <li class="pack"><span class="pack__tag">4장</span><h3 class="pack__t"><span class="todo">장 제목</span></h3><p class="pack__d"><span class="todo">이 장에서 다루는 것 한두 줄</span></p></li>
-        </ul>
+        <ol role="list" class="weeks toc" data-stack>
+          <li class="week">
+            <span class="week__n">01</span>
+            <span class="week__phase">핵심 내용</span>
+            <h3 class="week__t">절세계좌를 채우는 순서</h3>
+            <p class="week__d">연금저축 · IRP · ISA, 세 계좌를 어떤 순서로 채우는지 정리합니다.</p>
+            <svg class="toc__ico" viewBox="0 0 48 48" aria-hidden="true"><rect x="8" y="26" width="32" height="10" rx="3"/><rect x="8" y="14" width="32" height="10" rx="3" class="a"/><rect x="8" y="38" width="32" height="6" rx="3" class="b"/><path d="M40 8l-6 4 6 4" class="c"/></svg>
+          </li>
+          <li class="week">
+            <span class="week__n">02</span>
+            <span class="week__phase">핵심 내용</span>
+            <h3 class="week__t">건강보험료가 갈리는 지점</h3>
+            <p class="week__d">건강보험료가 어디서 갈리는지 계산과 함께 짚습니다.</p>
+            <svg class="toc__ico" viewBox="0 0 48 48" aria-hidden="true"><path d="M24 6l15 6v10c0 10-6.5 16.5-15 20-8.5-3.5-15-10-15-20V12z"/><path d="M24 17v14M17 24h14" class="c"/></svg>
+          </li>
+          <li class="week">
+            <span class="week__n">03</span>
+            <span class="week__phase">핵심 내용</span>
+            <h3 class="week__t">세금이 결정되는 지점</h3>
+            <p class="week__d">세금이 어느 지점에서 정해지는지 계산과 함께 봅니다.</p>
+            <svg class="toc__ico" viewBox="0 0 48 48" aria-hidden="true"><path d="M12 6h24v36l-4-3-4 3-4-3-4 3-4-3-4 3z"/><path d="M19 30l10-12" class="c"/><circle cx="19" cy="19" r="2.5" class="a"/><circle cx="29" cy="29" r="2.5" class="a"/></svg>
+          </li>
+          <li class="week">
+            <span class="week__n">04</span>
+            <span class="week__phase">수록 자료</span>
+            <h3 class="week__t">계좌별 과세 비교표</h3>
+            <p class="week__d">계좌마다 세금이 어떻게 다른지 한 장의 표로 비교합니다.</p>
+            <svg class="toc__ico" viewBox="0 0 48 48" aria-hidden="true"><rect x="6" y="9" width="36" height="30" rx="4"/><path d="M6 18h36" class="c"/><path d="M18 18v21M30 18v21M6 28.5h36"/></svg>
+          </li>
+          <li class="week">
+            <span class="week__n">05</span>
+            <span class="week__phase">수록 자료</span>
+            <h3 class="week__t">판단 흐름도</h3>
+            <p class="week__d">헷갈릴 때 펼쳐 보는 판단 흐름도를 담았습니다.</p>
+            <svg class="toc__ico" viewBox="0 0 48 48" aria-hidden="true"><rect x="16" y="5" width="16" height="10" rx="3" class="a"/><rect x="5" y="33" width="16" height="10" rx="3"/><rect x="27" y="33" width="16" height="10" rx="3" class="b"/><path d="M24 15v8M13 33v-6h22v6" class="c"/></svg>
+          </li>
+        </ol>
+        <p class="aside-note">장별 상세 목차는 미리보기 페이지와 함께 올립니다.</p>
       </section>
 
       <section class="dsec" id="review" aria-labelledby="d3">
@@ -306,10 +345,10 @@
       </section>
 
       <a class="xsell spot glowbd" href="lectures-shop.html">
-        <span class="xsell__v xsell__v--lec">누구나<br>부자 되는<br>공식</span>
+        <span class="xsell__v xsell__v--lec">월 현금흐름<br>포트폴리오<br>완성반</span>
         <span>
           <span class="xsell__k">함께 보면 좋은 강의</span>
-          <span class="xsell__t" style="display:block">누구나 부자 되는 공식 · 5주 과정</span>
+          <span class="xsell__t" style="display:block">평생 마르지 않는 월 현금흐름 포트폴리오 완성반 · 5주 과정</span>
           <span class="xsell__d" style="display:block">ETF 구조와 절세계좌를 정리하고 내 포트폴리오까지 직접 짭니다. <span class="xsell__go">보러 가기 →</span></span>
         </span>
       </a>
@@ -381,7 +420,7 @@
 
 <!-- 바로 구매 바 — 위 상품 블록의 구매 버튼이 화면 밖으로 나가면 아래에 떠오른다. 결제가 열리면 href 를 결제 주소로 바꾼다 -->
 <div class="bbar" role="region" aria-label="바로 구매">
-  <span class="bbar__txt"><b>노후자금 시스템 만들기 노하우</b><small>PDF 410쪽 · <span class="todo">00,000원</span> · 판매 예정</small></span>
+  <span class="bbar__txt"><b>노후자금 시스템 만들기 노하우</b><small>PDF 410쪽 · <span data-bbar-price>89,000원</span> · 판매 예정</small></span>
   <a class="btn btn--red" href="#buy" data-todo="buy" aria-disabled="true">구매하기</a>
 </div>
 

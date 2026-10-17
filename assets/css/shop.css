@@ -604,3 +604,63 @@
   .bkst--mini .bk3d-wrap { --bw: 60cqw; --bh: 90cqw; --t: 9cqw; margin-top: calc(var(--bh) / -2 - 4cqw); }
   .bkst--mini::after { bottom: 13%; }
 }
+
+/* 전자책 목차 — 강의 주차 카드(.week)와 같은 틀에 번호를 크게, 오른쪽에 주제 아이콘 */
+.toc .week { grid-template-columns: 56px minmax(0, 1fr) 40px; gap: 2px 16px; align-items: start; }
+.toc .week__n { font-size: 24px; font-weight: 900; line-height: 1; letter-spacing: -.03em; padding-top: 2px; }
+.toc .week__phase { color: var(--red); opacity: .8; }
+.toc .week__t { color: var(--cocoa); }
+.toc__ico { grid-column: 3; grid-row: 1 / span 3; align-self: center; width: 40px; height: 40px;
+  fill: #F1DDD3; stroke: var(--cocoa); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.toc__ico .a { fill: var(--yellow); }
+.toc__ico .b { fill: #EDE3D3; }
+.toc__ico .c { fill: none; stroke: var(--red); stroke-width: 2.6; }
+@media (min-width: 680px) {
+  .toc .week { grid-template-columns: 72px minmax(0, 1fr) 52px; gap: 2px 22px; padding: 22px 26px; }
+  .toc .week__n { font-size: 30px; }
+  .toc__ico { width: 52px; height: 52px; }
+}
+
+/* ========================================================================== 함께 구매 할인 */
+/* 상세 — 체크하면 「선택한 상품」 · 「총 결제금액」 · 바로 구매 바가 묶음가로 바뀐다 (shop.js) */
+.bundle { margin-top: 16px; padding: 14px 14px 12px; border-radius: 14px; background: var(--red-soft); border: 1.5px solid var(--red-line); }
+.bundle__h { font-size: 12.5px; font-weight: 800; color: var(--red); padding-left: 2px; }
+.bundle__opt { position: relative; display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; align-items: center; gap: 12px; margin-top: 8px; padding: 11px 14px; border-radius: 11px; background: var(--paper); border: 1px solid var(--line); cursor: pointer; transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease; }
+.bundle__opt:hover { transform: translateY(-1px); box-shadow: 0 8px 18px -12px rgba(58, 47, 38, .35); }
+.bundle__opt input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.bundle__chk { width: 20px; height: 20px; border-radius: 6px; border: 2px solid #CFC3B3; display: grid; place-items: center; transition: background-color .2s ease, border-color .2s ease; }
+.bundle__chk::after { content: ''; width: 5px; height: 10px; margin-top: -2px; border: solid #fff; border-width: 0 2.5px 2.5px 0; transform: rotate(45deg) scale(.4); opacity: 0; transition: transform .2s ease, opacity .2s ease; }
+.bundle__opt input:checked + .bundle__chk { background: var(--red); border-color: var(--red); }
+.bundle__opt input:checked + .bundle__chk::after { opacity: 1; transform: rotate(45deg) scale(1); }
+.bundle__opt input:focus-visible + .bundle__chk { outline: 2px solid var(--red); outline-offset: 2px; }
+.bundle__opt.is-on { border-color: var(--red); box-shadow: inset 0 0 0 1px var(--red); }
+.bundle__n { font-size: 14.5px; font-weight: 800; color: var(--ink); line-height: 1.4; letter-spacing: -.02em; }
+.bundle__n small { display: block; margin-top: 1px; font-size: 12.5px; font-weight: 500; color: var(--ink-3); letter-spacing: 0; }
+.bundle__off { font-size: 13.5px; font-weight: 900; color: var(--red); white-space: nowrap; }
+.bundle__all { margin-top: 10px; padding-left: 2px; font-size: 12.5px; color: var(--ink-2); }
+.bundle__all b { color: var(--red); font-weight: 800; }
+.pick__row--off .pick__n, .pick__row--off .pick__v { color: var(--red); }
+.total__was { margin-right: 8px; font-size: 14px; font-weight: 600; color: var(--ink-3); }
+
+/* 처음 화면 — 묶음 4종 한눈에 */
+.bset { margin-top: 28px; padding: 22px 24px 24px; border-radius: 18px; background: var(--paper); border: 1px solid var(--line);
+  box-shadow: 0 1px 2px rgba(58, 47, 38, .05), 0 16px 30px -20px rgba(58, 47, 38, .3); }
+.bset__h { font-size: 18px; font-weight: 900; letter-spacing: -.035em; color: var(--cocoa); }
+.bset__d { margin-top: 4px; font-size: 14px; color: var(--ink-3); line-height: 1.6; }
+.bset__list { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 16px; }
+.bset__i { position: relative; display: grid; align-content: space-between; gap: 10px; padding: 16px 16px 14px; border-radius: 13px; background: var(--paper-gray); }
+.bset__n { font-size: 14.5px; font-weight: 800; line-height: 1.45; letter-spacing: -.02em; color: var(--ink); }
+.bset__p { display: flex; align-items: baseline; flex-wrap: wrap; gap: 2px 7px; font-variant-numeric: tabular-nums; }
+.bset__rate { font-size: 17px; font-weight: 900; color: var(--red); }
+.bset__now { font-size: 20px; font-weight: 900; letter-spacing: -.035em; color: var(--cocoa); }
+.bset__was { font-size: 13px; color: var(--ink-3); }
+.bset__i--best { background: linear-gradient(150deg, var(--cocoa), var(--cocoa-2, #4a3b30)); }
+.bset__i--best .bset__n, .bset__i--best .bset__now { color: var(--paper); }
+.bset__i--best .bset__rate { color: var(--yellow); }
+.bset__i--best .bset__was { color: rgba(251, 247, 240, .6); }
+.bset__tag { justify-self: start; padding: 3px 9px; border-radius: 999px; background: var(--yellow); color: var(--on-yellow); font-size: 11.5px; font-weight: 900; }
+
+/* 강의 표지 — 이름이 세 줄(평생 마르지 않는 / 월 현금흐름 / 포트폴리오 완성반)이라 글자를 한 단계 줄인다 */
+.cov__t--3 { font-size: clamp(27px, 3.7vw, 40px); }
+.cov.is-play .cov__t .ln:nth-child(3) > span { animation-delay: .24s; }
+.xsell__v--lec { font-size: 12px; }

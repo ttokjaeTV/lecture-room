@@ -101,3 +101,48 @@
   window.addEventListener('resize', onScroll);
   mark(); dock();
 })();
+
+/* ------------------------------------------------------------ 함께 구매 할인
+   상세의 [data-bundle] 체크칸을 고르면 「선택한 상품」 · 「총 결제금액」 · 바로 구매 바 가격이 묶음가로 바뀐다.
+   값을 바꿀 때는 각 상세의 표시 가격 · 묶음 칸 문구 · index.html 묶음 표(.bset)도 함께 고친다. */
+(function () {
+  var box = document.querySelector('[data-bundle]');
+  if (!box) return;
+  var PRICE = { lec: 298000, eb: 89000, us: 129000 };
+  var NAME = { lec: '평생 마르지 않는 월 현금흐름 포트폴리오 완성반', eb: '노후자금 시스템 만들기 노하우 · PDF', us: '미국주식 기초반' };
+  var BUNDLE = { 'eb+us': [198000, 9], 'eb+lec': [349000, 10], 'lec+us': [379000, 11], 'eb+lec+us': [449000, 13] };
+  var base = box.getAttribute('data-bundle');
+  var pick = document.querySelector('.pick');
+  var total = pick && pick.querySelector('.total__v');
+  var baseRow = pick && pick.querySelector('.pick__row');
+  var bbar = document.querySelector('[data-bbar-price]');
+  function won(n) { return n.toLocaleString('ko-KR') + '원'; }
+  function row(n, v, off) {
+    var r = document.createElement('div');
+    r.className = 'pick__row' + (off ? ' pick__row--off' : '');
+    r.setAttribute('data-added', '');
+    r.innerHTML = '<span class="pick__n"></span><span class="pick__v"></span>';
+    r.firstChild.textContent = n; r.lastChild.textContent = v;
+    return r;
+  }
+  function update() {
+    var keys = [base];
+    Array.prototype.forEach.call(box.querySelectorAll('input'), function (i) {
+      i.closest('.bundle__opt').classList.toggle('is-on', i.checked);
+      if (i.checked) keys.push(i.value);
+    });
+    var sum = keys.reduce(function (a, k) { return a + PRICE[k]; }, 0);
+    var b = BUNDLE[keys.slice().sort().join('+')];
+    var pay = b ? b[0] : sum;
+    if (pick && baseRow) {
+      Array.prototype.forEach.call(pick.querySelectorAll('[data-added]'), function (r) { r.remove(); });
+      var at = baseRow;
+      keys.slice(1).forEach(function (k) { var r = row(NAME[k], won(PRICE[k])); at.after(r); at = r; });
+      if (b) at.after(row('묶음 할인 ' + b[1] + '%', '−' + won(sum - pay), true));
+    }
+    if (total) total.innerHTML = (b ? '<s class="total__was">' + won(sum) + '</s>' : '') + won(pay);
+    if (bbar) bbar.textContent = won(pay) + (b ? ' (' + (keys.length) + '개 묶음)' : '');
+  }
+  box.addEventListener('change', update);
+  update();
+})();

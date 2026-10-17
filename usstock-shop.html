@@ -92,17 +92,22 @@
         <p class="info__lead">미국주식을 처음 시작하는 분을 위한 기초 과정입니다. <span class="todo">한 줄 소개 — 확정 후 기재</span></p>
         <div class="price">
           <div class="price__row">
-            <span class="price__rate"><span class="todo">00%</span></span>
-            <span class="price__now"><span class="todo">000,000</span><small>원</small></span>
-            <span class="price__was"><span class="todo">000,000원</span></span>
+            <span class="price__now">129,000<small>원</small></span>
           </div>
-          <p class="price__note">수강료·할인은 모집 공지와 함께 확정됩니다.</p>
+          <p class="price__note">전자책 · 강의와 함께 사면 최대 13% 할인됩니다.</p>
         </div>
         <dl class="spec"><div><dt>구성</dt><dd><span class="todo">00강 · 확정 후 기재</span></dd></div><div><dt>신청 기간</dt><dd><span class="todo">00.00 ~ 00.00</span></dd></div><div><dt>진행 방식</dt><dd><span class="todo">확정 후 기재</span></dd></div><div><dt>수강 기간</dt><dd><span class="todo">확정 후 기재</span></dd></div></dl>
+        <!-- 함께 구매 할인 — 묶음가를 바꿀 때는 assets/js/shop.js 의 BUNDLE 표와 index.html 의 묶음 표(.bset)도 함께 고친다 -->
+        <div class="bundle" data-bundle="us" role="group" aria-labelledby="bd-h">
+          <p class="bundle__h" id="bd-h">함께 구매하면 더 저렴해요</p>
+            <label class="bundle__opt"><input type="checkbox" value="lec"><span class="bundle__chk" aria-hidden="true"></span><span class="bundle__n">+ 평생 마르지 않는 월 현금흐름 포트폴리오 완성반 함께<small>단품 298,000원 · 둘이 합쳐 379,000원</small></span><span class="bundle__off">11% 할인</span></label>
+            <label class="bundle__opt"><input type="checkbox" value="eb"><span class="bundle__chk" aria-hidden="true"></span><span class="bundle__n">+ 전자책 함께<small>단품 89,000원 · 둘이 합쳐 198,000원</small></span><span class="bundle__off">9% 할인</span></label>
+          <p class="bundle__all">둘 다 담으면 3개 묶음 <b>13% 할인 · 449,000원</b></p>
+        </div>
         <div class="pick spot glowbd" aria-label="선택한 상품">
           <p class="pick__h">선택한 상품</p>
-          <div class="pick__row"><span class="pick__n">미국주식 기초반</span><span class="pick__v"><span class="todo">000,000원</span></span></div>
-          <div class="total"><span class="total__l">총 결제금액</span><span class="total__v"><span class="todo">000,000원</span></span></div>
+          <div class="pick__row"><span class="pick__n">미국주식 기초반</span><span class="pick__v">129,000원</span></div>
+          <div class="total"><span class="total__l">총 결제금액</span><span class="total__v">129,000원</span></div>
         </div>
         <div class="buy">
           <a class="btn btn--red" href="#apply" data-todo="apply" aria-disabled="true" data-magnet>수강 신청하기</a>
@@ -146,7 +151,7 @@
           <li>디지털 콘텐츠 특성상 청약철회가 제한될 수 있습니다. 자세한 내용은 <a href="legal/refund.html">환불 규정</a>을 확인해 주세요.</li>
         </ul>
       </section>
-      <a class="xsell spot glowbd" href="lectures-shop.html"><span class="xsell__v xsell__v--lec">누구나<br>부자 되는<br>공식</span><span><span class="xsell__k">함께 보면 좋은 강의</span><span class="xsell__t" style="display:block">누구나 부자 되는 공식 · 5주 과정</span><span class="xsell__d" style="display:block">ETF 구조와 절세계좌를 정리하고 내 포트폴리오까지 직접 짭니다. <span class="xsell__go">보러 가기 →</span></span></span></a>
+      <a class="xsell spot glowbd" href="lectures-shop.html"><span class="xsell__v xsell__v--lec">월 현금흐름<br>포트폴리오<br>완성반</span><span><span class="xsell__k">함께 보면 좋은 강의</span><span class="xsell__t" style="display:block">평생 마르지 않는 월 현금흐름 포트폴리오 완성반 · 5주 과정</span><span class="xsell__d" style="display:block">ETF 구조와 절세계좌를 정리하고 내 포트폴리오까지 직접 짭니다. <span class="xsell__go">보러 가기 →</span></span></span></a>
     </div>
   </div>
 
@@ -214,7 +219,7 @@
 
 <!-- 바로 구매 바 — 위 상품 블록의 구매 버튼이 화면 밖으로 나가면 아래에 떠오른다. 결제가 열리면 href 를 결제 주소로 바꾼다 -->
 <div class="bbar" role="region" aria-label="바로 구매">
-  <span class="bbar__txt"><b>미국주식 기초반</b><small><span class="todo">000,000원</span> · 준비 중</small></span>
+  <span class="bbar__txt"><b>미국주식 기초반</b><small><span data-bbar-price>129,000원</span> · 준비 중</small></span>
   <a class="btn btn--red" href="#apply" data-todo="apply" aria-disabled="true">수강 신청</a>
 </div>
 
