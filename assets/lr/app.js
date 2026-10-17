@@ -168,7 +168,7 @@
       form = '<form id="f-auth"><label class="field"><span>이름</span><input class="input" name="name" autocomplete="name" required></label>' +
         '<label class="field"><span>이메일</span><input class="input" type="email" name="email" autocomplete="email" required><em>강의를 구매할 때 쓴 이메일로 가입하면 수강 권한이 자동으로 연결돼요.</em></label>' +
         '<label class="field"><span>비밀번호 (6자 이상)</span><input class="input" type="password" name="pw" minlength="6" autocomplete="new-password" required></label>' +
-        pw2Field() + '<button class="lbtn lbtn-primary lbtn-block">회원가입</button></form>';
+        pw2Field() + agreeField() + '<button class="lbtn lbtn-primary lbtn-block">회원가입</button></form>';
     } else {
       form = '<form id="f-auth"><p class="lsmall muted" style="margin-top:0">가입한 이메일로 비밀번호 재설정 링크를 보내드려요.</p>' +
         '<label class="field"><span>이메일</span><input class="input" type="email" name="email" required></label>' +
@@ -184,7 +184,7 @@
       (msg ? '<div class="msg ' + (msg.ok ? 'msg-ok' : 'msg-err') + '">' + esc(msg.text) + '</div>' : '') + form + '</div>' + demoBox + '</div>');
 
     $$('[data-tab]').forEach(function (b) { b.addEventListener('click', function (e) { e.preventDefault(); viewAuth(b.getAttribute('data-tab')); }); });
-    if (tab === 'signup') bindPw2($('#f-auth'));
+    if (tab === 'signup') { bindPw2($('#f-auth')); bindAgree($('#f-auth')); }
     $('#f-auth').addEventListener('submit', async function (e) {
       e.preventDefault();
       var f = e.target, btn = $('button', f); btn.disabled = true;
@@ -194,7 +194,8 @@
           S.user = await B.signIn(email, pw);
           go('#/');
         } else if (tab === 'signup') {
-          var r = await B.signUp(email, pw, f.name.value.trim());
+          var now = new Date().toISOString();
+          var r = await B.signUp(email, pw, f.name.value.trim(), { terms_agreed_at: now, privacy_agreed_at: now, age14_confirmed_at: now });
           if (r.needConfirm) viewAuth('login', { ok: true, text: email + ' 로 인증 메일을 보냈어요. 메일의 링크를 누른 뒤 로그인해 주세요.' });
           else { S.user = await B.init(); go('#/'); }
         } else {
@@ -220,6 +221,25 @@
     }
     f.pw.addEventListener('input', check);
     f.pw2.addEventListener('input', check);
+  }
+
+  // 가입 동의: 이용약관 · 개인정보 수집·이용 · 만 14세 이상 (모두 필수) + 전체 동의
+  function agreeField() {
+    var link = function (url) { return url ? ' <a href="' + esc(url) + '" target="_blank" rel="noopener">보기</a>' : ''; };
+    var item = function (name, text, url) {
+      return '<label class="agree-item"><input type="checkbox" name="' + name + '" required><span><b>(필수)</b> ' + text + '</span>' + link(url) + '</label>';
+    };
+    return '<div class="agree"><label class="agree-all"><input type="checkbox" name="agree_all"><span>전체 동의</span></label>' +
+      item('agree_terms', '이용약관에 동의합니다', CFG.TERMS_URL) +
+      item('agree_privacy', '개인정보 수집·이용에 동의합니다', CFG.PRIVACY_URL) +
+      item('agree_age', '만 14세 이상입니다') + '</div>';
+  }
+  function bindAgree(f) {
+    var all = f.agree_all, items = [f.agree_terms, f.agree_privacy, f.agree_age];
+    all.addEventListener('change', function () { items.forEach(function (c) { c.checked = all.checked; }); });
+    items.forEach(function (c) {
+      c.addEventListener('change', function () { all.checked = items.every(function (x) { return x.checked; }); });
+    });
   }
 
   function viewSetPassword() {

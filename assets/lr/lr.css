@@ -120,6 +120,14 @@ body.lr { margin: 0; }
 .lr label.field > em.pw2-hint:empty { display: none; }
 .lr label.field > em.pw2-hint.ok { color: var(--green); }
 .lr label.field > em.pw2-hint.err { color: #b3261e; }
+.lr .agree { margin: 4px 0 18px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 12px; background: #fff; }
+.lr .agree label { display: flex; align-items: center; gap: 9px; font-size: 13.5px; line-height: 1.45; cursor: pointer; min-width: 0; }
+.lr .agree label + label { margin-top: 9px; }
+.lr .agree input[type=checkbox] { width: 18px; height: 18px; flex: none; margin: 0; accent-color: var(--accent); }
+.lr .agree label > span { flex: 1 1 auto; min-width: 0; }
+.lr .agree-all { padding-bottom: 10px; border-bottom: 1px solid var(--border); font-weight: 800; font-size: 14.5px !important; }
+.lr .agree-item b { color: var(--accent); font-weight: 700; }
+.lr .agree-item a { flex: none; font-size: 12.5px; color: var(--ink-mute); text-decoration: underline; }
 .lr .input, .lr select.input, .lr textarea.input {
   width: 100%; min-height: 42px; padding: 9px 12px; border-radius: 10px;
   border: 1px solid var(--border); background: #fff; font-weight: 600;

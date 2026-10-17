@@ -19,6 +19,10 @@ window.LR_CONFIG = {
   SUPABASE_ANON_KEY: 'sb_publishable_KsEHk7U9y729c6w9L5KF3Q_9WTRTF5j',   // 공개용(publishable) 키. secret 키는 절대 넣지 말 것
 
   // 수강 권한이 없는 강의의 [수강 신청하기] 버튼이 갈 곳
+  // 회원가입 동의 항목의 [보기] 링크 (비우면 링크 없이 문구만)
+  TERMS_URL: 'legal/terms.html',
+  PRIVACY_URL: 'legal/privacy.html',
+
   PURCHASE_URL: 'lectures-shop.html',
   HOME_URL: '',
 

@@ -74,10 +74,12 @@
         token = d.session.access_token;
         return loadProfile(d.user);
       },
-      signUp: async function (email, pw, name) {
+      // meta: 가입 동의 시각(이용약관·개인정보·만 14세) → 회원 정보(auth.users)에 함께 남는다
+      signUp: async function (email, pw, name, meta) {
+        var data = Object.assign({}, meta || {}, { name: name || '' });
         var d = chk(await sb.auth.signUp({
           email: String(email).trim(), password: pw,
-          options: { data: { name: name || '' }, emailRedirectTo: redirectUrl() }
+          options: { data: data, emailRedirectTo: redirectUrl() }
         }));
         if (d.user && Array.isArray(d.user.identities) && d.user.identities.length === 0) {
           throw new Error('이미 가입된 이메일이에요.');
