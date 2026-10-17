@@ -7,6 +7,11 @@
   var CFG = window.LR_CONFIG || {};
   var DAY = 86400000;
   var B = null;
+  // ?next=checkout.html?items=… — 로그인하면 돌아갈 화면 (같은 사이트의 .html 만 받는다)
+  var NEXT = (function () {
+    try { var n = new URLSearchParams(location.search).get('next') || ''; return /^[a-z0-9_-]+\.html(\?[^#<>"'\s]*)?$/i.test(n) ? n : ''; } catch (e) { return ''; }
+  })();
+  function goNext() { if (!NEXT) return false; location.replace(NEXT); return true; }
   var app = document.getElementById('app');
   var S = { user: null, courses: [], lessons: [], enrollments: [], progress: [], sessions: [] };
   var A = null;          // 관리자 데이터 캐시
@@ -209,7 +214,7 @@
         '<div class="row"><button class="lbtn lbtn-sm lbtn-dark" data-demo="student">수강생으로 체험</button><button class="lbtn lbtn-sm" data-demo="admin">관리자로 체험</button></div></div>'
       : '';
     shell('<div class="auth-wrap"><h1 class="auth-title">' + esc(CFG.SITE_NAME || '강의실') + '</h1>' +
-      '<p class="page-sub" style="margin-bottom:22px">구매한 강의를 여기서 수강할 수 있어요.</p>' +
+      '<p class="page-sub" style="margin-bottom:22px">' + (NEXT ? '결제하려면 먼저 로그인해 주세요. 로그인하면 주문 화면으로 바로 돌아가요.' : '구매한 강의를 여기서 수강할 수 있어요.') + '</p>' +
       '<div class="card card-pad"><div class="ltabs">' + t('login', '로그인') + t('signup', '회원가입') + '</div>' +
       (msg ? '<div class="msg ' + (msg.ok ? 'msg-ok' : 'msg-err') + '">' + esc(msg.text) + '</div>' : '') + form + '</div>' + demoBox + '</div>');
 
@@ -1165,6 +1170,7 @@
     if (!/^#\/watch\//.test(h)) cleanupWatch();
     if (B.isRecovery && B.isRecovery()) { viewSetPassword(); return; }
     if (!S.user) { viewAuth('login'); return; }
+    if (goNext()) return;   // 결제 화면 등에서 로그인하러 온 경우 원래 화면으로
     if (h === '#/login') { location.hash = '#/'; return; }
     // 상단 탭(이용 중인 상품)을 처음 한 번 불러온 뒤 화면을 그린다
     if (!S.tabs) {
