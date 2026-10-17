@@ -151,7 +151,11 @@
         '<button data-demo="student">수강생 화면</button><button data-demo="admin">관리자 화면</button><button data-demo="reset">데모 초기화</button></div>'
       : '';
     var home = CFG.HOME_URL ? '<a class="home-link" href="' + esc(CFG.HOME_URL) + '">← 홈페이지</a>' : '';
-    var navHtml = u ? '<nav class="nav"><a href="#/" class="' + (nav === 'home' ? 'on' : '') + '">내 강의실</a>' +
+    // 이용 중인 상품마다 탭 하나 (누부공 · 투자 Tool …). 아무것도 없으면 '내 강의실'
+    var tabs = S.tabs || [];
+    var navHtml = u ? '<nav class="nav">' + (tabs.length ? tabs.map(function (c) {
+        return '<a href="#/p/' + esc(c.id) + '" class="' + (nav === 'p:' + c.id ? 'on' : '') + '" data-tab-kind="' + kindOf(c) + '">' + esc(tabLabel(c)) + '</a>';
+      }).join('') : '<a href="#/" class="' + (nav === 'home' ? 'on' : '') + '">내 강의실</a>') +
       (u.is_admin ? '<a href="#/admin" class="' + (nav === 'admin' ? 'on' : '') + '">관리자</a>' : '') + '</nav>' : '';
     var userHtml = u ? '<div class="user"><span class="user-name">' + esc(u.name || u.email) + '<small>' + esc(u.email) + '</small></span>' +
       '<button class="lbtn lbtn-sm" data-act="logout">로그아웃</button></div>' : '';
@@ -170,12 +174,12 @@
     var d = e.target.closest('[data-demo]');
     if (d && B.mode === 'demo') {
       var v = d.getAttribute('data-demo');
-      if (v === 'reset') { if (confirm('데모 데이터를 처음 상태로 되돌릴까요?')) { S.user = null; A = null; B.resetDemo(); go('#/login'); } return; }
-      B.loginAs(v).then(function (u) { S.user = u; A = null; go(v === 'admin' ? '#/admin' : '#/'); });
+      if (v === 'reset') { if (confirm('데모 데이터를 처음 상태로 되돌릴까요?')) { S.user = null; S.tabs = null; A = null; B.resetDemo(); go('#/login'); } return; }
+      B.loginAs(v).then(function (u) { S.user = u; S.tabs = null; A = null; go(v === 'admin' ? '#/admin' : '#/'); });
       return;
     }
     if (e.target.closest('[data-act="logout"]')) {
-      cleanupWatch(); S.user = null; A = null;
+      cleanupWatch(); S.user = null; S.tabs = null; A = null;
       B.signOut().then(function () { go('#/login'); });
     }
   });
@@ -217,13 +221,13 @@
       var email = f.email.value, pw = f.pw && f.pw.value;
       try {
         if (tab === 'login') {
-          S.user = await B.signIn(email, pw);
+          S.tabs = null; S.user = await B.signIn(email, pw);
           go('#/');
         } else if (tab === 'signup') {
           var now = new Date().toISOString();
           var r = await B.signUp(email, pw, f.name.value.trim(), { terms_agreed_at: now, privacy_agreed_at: now, age14_confirmed_at: now });
           if (r.needConfirm) viewAuth('login', { ok: true, text: email + ' 로 인증 메일을 보냈어요. 메일의 링크를 누른 뒤 로그인해 주세요.' });
-          else { S.user = await B.init(); go('#/'); }
+          else { S.tabs = null; S.user = await B.init(); go("#/"); }
         } else {
           await B.resetPassword(email);
           viewAuth('login', { ok: true, text: '재설정 메일을 보냈어요. 메일의 링크를 눌러 새 비밀번호를 정해 주세요.' });
@@ -347,54 +351,81 @@
       '<span class="lesson-mini"><span>' + pct(ratio) + '%</span><span class="pbar"><i style="width:' + pct(ratio) + '%"></i></span></span></' + tag.split(' ')[0] + '>';
   }
 
-  async function viewHome() {
-    shell('<div class="empty">불러오는 중…</div>', 'home');
-    try { await loadMine(); } catch (e) { $('#lr-main').innerHTML = '<div class="msg msg-err">' + esc(errMsg(e)) + '</div>'; return; }
-    // 이용 중인 멤버십만 도구 목록을 받아 온다 (서버도 회원에게만 내줌)
+  // 탭 이름: 멤버십은 '투자 Tool', 전자책은 '전자책', 강의는 강의명(끝의 연도·괄호는 뗌. 예: 누부공 2026 → 누부공)
+  function tabLabel(c) {
+    var k = kindOf(c);
+    if (k === 'membership') return '투자 Tool';
+    if (k === 'ebook') return '전자책';
+    var t = String(c.title || '').replace(/\s*\([^)]*\)\s*$/, '').replace(/\s+\d{4}$/, '').trim() || '강의';
+    return t.length > 14 ? t.slice(0, 13) + '…' : t;
+  }
+  function myCards() {
+    return S.courses.map(function (c) {
+      var e = myEnr(c.id), st = S.user.is_admin ? 'active' : enrState(e);
+      return { c: c, e: e, st: st };
+    }).sort(function (a, b) { return (a.c.sort || 0) - (b.c.sort || 0); });
+  }
+  // 내 강의실 데이터 + 탭 목록 + (멤버십 회원만) 도구 목록
+  async function loadRoom() {
+    await loadMine();
+    S.tabs = myCards().filter(function (x) { return x.st === 'active'; }).map(function (x) { return x.c; });
     S.toolLists = {};
-    await Promise.all(S.courses.filter(function (c) {
-      return kindOf(c) === 'membership' && (S.user.is_admin || enrState(myEnr(c.id)) === 'active');
-    }).map(function (c) {
+    await Promise.all(S.tabs.filter(function (c) { return kindOf(c) === 'membership'; }).map(function (c) {
       return (B.myToolData ? B.myToolData(toolsKey(c)) : Promise.resolve(null)).then(function (d) {
         S.toolLists[c.id] = d && Array.isArray(d.items) ? d.items : DEFAULT_TOOLS;
       }).catch(function () { S.toolLists[c.id] = DEFAULT_TOOLS; });
     }));
-    var cards = S.courses.map(function (c) {
-      var e = myEnr(c.id), st = S.user.is_admin ? 'active' : enrState(e);
-      return { c: c, e: e, st: st, order: st === 'active' ? 0 : st === 'none' ? 2 : 1 };
-    }).sort(function (a, b) { return a.order - b.order || a.c.sort - b.c.sort; });
+  }
 
-    var mine = cards.filter(function (x) { return x.st === 'active'; }).length;
+  // '#/' : 이용 중인 상품이 있으면 첫 탭으로, 없으면 구매 안내
+  async function viewHome() {
+    shell('<div class="empty">불러오는 중…</div>', 'home');
+    try { await loadRoom(); } catch (e) { $('#lr-main').innerHTML = '<div class="msg msg-err">' + esc(errMsg(e)) + '</div>'; return; }
+    if (S.tabs.length) { location.replace('#/p/' + S.tabs[0].id); return; }
+    var cards = myCards();
     var html = '<div class="page-head"><div><h1 class="page-title">' + esc(S.user.name || '회원') + '님의 강의실</h1>' +
-      '<p class="page-sub">이용 중인 상품 ' + mine + '개' + (S.user.is_admin ? ' · 관리자는 모든 상품을 미리 볼 수 있어요' : '') + '</p></div></div><div class="grid">';
-
+      '<p class="page-sub">아직 이용 중인 상품이 없어요. 구매하시면 여기에 상품별 탭이 생겨요.</p></div></div><div class="grid">';
     if (!cards.length) html += '<div class="card empty">아직 등록된 상품이 없어요.</div>';
-    cards.forEach(function (x) {
-      if (!isLecture(x.c)) { html += productCard(x); return; }
-      var c = x.c, ls = lessonsOf(c.id), can = x.st === 'active';
-      var sm = courseSummary(c);
-      var meta = (S.user.is_admin && !x.e ? '<span class="lchip chip-dark">관리자 미리보기</span>' : (x.e ? periodChip(x.e) : '')) +
-        (c.max_views != null ? '<span class="lchip">회차당 ' + n2(c.max_views) + '회 시청</span>' : '<span class="lchip">시청 횟수 무제한</span>') +
-        '<span class="lchip">' + ls.length + '강 · ' + C.fmtMinutes(sm.total) + '</span>';
-      html += '<section class="card course' + (can ? '' : ' locked') + '"><div class="course-head"><div><h2 class="course-title">' + esc(c.title) + '</h2>' +
-        (c.description ? '<p class="course-desc">' + esc(c.description) + '</p>' : '') + '<div class="course-meta">' + meta + '</div></div>' +
-        (can ? '<div class="course-progress"><div class="lsmall muted" style="font-weight:700">전체 진도 · 완료 ' + sm.done + '/' + sm.count + '강</div><b>' + pct(sm.ratio) + '%</b>' + trackHtml(sm.ratio) + '</div>' : '') +
-        '</div><div class="lessons">' + (ls.length ? lessonList(c, ls, can) : '<div class="empty">회차가 아직 없어요.</div>') + '</div>';
-      if (!can) {
-        html += lockCta(x);
-      }
-      html += '</section>';
-    });
+    cards.forEach(function (x) { html += isLecture(x.c) ? lectureCard(x) : productCard(x); });
     html += '</div>';
+    shell(html, 'home');
+  }
 
-    if (S.sessions.length) {
-      html += '<section class="card card-pad" style="margin-top:18px"><h2 class="section-title">최근 시청 기록</h2><ul class="history-list">' +
-        S.sessions.filter(function (s) { return s.played_sec > 0; }).map(function (s) {
-          var l = byId(S.lessons, s.lesson_id);
-          return '<li><span>' + esc(l ? l.title : '삭제된 회차') + '</span><span class="muted nowrap">' + fmtDT(s.started_at) + ' · ' + C.fmtMinutes(s.played_sec) + ' 시청</span></li>';
-        }).join('') + '</ul></section>';
+  // '#/p/상품ID' : 상품 하나 (강의 · 전자책 · 투자 Tool)
+  async function viewProduct(id) {
+    shell('<div class="empty">불러오는 중…</div>', 'p:' + id);
+    try { await loadRoom(); } catch (e) { $('#lr-main').innerHTML = '<div class="msg msg-err">' + esc(errMsg(e)) + '</div>'; return; }
+    var x = myCards().find(function (y) { return y.c.id === id; });
+    if (!x) { location.replace('#/'); return; }
+    var html = isLecture(x.c) ? lectureCard(x) : productCard(x);
+    if (isLecture(x.c) && x.st === 'active') {
+      var mine = S.sessions.filter(function (s) { var l = byId(S.lessons, s.lesson_id); return s.played_sec > 0 && l && l.course_id === id; });
+      if (mine.length) {
+        html += '<section class="card card-pad" style="margin-top:18px"><h2 class="section-title">최근 시청 기록</h2><ul class="history-list">' +
+          mine.map(function (s) {
+            var l = byId(S.lessons, s.lesson_id);
+            return '<li><span>' + esc(l.title) + '</span><span class="muted nowrap">' + fmtDT(s.started_at) + ' · ' + C.fmtMinutes(s.played_sec) + ' 시청</span></li>';
+          }).join('') + '</ul></section>';
+      }
     }
-    $('#lr-main').innerHTML = html;
+    shell(html, 'p:' + id);
+    bindEbook();
+  }
+
+  function lectureCard(x) {
+    var c = x.c, ls = lessonsOf(c.id), can = x.st === 'active';
+    var sm = courseSummary(c);
+    var meta = (S.user.is_admin && !x.e ? '<span class="lchip chip-dark">관리자 미리보기</span>' : (x.e ? periodChip(x.e) : '')) +
+      (c.max_views != null ? '<span class="lchip">회차당 ' + n2(c.max_views) + '회 시청</span>' : '<span class="lchip">시청 횟수 무제한</span>') +
+      '<span class="lchip">' + ls.length + '강 · ' + C.fmtMinutes(sm.total) + '</span>';
+    return '<section class="card course' + (can ? '' : ' locked') + '"><div class="course-head"><div><h2 class="course-title">' + esc(c.title) + '</h2>' +
+      (c.description ? '<p class="course-desc">' + esc(c.description) + '</p>' : '') + '<div class="course-meta">' + meta + '</div></div>' +
+      (can ? '<div class="course-progress"><div class="lsmall muted" style="font-weight:700">전체 진도 · 완료 ' + sm.done + '/' + sm.count + '강</div><b>' + pct(sm.ratio) + '%</b>' + trackHtml(sm.ratio) + '</div>' : '') +
+      '</div><div class="lessons">' + (ls.length ? lessonList(c, ls, can) : '<div class="empty">회차가 아직 없어요.</div>') + '</div>' +
+      (can ? '' : lockCta(x)) + '</section>';
+  }
+
+  function bindEbook() {
     $$('[data-ebook]').forEach(function (b) {
       b.addEventListener('click', async function () {
         b.disabled = true; var label = b.textContent; b.textContent = '준비 중…';
@@ -455,17 +486,19 @@
 
   async function viewWatch(lessonId) {
     shell('<div class="empty">불러오는 중…</div>', 'home');
-    try { if (!S.lessons.length) await loadMine(); } catch (e) {}
+    try { if (!S.lessons.length || !S.tabs) await loadRoom(); } catch (e) {}
     var l = byId(S.lessons, lessonId);
     var c = l ? byId(S.courses, l.course_id) : null;
     var ls = c ? lessonsOf(c.id) : [];
     var idx = l ? ls.indexOf(l) : -1;
     var prev = idx > 0 ? ls[idx - 1] : null, next = idx >= 0 && idx < ls.length - 1 ? ls[idx + 1] : null;
+    var back = c ? '#/p/' + c.id : '#/';
+    if (c) shell('', 'p:' + c.id);
 
     $('#lr-main').innerHTML =
       (c ? '<section class="lr-head" id="lr-head">' + courseHead(c, myEnr(c.id)) + '</section>' : '') +
       '<div class="watch"><div>' +
-      '<div class="lcrumb"><a href="#/">내 강의실</a> › ' + esc(c ? c.title : '') + (l && l.section ? ' › ' + esc(l.section) : '') + '</div>' +
+      '<div class="lcrumb"><a href="' + esc(back) + '">' + esc(c ? tabLabel(c) : '내 강의실') + '</a> › ' + esc(c ? c.title : '') + (l && l.section ? ' › ' + esc(l.section) : '') + '</div>' +
       '<h1 class="watch-title">' + esc(l ? l.title : '강의') + '</h1>' +
       '<div class="player-box"><div class="player-slot" id="slot"></div><div class="overlay" id="ov"><div><div class="spinner"></div><p>강의를 여는 중…</p></div></div></div>' +
       '<div class="rangebar-wrap"><div class="rangebar-label"><span>내가 본 구간</span><span id="rb-txt"></span></div><div class="rangebar" id="rb"></div></div>' +
@@ -486,7 +519,7 @@
       var desc = R[2];
       if (reason === 'limit') desc = '이 회차는 최대 ' + n2(extra && extra.max_views) + '회까지 볼 수 있어요. ' + (CFG.CONTACT_TEXT || '');
       if (reason === 'expired') desc = (CFG.CONTACT_TEXT || '');
-      var btns = '<a class="lbtn" href="#/">내 강의실로</a>';
+      var btns = '<a class="lbtn" href="' + esc(back) + '">내 강의실로</a>';
       if (reason === 'replaced' || reason === 'no_session') btns += ' <button class="lbtn lbtn-primary" id="ov-retry">여기서 다시 보기</button>';
       if (reason === 'not_enrolled' && CFG.PURCHASE_URL) btns += ' <a class="lbtn lbtn-primary" href="' + esc(CFG.PURCHASE_URL) + '">수강 신청하기</a>';
       if (reason === 'login') btns = '<a class="lbtn lbtn-primary" href="#/login">로그인</a>';
@@ -1133,9 +1166,19 @@
     if (B.isRecovery && B.isRecovery()) { viewSetPassword(); return; }
     if (!S.user) { viewAuth('login'); return; }
     if (h === '#/login') { location.hash = '#/'; return; }
+    // 상단 탭(이용 중인 상품)을 처음 한 번 불러온 뒤 화면을 그린다
+    if (!S.tabs) {
+      if (!S.tabsLoading) {
+        S.tabsLoading = true;
+        loadRoom().catch(function () { S.tabs = []; }).then(function () { S.tabsLoading = false; route(); });
+      }
+      shell('<div class="empty">불러오는 중…</div>', 'home');
+      return;
+    }
     var m;
     if ((m = h.match(/^#\/watch\/(.+)$/))) { cleanupWatch(); viewWatch(decodeURIComponent(m[1])); return; }
     if (/^#\/admin/.test(h) && !S.user.is_admin) { location.hash = '#/'; return; }
+    if ((m = h.match(/^#\/p\/(.+)$/))) { viewProduct(decodeURIComponent(m[1])); return; }
     if (h === '#/admin') { viewAdminStudents(); return; }
     if ((m = h.match(/^#\/admin\/student\/(.+)$/))) { viewAdminStudent(decodeURIComponent(m[1])); return; }
     if (h === '#/admin/courses') { viewAdminCourses(); return; }
@@ -1161,6 +1204,7 @@
     B.onAuthChange(function (u, event) {
       var was = S.user && S.user.id;
       S.user = u;
+      if ((u && u.id) !== was) S.tabs = null;
       if (event === 'PASSWORD_RECOVERY' || (u && u.id) !== was) route();
     });
     window.addEventListener('hashchange', route);
