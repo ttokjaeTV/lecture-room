@@ -826,3 +826,18 @@ input:focus-visible + .co-chk { outline: 2px solid var(--red); outline-offset: 2
   .mcf__n { display: none; }
   .mcf__scene { left: -6%; width: 112%; }
 }
+
+/* 강의 상세 큰 표지(2026-10-17 교체): 계단 → 카드와 같은 「월 현금흐름」 장면. 제목·부제는 그대로, 아래 그림만 바뀜 */
+.cov .cov__scene--mcf { bottom: 0; }
+.cov .mcf__n { font-size: 10px; }
+.cov.is-play .mcf__m { transform-box: fill-box; transform-origin: 50% 100%; animation: cvStep .6s cubic-bezier(.3, 1.4, .5, 1) calc(.5s + var(--i) * .05s) both; }
+.cov.is-play .mcf__flow { animation: cvFade .5s ease 1.1s both, mcfFlow 1.2s linear 1.1s infinite; }
+.cov.is-play .mcf__coin > g { opacity: 0; animation: mcfDrop 4.8s cubic-bezier(.5, 0, .7, .4) calc(1.6s + var(--i) * .4s) infinite; }
+.cov.is-play .mcf__top { animation: mcfLit 4.8s ease-out calc(1.6s + var(--i) * .4s) infinite; }
+.cov.is-play .mcf__char { animation: cvFade .5s ease 1.2s both; }
+@media (prefers-reduced-motion: reduce) {
+  .cov .mcf__coin > g { opacity: 1; }
+}
+@media (max-width: 640px) {
+  .cov .cov__scene--mcf { left: 6%; width: 88%; }
+}

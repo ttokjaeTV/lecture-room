@@ -22,7 +22,7 @@
 <link rel="stylesheet" href="assets/css/fx.css">
 <link rel="stylesheet" href="assets/css/ace.css">
 <link rel="stylesheet" href="assets/css/shell.css?v=20261017d">
-<link rel="stylesheet" href="assets/css/shop.css?v=20261017c">
+<link rel="stylesheet" href="assets/css/shop.css?v=20261017e">
 </head>
 <body class="shop-page">
 
@@ -83,50 +83,104 @@
               <div class="cov__head">
                 <p class="cov__kind"><span>ONLINE CLASS</span><span class="cov__dot"></span><span>5 WEEKS</span></p>
                 <p class="cov__t cov__t--3"><span class="ln"><span>평생 마르지 않는</span></span><span class="ln"><span><em>월 현금흐름<svg class="cov__swash" viewBox="0 0 200 16" preserveAspectRatio="none" aria-hidden="true"><path d="M3 11 C 50 4, 120 3, 197 8"/></svg></em></span></span><span class="ln"><span>포트폴리오 완성반</span></span></p>
-                <p class="cov__sub"><span class="key key--a"></span>개념 3주 <span class="key key--b"></span>실전 2주</p>
+                <p class="cov__sub">개념 3주 + 실전 2주</p>
               </div>
-              <svg class="cov__scene" viewBox="0 0 600 330" aria-label="1–2주 ETF, 3주 세금·계좌, 4주 포트폴리오, 5주 현금흐름 순서로 올라가는 계단" role="img">
+              <svg class="cov__scene cov__scene--mcf" viewBox="0 0 400 250" aria-label="1월부터 12월까지 매달 동전이 하나씩 들어오는 막대 그림" role="img">
                 <defs>
-                  <linearGradient id="cvLine" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#F8E04A" stop-opacity=".25"/><stop offset="1" stop-color="#F8E04A"/></linearGradient>
-                  <linearGradient id="cvFloor" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".35"/></linearGradient>
+                  <linearGradient id="mcfBarC" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#B0221F"/><stop offset="1" stop-color="#7C1315"/></linearGradient>
+                  <linearGradient id="mcfFloorC" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".35"/></linearGradient>
+                  <radialGradient id="mcfCoinC" cx=".35" cy=".3" r=".75"><stop offset="0" stop-color="#FFF6B8"/><stop offset=".45" stop-color="#F8E04A"/><stop offset="1" stop-color="#C9A512"/></radialGradient>
                 </defs>
-                <rect x="0" y="300" width="600" height="30" fill="url(#cvFloor)"/>
-                <g class="cv-grid" stroke="#FBF7F0" stroke-opacity=".06">
-                  <path d="M0 300 H600"/><path d="M60 300 L20 330"/><path d="M160 300 L140 330"/><path d="M260 300 L255 330"/><path d="M360 300 L370 330"/><path d="M460 300 L485 330"/><path d="M560 300 L600 326"/>
+                <rect x="0" y="226" width="400" height="24" fill="url(#mcfFloorC)"/>
+                <path d="M0 226 H400" stroke="#FBF7F0" stroke-opacity=".08"/>
+                <!-- 흐르는 선(현금흐름) → 동전이 1~12월 막대로 한 달씩 떨어진다. 처음 화면 카드와 같은 장면 -->
+                <path d="M8 62 H392" fill="none" stroke="#F8E04A" stroke-opacity=".18" stroke-width="10" stroke-linecap="round"/>
+                <path class="mcf__flow" d="M8 62 H392" fill="none" stroke="#F8E04A" stroke-width="3" stroke-linecap="round" stroke-dasharray="14 10"/>
+                <g class="mcf__m" style="--i:0">
+                  <path d="M50 124 l6 -5 v102 l-6 5 z" fill="#5E0E10"/>
+                  <rect x="30" y="124" width="20" height="102" fill="url(#mcfBarC)"/>
+                  <path class="mcf__top" d="M30 124 l6 -5 h20 l-6 5 z" fill="#C0392B"/>
+                  <g class="mcf__coin" transform="translate(43 109)"><g><circle r="8" fill="url(#mcfCoinC)"/><circle r="5" fill="none" stroke="#9A7A08" stroke-opacity=".45" stroke-width="1.2"/></g></g>
+                  <text class="mcf__n" x="42" y="243" text-anchor="middle">1월</text>
                 </g>
-                <!-- 계단: 앞면 · 윗면 · 옆면. 개념은 브라운, 실전은 빨강 -->
-                <g class="cv-step" style="--d:0">
-                  <path class="s-side" d="M190 236 l18 -12 v76 l-18 0 z" fill="#2B221B"/>
-                  <path class="s-top" d="M40 236 l18 -12 h150 l-18 12 z" fill="#6A584A"/>
-                  <rect class="s-front" x="40" y="236" width="150" height="64" fill="#4A3C30"/>
-                  <text x="56" y="260" class="t-wk">1–2주</text><text x="56" y="284" class="t-tp">ETF</text>
+                <g class="mcf__m" style="--i:1">
+                  <path d="M78 124 l6 -5 v102 l-6 5 z" fill="#5E0E10"/>
+                  <rect x="58" y="124" width="20" height="102" fill="url(#mcfBarC)"/>
+                  <path class="mcf__top" d="M58 124 l6 -5 h20 l-6 5 z" fill="#C0392B"/>
+                  <g class="mcf__coin" transform="translate(71 109)"><g><circle r="8" fill="url(#mcfCoinC)"/><circle r="5" fill="none" stroke="#9A7A08" stroke-opacity=".45" stroke-width="1.2"/></g></g>
+                  <text class="mcf__n" x="70" y="243" text-anchor="middle">2월</text>
                 </g>
-                <g class="cv-step" style="--d:1">
-                  <path class="s-side" d="M300 188 l18 -12 v124 l-18 0 z" fill="#2B221B"/>
-                  <path class="s-top" d="M190 188 l18 -12 h110 l-18 12 z" fill="#6A584A"/>
-                  <rect class="s-front" x="190" y="188" width="110" height="112" fill="#4A3C30"/>
-                  <text x="204" y="212" class="t-wk">3주</text><text x="204" y="236" class="t-tp">세금·계좌</text>
+                <g class="mcf__m" style="--i:2">
+                  <path d="M106 124 l6 -5 v102 l-6 5 z" fill="#5E0E10"/>
+                  <rect x="86" y="124" width="20" height="102" fill="url(#mcfBarC)"/>
+                  <path class="mcf__top" d="M86 124 l6 -5 h20 l-6 5 z" fill="#C0392B"/>
+                  <g class="mcf__coin" transform="translate(99 109)"><g><circle r="8" fill="url(#mcfCoinC)"/><circle r="5" fill="none" stroke="#9A7A08" stroke-opacity=".45" stroke-width="1.2"/></g></g>
+                  <text class="mcf__n" x="98" y="243" text-anchor="middle">3월</text>
                 </g>
-                <g class="cv-step" style="--d:2">
-                  <path class="s-side" d="M410 140 l18 -12 v172 l-18 0 z" fill="#5E0E10"/>
-                  <path class="s-top" d="M300 140 l18 -12 h110 l-18 12 z" fill="#C0392B"/>
-                  <rect class="s-front" x="300" y="140" width="110" height="160" fill="#96181A"/>
-                  <text x="314" y="164" class="t-wk">4주</text><text x="314" y="188" class="t-tp">포트폴리오</text>
+                <g class="mcf__m" style="--i:3">
+                  <path d="M134 124 l6 -5 v102 l-6 5 z" fill="#5E0E10"/>
+                  <rect x="114" y="124" width="20" height="102" fill="url(#mcfBarC)"/>
+                  <path class="mcf__top" d="M114 124 l6 -5 h20 l-6 5 z" fill="#C0392B"/>
+                  <g class="mcf__coin" transform="translate(127 109)"><g><circle r="8" fill="url(#mcfCoinC)"/><circle r="5" fill="none" stroke="#9A7A08" stroke-opacity=".45" stroke-width="1.2"/></g></g>
+                  <text class="mcf__n" x="126" y="243" text-anchor="middle">4월</text>
                 </g>
-                <g class="cv-step" style="--d:3">
-                  <path class="s-side" d="M520 92 l18 -12 v220 l-18 0 z" fill="#5E0E10"/>
-                  <path class="s-top" d="M410 92 l18 -12 h110 l-18 12 z" fill="#C0392B"/>
-                  <rect class="s-front" x="410" y="92" width="110" height="208" fill="#96181A"/>
-                  <text x="424" y="116" class="t-wk">5주</text><text x="424" y="140" class="t-tp">현금흐름</text>
+                <g class="mcf__m" style="--i:4">
+                  <path d="M162 124 l6 -5 v102 l-6 5 z" fill="#5E0E10"/>
+                  <rect x="142" y="124" width="20" height="102" fill="url(#mcfBarC)"/>
+                  <path class="mcf__top" d="M142 124 l6 -5 h20 l-6 5 z" fill="#C0392B"/>
+                  <g class="mcf__coin" transform="translate(155 109)"><g><circle r="8" fill="url(#mcfCoinC)"/><circle r="5" fill="none" stroke="#9A7A08" stroke-opacity=".45" stroke-width="1.2"/></g></g>
+                  <text class="mcf__n" x="154" y="243" text-anchor="middle">5월</text>
                 </g>
-                <!-- 우상향 선 + 끝점 -->
-                <path class="cv-line" d="M24 262 C 90 250, 130 222, 196 200 S 300 150, 360 118 S 470 64, 566 30" fill="none" stroke="url(#cvLine)" stroke-width="4" stroke-linecap="round" pathLength="1"/>
-                <g class="cv-end" transform="translate(566 30)">
-                  <circle class="cv-ring" r="9" fill="none" stroke="#F8E04A" stroke-width="2"/>
-                  <circle r="6.5" fill="#F8E04A"/><circle r="2.5" cx="-1.6" cy="-1.6" fill="#fff" fill-opacity=".8"/>
+                <g class="mcf__m" style="--i:5">
+                  <path d="M190 124 l6 -5 v102 l-6 5 z" fill="#5E0E10"/>
+                  <rect x="170" y="124" width="20" height="102" fill="url(#mcfBarC)"/>
+                  <path class="mcf__top" d="M170 124 l6 -5 h20 l-6 5 z" fill="#C0392B"/>
+                  <g class="mcf__coin" transform="translate(183 109)"><g><circle r="8" fill="url(#mcfCoinC)"/><circle r="5" fill="none" stroke="#9A7A08" stroke-opacity=".45" stroke-width="1.2"/></g></g>
+                  <text class="mcf__n" x="182" y="243" text-anchor="middle">6월</text>
                 </g>
-                <!-- 캐릭터: 계단을 한 칸씩 올라 꼭대기에 선다 -->
-                <g class="cv-char"><image class="cv-bob" href="assets/img/character.png" width="44" height="66"/></g>
+                <g class="mcf__m" style="--i:6">
+                  <path d="M218 124 l6 -5 v102 l-6 5 z" fill="#5E0E10"/>
+                  <rect x="198" y="124" width="20" height="102" fill="url(#mcfBarC)"/>
+                  <path class="mcf__top" d="M198 124 l6 -5 h20 l-6 5 z" fill="#C0392B"/>
+                  <g class="mcf__coin" transform="translate(211 109)"><g><circle r="8" fill="url(#mcfCoinC)"/><circle r="5" fill="none" stroke="#9A7A08" stroke-opacity=".45" stroke-width="1.2"/></g></g>
+                  <text class="mcf__n" x="210" y="243" text-anchor="middle">7월</text>
+                </g>
+                <g class="mcf__m" style="--i:7">
+                  <path d="M246 124 l6 -5 v102 l-6 5 z" fill="#5E0E10"/>
+                  <rect x="226" y="124" width="20" height="102" fill="url(#mcfBarC)"/>
+                  <path class="mcf__top" d="M226 124 l6 -5 h20 l-6 5 z" fill="#C0392B"/>
+                  <g class="mcf__coin" transform="translate(239 109)"><g><circle r="8" fill="url(#mcfCoinC)"/><circle r="5" fill="none" stroke="#9A7A08" stroke-opacity=".45" stroke-width="1.2"/></g></g>
+                  <text class="mcf__n" x="238" y="243" text-anchor="middle">8월</text>
+                </g>
+                <g class="mcf__m" style="--i:8">
+                  <path d="M274 124 l6 -5 v102 l-6 5 z" fill="#5E0E10"/>
+                  <rect x="254" y="124" width="20" height="102" fill="url(#mcfBarC)"/>
+                  <path class="mcf__top" d="M254 124 l6 -5 h20 l-6 5 z" fill="#C0392B"/>
+                  <g class="mcf__coin" transform="translate(267 109)"><g><circle r="8" fill="url(#mcfCoinC)"/><circle r="5" fill="none" stroke="#9A7A08" stroke-opacity=".45" stroke-width="1.2"/></g></g>
+                  <text class="mcf__n" x="266" y="243" text-anchor="middle">9월</text>
+                </g>
+                <g class="mcf__m" style="--i:9">
+                  <path d="M302 124 l6 -5 v102 l-6 5 z" fill="#5E0E10"/>
+                  <rect x="282" y="124" width="20" height="102" fill="url(#mcfBarC)"/>
+                  <path class="mcf__top" d="M282 124 l6 -5 h20 l-6 5 z" fill="#C0392B"/>
+                  <g class="mcf__coin" transform="translate(295 109)"><g><circle r="8" fill="url(#mcfCoinC)"/><circle r="5" fill="none" stroke="#9A7A08" stroke-opacity=".45" stroke-width="1.2"/></g></g>
+                  <text class="mcf__n" x="294" y="243" text-anchor="middle">10월</text>
+                </g>
+                <g class="mcf__m" style="--i:10">
+                  <path d="M330 124 l6 -5 v102 l-6 5 z" fill="#5E0E10"/>
+                  <rect x="310" y="124" width="20" height="102" fill="url(#mcfBarC)"/>
+                  <path class="mcf__top" d="M310 124 l6 -5 h20 l-6 5 z" fill="#C0392B"/>
+                  <g class="mcf__coin" transform="translate(323 109)"><g><circle r="8" fill="url(#mcfCoinC)"/><circle r="5" fill="none" stroke="#9A7A08" stroke-opacity=".45" stroke-width="1.2"/></g></g>
+                  <text class="mcf__n" x="322" y="243" text-anchor="middle">11월</text>
+                </g>
+                <g class="mcf__m" style="--i:11">
+                  <path d="M358 124 l6 -5 v102 l-6 5 z" fill="#5E0E10"/>
+                  <rect x="338" y="124" width="20" height="102" fill="url(#mcfBarC)"/>
+                  <path class="mcf__top" d="M338 124 l6 -5 h20 l-6 5 z" fill="#C0392B"/>
+                  <g class="mcf__coin" transform="translate(351 109)"><g><circle r="8" fill="url(#mcfCoinC)"/><circle r="5" fill="none" stroke="#9A7A08" stroke-opacity=".45" stroke-width="1.2"/></g></g>
+                  <text class="mcf__n" x="350" y="243" text-anchor="middle">12월</text>
+                </g>
+                <g class="mcf__char"><image class="cv-bob" href="assets/img/character.png" x="334" y="71" width="34" height="51"/></g>
               </svg>
             </div>
           </div>
