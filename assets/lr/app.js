@@ -668,34 +668,65 @@
     var activeLec = active.filter(function (e) { return isLecture(byId(A.courses, e.course_id)); });
     var avg = activeLec.length ? activeLec.reduce(function (s, e) { return s + enrSummary(e).ratio; }, 0) / activeLec.length : 0;
 
-    var rows = A.enrollments.map(function (e) {
+    // 회원 1명 = 1줄. 같은 회원이 상품을 여러 개 가지면 줄을 늘리지 않고 상품 칸 안에 차례로 쌓는다.
+    var stLabel = { active: '<span class="lchip chip-green">이용 중</span>', expired: '<span class="lchip chip-gray">만료</span>', revoked: '<span class="lchip chip-gray">해지</span>', pending: '<span class="lchip chip-warn">시작 전</span>' };
+    var byUser = {}, order = [];
+    A.enrollments.forEach(function (e) {
       var cc = byId(A.courses, e.course_id) || { title: '-' };
-      return { e: e, u: byId(A.profiles, e.user_id) || { name: '(탈퇴)', email: '' }, c: cc, st: enrState(e), sm: enrSummary(e), lec: isLecture(cc) };
-    }).filter(function (r) {
-      if (stuFilter.course && r.e.course_id !== stuFilter.course) return false;
-      if (stuFilter.st && r.st !== stuFilter.st) return false;
-      if (stuFilter.q) { var q = stuFilter.q.toLowerCase(); if ((r.u.name || '').toLowerCase().indexOf(q) < 0 && (r.u.email || '').toLowerCase().indexOf(q) < 0 && (r.e.memo || '').toLowerCase().indexOf(q) < 0) return false; }
+      if (!byUser[e.user_id]) { byUser[e.user_id] = { uid: e.user_id, u: byId(A.profiles, e.user_id) || { name: '(탈퇴)', email: '' }, items: [], last: null }; order.push(e.user_id); }
+      var it = { e: e, c: cc, st: enrState(e), sm: enrSummary(e), lec: isLecture(cc) };
+      byUser[e.user_id].items.push(it);
+      if (it.lec && it.sm.last && (!byUser[e.user_id].last || it.sm.last > byUser[e.user_id].last)) byUser[e.user_id].last = it.sm.last;
+    });
+    var stRank = { active: 0, pending: 1, expired: 2, revoked: 3 };
+    var rows = order.map(function (k) { return byUser[k]; }).filter(function (r) {
+      if (stuFilter.course && !r.items.some(function (it) { return it.e.course_id === stuFilter.course; })) return false;
+      if (stuFilter.st && !r.items.some(function (it) { return it.st === stuFilter.st; })) return false;
+      if (stuFilter.q) {
+        var q = stuFilter.q.toLowerCase();
+        var hit = (r.u.name || '').toLowerCase().indexOf(q) >= 0 || (r.u.email || '').toLowerCase().indexOf(q) >= 0 ||
+          r.items.some(function (it) { return (it.e.memo || '').toLowerCase().indexOf(q) >= 0; });
+        if (!hit) return false;
+      }
       return true;
-    }).sort(function (a, b) { return (b.sm.last || '') < (a.sm.last || '') ? -1 : 1; });
+    }).sort(function (a, b) {
+      if ((a.last || '') !== (b.last || '')) return (b.last || '') < (a.last || '') ? -1 : 1;
+      return (a.u.name || '').localeCompare(b.u.name || '', 'ko');
+    });
+    rows.forEach(function (r) {
+      // 이용 중인 상품이 위로, 같은 상태면 상품 목록 순서대로
+      r.items.sort(function (x, y) { return (stRank[x.st] - stRank[y.st]) || (A.courses.indexOf(x.c) - A.courses.indexOf(y.c)); });
+    });
+    function cell(r, f) { return r.items.map(function (it) { return '<div class="stu-l">' + f(it) + '</div>'; }).join(''); }
+    var activeUsers = {}; active.forEach(function (e) { activeUsers[e.user_id] = 1; });
+    var soonUsers = {}; active.forEach(function (e) { var d = daysLeft(e.expires_at); if (d != null && d <= 7) soonUsers[e.user_id] = 1; });
 
-    var stLabel = { active: '<span class="lchip chip-green">수강 중</span>', expired: '<span class="lchip chip-gray">만료</span>', revoked: '<span class="lchip chip-gray">해지</span>', pending: '<span class="lchip chip-warn">시작 전</span>' };
     var html = adminTabs('students') +
-      '<div class="kpis"><div class="lstat"><div class="stat-label">수강 중</div><div class="stat-value">' + active.length + '<small>명</small></div></div>' +
+      '<div class="kpis"><div class="lstat"><div class="stat-label">이용 중 회원</div><div class="stat-value">' + Object.keys(activeUsers).length + '<small>명</small></div></div>' +
       '<div class="lstat"><div class="stat-label">최근 7일 시청자</div><div class="stat-value">' + Object.keys(watchers).length + '<small>명</small></div></div>' +
       '<div class="lstat"><div class="stat-label">평균 진도율</div><div class="stat-value">' + pct(avg) + '<small>%</small></div></div>' +
-      '<div class="lstat' + (soon ? ' warn' : '') + '"><div class="stat-label">7일 안에 만료</div><div class="stat-value">' + soon + '<small>명</small></div></div></div>' +
+      '<div class="lstat' + (soon ? ' warn' : '') + '"><div class="stat-label">7일 안에 만료</div><div class="stat-value">' + Object.keys(soonUsers).length + '<small>명</small></div></div></div>' +
       '<div class="card card-pad"><div class="toolbar"><select class="input" id="flt-course">' + courseOptions(stuFilter.course, true) + '</select>' +
-      '<select class="input" id="flt-st"><option value="">전체 상태</option><option value="active"' + (stuFilter.st === 'active' ? ' selected' : '') + '>수강 중</option><option value="expired"' + (stuFilter.st === 'expired' ? ' selected' : '') + '>만료</option><option value="revoked"' + (stuFilter.st === 'revoked' ? ' selected' : '') + '>해지</option></select>' +
+      '<select class="input" id="flt-st"><option value="">전체 상태</option><option value="active"' + (stuFilter.st === 'active' ? ' selected' : '') + '>이용 중</option><option value="expired"' + (stuFilter.st === 'expired' ? ' selected' : '') + '>만료</option><option value="revoked"' + (stuFilter.st === 'revoked' ? ' selected' : '') + '>해지</option></select>' +
       '<input class="input grow" id="flt-q" placeholder="이름·이메일·메모 검색" value="' + esc(stuFilter.q) + '"><span class="spacer"></span>' +
       '<button class="lbtn lbtn-primary" id="btn-grant">+ 이용 권한 부여</button></div>' +
-      '<div class="tbl-wrap"><table class="tbl"><thead><tr><th>회원</th><th>상품</th><th>기간</th><th>진도율</th><th class="num">완료</th><th>최근 시청</th><th>상태</th></tr></thead><tbody>' +
+      '<p class="lsmall muted" style="margin:-4px 0 10px">회원 ' + rows.length + '명 · 한 회원이 가진 상품은 한 줄 안에 모아 보여요. 줄을 누르면 상품별 기간·시청 기록을 고칠 수 있어요.</p>' +
+      '<div class="tbl-wrap"><table class="tbl tbl-stu"><thead><tr><th>회원</th><th>상품</th><th>기간</th><th>진도율</th><th>상태</th><th>최근 시청</th></tr></thead><tbody>' +
       (rows.length ? rows.map(function (r) {
-        return '<tr class="click" data-uid="' + esc(r.e.user_id) + '"><td><b>' + esc(r.u.name) + '</b><div class="tbl-email">' + esc(r.u.email) + (r.e.memo ? ' · ' + esc(r.e.memo) : '') + '</div></td>' +
-          '<td>' + (r.lec ? '' : '<span class="lchip chip-dark">' + KIND[kindOf(r.c)] + '</span> ') + esc(r.c.title) + '</td><td class="nowrap">' + (r.e.expires_at ? fmtDate(r.e.expires_at) + (r.st === 'active' ? ' <span class="muted lsmall">(D-' + daysLeft(r.e.expires_at) + ')</span>' : '') : '무제한') + '</td>' +
-          (r.lec ? '<td style="min-width:120px"><div class="lsmall" style="font-weight:800">' + pct(r.sm.ratio) + '%</div><div class="pbar" style="margin-top:3px"><i style="width:' + pct(r.sm.ratio) + '%"></i></div></td>' +
-          '<td class="num">' + r.sm.done + '/' + r.sm.count + '</td><td class="nowrap">' + (r.sm.last ? ago(r.sm.last) : '<span class="muted">시청 전</span>') + '</td>'
-          : '<td class="muted">-</td><td class="num muted">-</td><td class="muted">-</td>') + '<td>' + (stLabel[r.st] || '') + '</td></tr>';
-      }).join('') : '<tr><td colspan="7" class="empty">조건에 맞는 수강생이 없어요.</td></tr>') +
+        return '<tr class="click" data-uid="' + esc(r.uid) + '"><td><b>' + esc(r.u.name) + '</b><div class="tbl-email">' + esc(r.u.email) + '</div>' +
+          (r.items.length > 1 ? '<div class="lsmall muted" style="margin-top:2px">상품 ' + r.items.length + '개</div>' : '') + '</td>' +
+          '<td class="stu-prod">' + cell(r, function (it) {
+            return (it.lec ? '<span class="lchip">강의</span> ' : '<span class="lchip chip-dark">' + KIND[kindOf(it.c)] + '</span> ') +
+              '<span class="stu-t" title="' + esc(it.c.title + (it.e.memo ? ' · ' + it.e.memo : '')) + '">' + esc(it.c.title) + '</span>' +
+              (it.e.memo ? ' <span class="lsmall muted stu-memo">· ' + esc(it.e.memo) + '</span>' : '');
+          }) + '</td>' +
+          '<td class="nowrap">' + cell(r, function (it) { return it.e.expires_at ? fmtDate(it.e.expires_at) + (it.st === 'active' ? ' <span class="muted lsmall">(D-' + daysLeft(it.e.expires_at) + ')</span>' : '') : '무제한'; }) + '</td>' +
+          '<td>' + cell(r, function (it) {
+            return it.lec ? '<span class="stu-bar"><span class="pbar"><i style="width:' + pct(it.sm.ratio) + '%"></i></span></span><span class="lsmall" style="font-weight:800">' + pct(it.sm.ratio) + '%</span> <span class="lsmall muted">' + it.sm.done + '/' + it.sm.count + '</span>' : '<span class="muted">-</span>';
+          }) + '</td>' +
+          '<td>' + cell(r, function (it) { return stLabel[it.st] || ''; }) + '</td>' +
+          '<td class="nowrap">' + (r.last ? ago(r.last) : r.items.some(function (it) { return it.lec; }) ? '<span class="muted">시청 전</span>' : '<span class="muted">-</span>') + '</td></tr>';
+      }).join('') : '<tr><td colspan="6" class="empty">조건에 맞는 회원이 없어요.</td></tr>') +
       '</tbody></table></div></div>';
 
     if (A.invites.length) {

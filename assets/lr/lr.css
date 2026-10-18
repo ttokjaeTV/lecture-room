@@ -251,6 +251,16 @@ body.lr { margin: 0; }
 .lr .tbl td { padding: 11px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
 .lr .tbl tr:last-child td { border-bottom: 0; }
 .lr .tbl tr.click { cursor: pointer; }
+/* 관리자 수강생 목록 — 회원 1줄, 상품은 칸 안에 줄줄이(같은 높이로 맞춰 칸끼리 가로로 정렬) */
+.lr .tbl-stu td { vertical-align: top; }
+.lr .tbl-stu .stu-l { display: flex; align-items: center; gap: 6px; min-height: 30px; white-space: nowrap; }
+.lr .tbl-stu .stu-l + .stu-l { border-top: 1px dashed var(--border); }
+.lr .tbl-stu .stu-prod .stu-l { min-width: 0; }
+.lr .tbl-stu .stu-t { font-weight: 700; overflow: hidden; text-overflow: ellipsis; max-width: 260px; }
+.lr .tbl-stu .stu-memo { overflow: hidden; text-overflow: ellipsis; max-width: 140px; }
+.lr .tbl-stu .stu-bar { display: inline-block; width: 64px; }
+.lr .tbl-stu .stu-bar .pbar { display: block; margin-top: 0; height: 6px; }
+.lr .tbl-stu td > b, .lr .tbl-stu td > .tbl-email { line-height: 1.5; }
 .lr .tbl tr.click:hover td { background: #F8F1E6; }
 .lr .tbl .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .lr .tbl .nowrap { white-space: nowrap; }
